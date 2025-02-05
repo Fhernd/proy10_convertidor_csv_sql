@@ -17,6 +17,9 @@ export default {
     },
     setup(props) {
         const registerTab = inject("registerTab");
+        const activeTabIndex = inject("activeTabIndex");
+        const tabs = inject("tabs");
+
         if (!registerTab) {
             console.error("El componente Tab debe estar dentro de un Tabs.");
         }
@@ -27,7 +30,7 @@ export default {
 
         registerTab(tabData);
 
-        const isActive = computed(() => tabData === inject("tabs")[inject("activeTabIndex")]);
+        const isActive = computed(() => tabs.indexOf(tabData) === activeTabIndex.value);
 
         return {
             isActive,

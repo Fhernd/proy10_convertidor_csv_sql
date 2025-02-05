@@ -1,16 +1,13 @@
-<!-- Tabs.vue -->
 <template>
     <div class="tabs">
-        <!-- Pestañas (navegación) -->
         <div class="tabs-navigation">
             <button v-for="(tab, index) in tabs" :key="index" :class="{ active: index === activeTabIndex }"
                 @click="activeTabIndex = index">
                 {{ tab.label }}
             </button>
         </div>
-        <!-- Contenido de las pestañas -->
         <div class="tabs-content">
-            <slot :active-tab="tabs[activeTabIndex]" />
+            <slot />
         </div>
     </div>
 </template>
@@ -24,10 +21,12 @@ export default {
         const tabs = reactive([]);
         const activeTabIndex = ref(0);
 
-        // Proveer las pestañas para los componentes hijos (Tab)
         provide("registerTab", (tab) => {
             tabs.push(tab);
         });
+
+        provide("activeTabIndex", activeTabIndex);
+        provide("tabs", tabs);
 
         onMounted(() => {
             if (tabs.length === 0) {
