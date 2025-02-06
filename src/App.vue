@@ -1,71 +1,44 @@
 <script setup>
-import { RouterView } from 'vue-router'
+import Tabs from '@/components/Tabs.vue'
+import Tab from '@/components/Tab.vue'
 </script>
 
 <template>
-  <RouterView />
+  <div class="min-h-screen bg-gray-50 text-gray-800">
+    <!-- Header con las Tabs -->
+    <header class="sticky top-0 z-10 bg-white shadow-md">
+      <div class="container mx-auto px-4 py-2">
+        <Tabs>
+          <template #default="{ activeTab }">
+            <Tab label="Pestaña 1">
+              <div class="p-4 bg-white shadow rounded-md">
+                <h2 class="text-lg font-semibold">Contenido de Pestaña 1</h2>
+                <p class="text-gray-600">Este es el contenido de la primera pestaña.</p>
+              </div>
+            </Tab>
+            <Tab label="Pestaña 2">
+              <div class="p-4 bg-white shadow rounded-md">
+                <h2 class="text-lg font-semibold">Contenido de Pestaña 2</h2>
+                <p class="text-gray-600">Este es el contenido de la segunda pestaña.</p>
+              </div>
+            </Tab>
+            <Tab label="Pestaña 3">
+              <div class="p-4 bg-white shadow rounded-md">
+                <h2 class="text-lg font-semibold">Contenido de Pestaña 3</h2>
+                <p class="text-gray-600">Este es el contenido de la tercera pestaña.</p>
+              </div>
+            </Tab>
+          </template>
+        </Tabs>
+      </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="container mx-auto px-4 py-8">
+      <h2 class="text-2xl font-bold mb-4">App</h2>
+      <p class="text-gray-700">Esta es la sección principal debajo de las pestañas.</p>
+    </main>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
+<style scoped></style>

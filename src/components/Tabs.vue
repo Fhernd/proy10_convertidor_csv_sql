@@ -1,12 +1,19 @@
 <template>
-    <div class="tabs">
-        <div class="tabs-navigation">
-            <button v-for="(tab, index) in tabs" :key="index" :class="{ active: index === activeTabIndex }"
-                @click="activeTabIndex = index">
+    <div>
+        <!-- Navegación de Tabs -->
+        <div class="flex justify-center space-x-4 border-b border-gray-200">
+            <button v-for="(tab, index) in tabs" :key="index" :class="[
+                'py-2 px-4 text-sm font-medium focus:outline-none',
+                index === activeTabIndex
+                    ? 'border-b-2 border-blue-500 text-blue-500'
+                    : 'text-gray-600 hover:text-blue-500 hover:border-blue-500'
+            ]" @click="activeTabIndex = index">
                 {{ tab.label }}
             </button>
         </div>
-        <div class="tabs-content">
+
+        <!-- Contenido de las Tabs -->
+        <div class="mt-4">
             <slot />
         </div>
     </div>
@@ -42,28 +49,4 @@ export default {
 };
 </script>
 
-<style>
-.tabs-navigation {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.tabs-navigation button {
-    padding: 0.5rem 1rem;
-    border: none;
-    background: #f5f5f5;
-    cursor: pointer;
-}
-
-.tabs-navigation button.active {
-    background: #007bff;
-    color: white;
-}
-
-.tabs-content {
-    border: 1px solid #ddd;
-    padding: 1rem;
-    border-radius: 0.5rem;
-}
-</style>
+<style scoped></style>
