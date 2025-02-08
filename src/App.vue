@@ -23,8 +23,7 @@ import Tab from '@/components/Tab.vue'
             </Tab>
             <Tab label="URL">
               <div class="p-4 bg-white shadow rounded-md">
-                <h2 class="text-lg font-semibold">Contenido de Pestaña 3</h2>
-                <p class="text-gray-600">Este es el contenido de la tercera pestaña.</p>
+                <input type="url" class="w-full mt-4 p-2 border border-gray-300 rounded" placeholder="Ingresa una URL válida" />
               </div>
             </Tab>
           </template>
