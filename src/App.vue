@@ -11,18 +11,18 @@ import Tab from '@/components/Tab.vue'
         <Tabs>
           <template #default="{ activeTab }">
             <Tab label="Ingreso datos">
-              <div class="p-4 bg-white shadow rounded-md">
+              <div class="tab-content p-4 bg-white shadow rounded-md">
                 <textarea class="w-full h-64 p-2 border border-gray-300 rounded"
                   placeholder="Escribe aquí..."></textarea>
               </div>
             </Tab>
             <Tab label="Subir archivo">
-              <div class="p-4 bg-white shadow rounded-md">
+              <div class="tab-content p-4 bg-white shadow rounded-md">
                 <input type="file" accept=".csv" class="mt-4 p-2 border border-gray-300 rounded cursor-pointer" />
               </div>
             </Tab>
             <Tab label="URL">
-              <div class="p-4 bg-white shadow rounded-md">
+              <div class="tab-content p-4 bg-white shadow rounded-md">
                 <input type="url" class="w-full mt-4 p-2 border border-gray-300 rounded" placeholder="Ingresa una URL válida" />
               </div>
             </Tab>
@@ -39,4 +39,8 @@ import Tab from '@/components/Tab.vue'
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.tab-content {
+  min-height: 250px;
+}
+</style>
