@@ -10,19 +10,18 @@ import Tab from '@/components/Tab.vue'
       <div class="container mx-auto px-4 py-2">
         <Tabs>
           <template #default="{ activeTab }">
-            <Tab label="Pestaña 1">
+            <Tab label="Ingreso datos">
               <div class="p-4 bg-white shadow rounded-md">
-                <h2 class="text-lg font-semibold">Contenido de Pestaña 1</h2>
-                <p class="text-gray-600">Este es el contenido de la primera pestaña.</p>
+                <textarea class="w-full h-64 p-2 border border-gray-300 rounded" placeholder="Escribe aquí..."></textarea>
               </div>
             </Tab>
-            <Tab label="Pestaña 2">
+            <Tab label="Subir archivo">
               <div class="p-4 bg-white shadow rounded-md">
                 <h2 class="text-lg font-semibold">Contenido de Pestaña 2</h2>
                 <p class="text-gray-600">Este es el contenido de la segunda pestaña.</p>
               </div>
             </Tab>
-            <Tab label="Pestaña 3">
+            <Tab label="URL">
               <div class="p-4 bg-white shadow rounded-md">
                 <h2 class="text-lg font-semibold">Contenido de Pestaña 3</h2>
                 <p class="text-gray-600">Este es el contenido de la tercera pestaña.</p>
