@@ -12,7 +12,7 @@ import Tab from '@/components/Tab.vue'
           <template #default="{ activeTab }">
             <Tab label="Ingreso datos">
               <div class="tab-content p-4 bg-white shadow rounded-md">
-                <textarea class="w-full h-64 p-2 border border-gray-300 rounded"
+                <textarea class="w-full h-48 p-2 border border-gray-300 rounded"
                   placeholder="Escribe aquí..."></textarea>
               </div>
             </Tab>
