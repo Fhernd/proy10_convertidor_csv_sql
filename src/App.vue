@@ -12,13 +12,13 @@ import Tab from '@/components/Tab.vue'
           <template #default="{ activeTab }">
             <Tab label="Ingreso datos">
               <div class="p-4 bg-white shadow rounded-md">
-                <textarea class="w-full h-64 p-2 border border-gray-300 rounded" placeholder="Escribe aquí..."></textarea>
+                <textarea class="w-full h-64 p-2 border border-gray-300 rounded"
+                  placeholder="Escribe aquí..."></textarea>
               </div>
             </Tab>
             <Tab label="Subir archivo">
               <div class="p-4 bg-white shadow rounded-md">
-                <h2 class="text-lg font-semibold">Contenido de Pestaña 2</h2>
-                <p class="text-gray-600">Este es el contenido de la segunda pestaña.</p>
+                <input type="file" accept=".csv" class="mt-4 p-2 border border-gray-300 rounded cursor-pointer" />
               </div>
             </Tab>
             <Tab label="URL">
