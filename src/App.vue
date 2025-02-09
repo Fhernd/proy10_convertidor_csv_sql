@@ -27,7 +27,7 @@
     </header>
 
     <!-- Contenido Principal -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-8 max-w-screen-2xl">
       <OpcionesEntrada />
     </main>
   </div>
