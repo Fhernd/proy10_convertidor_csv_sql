@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 max-w-lg mx-auto bg-white shadow-md rounded-md">
+    <div class="p-6 max-w-lg mx-auto bg-white shadow-md rounded-md w-full">
       <!-- Título -->
       <h1 class="text-xl font-bold text-gray-800 mb-4">Parámetros de Entrada del CSV</h1>
   
