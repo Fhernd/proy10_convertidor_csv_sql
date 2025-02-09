@@ -1,8 +1,3 @@
-<script setup>
-import Tabs from '@/components/Tabs.vue'
-import Tab from '@/components/Tab.vue'
-</script>
-
 <template>
   <div class="min-h-screen bg-gray-50 text-gray-800">
     <!-- Header con las Tabs -->
@@ -33,11 +28,16 @@ import Tab from '@/components/Tab.vue'
 
     <!-- Contenido Principal -->
     <main class="container mx-auto px-4 py-8">
-      <h2 class="text-2xl font-bold mb-4">App</h2>
-      <p class="text-gray-700">Esta es la sección principal debajo de las pestañas.</p>
+      <OpcionesEntrada />
     </main>
   </div>
 </template>
+
+<script setup>
+import Tabs from '@/components/Tabs.vue'
+import Tab from '@/components/Tab.vue'
+import OpcionesEntrada from './components/OpcionesEntrada.vue';
+</script>
 
 <style scoped>
 .tab-content {
