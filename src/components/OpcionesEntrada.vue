@@ -40,7 +40,7 @@
       <!-- Grupo de Radio Buttons: Separador de campos -->
       <div class="mb-4">
         <label class="block text-gray-700 font-medium mb-2">Separador de campos:</label>
-        <div class="space-y-2">
+        <div class="grid grid-cols-3 gap-4">
           <label class="flex items-center space-x-2">
             <input
               type="radio"
