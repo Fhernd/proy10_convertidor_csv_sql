@@ -41,6 +41,8 @@
       <OpcionesEntrada />
 
       <OpcionesSalida />
+
+      <OpcionesSalidaTabla />
     </main>
   </div>
 </template>
@@ -50,6 +52,7 @@ import Tabs from "@/components/Tabs.vue";
 import Tab from "@/components/Tab.vue";
 import OpcionesEntrada from "./components/OpcionesEntrada.vue";
 import OpcionesSalida from "./components/OpcionesSalida.vue";
+import OpcionesSalidaTabla from "./components/OpcionesSalidaTabla.vue";
 </script>
 
 <style scoped>

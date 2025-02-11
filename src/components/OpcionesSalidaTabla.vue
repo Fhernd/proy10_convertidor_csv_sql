@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 bg-white shadow-lg rounded-lg">
+    <div class="p-6 bg-white shadow-lg rounded-lg mt-4">
         <h2 class="text-xl font-bold mb-4">Opciones de Salida de la Tabla</h2>
 
         <div class="flex flex-col space-y-4">
@@ -29,7 +29,7 @@
             </label>
         </div>
 
-        <button @click="applyOptions" class="mt-6 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button @click="applyOptions" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Aplicar Opciones
         </button>
     </div>
