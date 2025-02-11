@@ -39,6 +39,8 @@
     <!-- Contenido Principal -->
     <main class="container mx-auto max-w-screen-lg px-4 py-8">
       <OpcionesEntrada />
+
+      <OpcionesSalida />
     </main>
   </div>
 </template>
@@ -47,6 +49,7 @@
 import Tabs from "@/components/Tabs.vue";
 import Tab from "@/components/Tab.vue";
 import OpcionesEntrada from "./components/OpcionesEntrada.vue";
+import OpcionesSalida from "./components/OpcionesSalida.vue";
 </script>
 
 <style scoped>
