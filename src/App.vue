@@ -40,6 +40,8 @@
     <main class="container mx-auto max-w-screen-lg px-4 py-8">
       <OpcionesEntrada />
 
+      <OpcionesSGBD />
+
       <OpcionesSalida />
 
       <OpcionesSalidaTabla />
@@ -51,6 +53,7 @@
 import Tabs from "@/components/Tabs.vue";
 import Tab from "@/components/Tab.vue";
 import OpcionesEntrada from "./components/OpcionesEntrada.vue";
+import OpcionesSGBD from "./components/OpcionesSGBD.vue";
 import OpcionesSalida from "./components/OpcionesSalida.vue";
 import OpcionesSalidaTabla from "./components/OpcionesSalidaTabla.vue";
 </script>
