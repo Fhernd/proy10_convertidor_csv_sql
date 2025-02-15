@@ -4,27 +4,27 @@
 
         <div class="flex flex-col space-y-4">
             <label class="flex items-center">
-                <input v-model="replaceSpaces" type="checkbox" class="mr-2">
+                <input v-model="replaceSpaces" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
                 Sustitución de espacios por guiones bajos en nombres de columnas
             </label>
 
             <label class="flex items-center">
-                <input v-model="allVarchar" type="checkbox" class="mr-2">
+                <input v-model="allVarchar" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
                 Dejar como VARCHAR todos los campos
             </label>
 
             <label class="flex items-center">
-                <input v-model="createView" type="checkbox" class="mr-2">
+                <input v-model="createView" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
                 Agregar vista o tabla
             </label>
 
             <label class="flex items-center">
-                <input v-model="dropTable" type="checkbox" class="mr-2">
+                <input v-model="dropTable" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
                 Eliminar tabla si existe antes de crearla
             </label>
 
             <label class="flex items-center">
-                <input v-model="selectPrimaryKey" type="checkbox" class="mr-2">
+                <input v-model="selectPrimaryKey" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
                 Selección de columnas que integran la llave primaria
             </label>
         </div>
