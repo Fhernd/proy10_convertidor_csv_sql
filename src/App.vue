@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-50 text-gray-800">
-    <!-- Header con las Tabs -->
     <header class="sticky top-0 z-10 bg-white shadow-md">
       <div class="container mx-auto max-w-screen-lg px-4 py-2">
         <Tabs>
@@ -36,7 +35,6 @@
       </div>
     </header>
 
-    <!-- Contenido Principal -->
     <main class="container mx-auto max-w-screen-lg px-4 py-8">
       <OpcionesEntrada />
 
@@ -47,6 +45,8 @@
       <OpcionesSalidaTabla />
 
       <OpcionesInsert />
+
+      <OpcionesFormato />
     </main>
   </div>
 </template>
@@ -59,6 +59,7 @@ import OpcionesSGBD from "./components/OpcionesSGBD.vue";
 import OpcionesSalida from "./components/OpcionesSalida.vue";
 import OpcionesSalidaTabla from "./components/OpcionesSalidaTabla.vue";
 import OpcionesInsert from "./components/OpcionesInsert.vue";
+import OpcionesFormato from "./components/OpcionesFormato.vue";
 </script>
 
 <style scoped>
