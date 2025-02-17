@@ -24,7 +24,7 @@
             <label class="flex items-center">
                 <input v-model="useBackticks" type="checkbox"
                     class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
-                Nombres de tablas, columnas con carácter ` (backtick)
+                Nombres de tablas y columnas con carácter ` (backtick)
             </label>
         </div>
 
