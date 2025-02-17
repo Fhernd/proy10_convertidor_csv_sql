@@ -47,6 +47,8 @@
       <OpcionesInsert />
 
       <OpcionesFormato />
+
+      <SalidaSQL />
     </main>
   </div>
 </template>
@@ -60,6 +62,7 @@ import OpcionesSalida from "./components/OpcionesSalida.vue";
 import OpcionesSalidaTabla from "./components/OpcionesSalidaTabla.vue";
 import OpcionesInsert from "./components/OpcionesInsert.vue";
 import OpcionesFormato from "./components/OpcionesFormato.vue";
+import SalidaSQL from "./components/SalidaSQL.vue";
 </script>
 
 <style scoped>

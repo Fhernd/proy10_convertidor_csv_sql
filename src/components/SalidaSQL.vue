@@ -4,8 +4,7 @@
 
         <!-- First Row: Buttons -->
         <div class="flex flex-wrap justify-center gap-2 mb-4">
-            <button v-for="(option, index) in sqlOptions" :key="index"
-                @click="generateSQL(option.type)"
+            <button v-for="(option, index) in sqlOptions" :key="index" @click="generateSQL(option.type)"
                 class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 {{ option.label }}
             </button>
@@ -20,21 +19,23 @@
         </div>
 
         <!-- Third Row: File Name, Download Button, EOL Selector -->
-        <div class="flex flex-wrap justify-between items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
             <input v-model="fileName" type="text" placeholder="Nombre del archivo de salida"
                 class="p-2 border border-gray-300 rounded w-1/3 focus:ring focus:ring-blue-200">
 
-            <button @click="downloadSQL"
-                class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+            <button @click="downloadSQL" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                 Descargar SQL
             </button>
 
-            <select v-model="eolType"
-                class="p-2 border border-gray-300 rounded focus:ring focus:ring-blue-200">
-                <option value="\n">LF (Unix/Linux)</option>
-                <option value="\r\n">CRLF (Windows)</option>
-                <option value="\r">CR (Old Mac)</option>
-            </select>
+            <div class="flex items-center gap-2 ml-auto">
+                <label for="eol-select" class="font-bold text-gray-700">EOL:</label>
+                <select id="eol-select" v-model="eolType"
+                    class="p-2 border border-gray-300 rounded focus:ring focus:ring-blue-200">
+                    <option value="\n">LF (Unix/Linux)</option>
+                    <option value="\r\n">CRLF (Windows)</option>
+                    <option value="\r">CR (Old Mac)</option>
+                </select>
+            </div>
         </div>
     </div>
 </template>
