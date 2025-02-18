@@ -9,6 +9,8 @@
                 <textarea
                   class="w-full h-48 p-2 border border-gray-300 rounded"
                   placeholder="Escribe aquí..."
+                  @paste="onPaste"
+                  @input="onInput"
                 ></textarea>
               </div>
             </Tab>
@@ -63,6 +65,14 @@ import OpcionesSalidaTabla from "./components/OpcionesSalidaTabla.vue";
 import OpcionesInsert from "./components/OpcionesInsert.vue";
 import OpcionesFormato from "./components/OpcionesFormato.vue";
 import SalidaSQL from "./components/SalidaSQL.vue";
+
+const onPaste = (event) => {
+  console.log("Texto pegado:", event.clipboardData.getData("text"));
+};
+
+const onInput = (event) => {
+  console.log("Texto ingresado:", event.target.value);
+};
 </script>
 
 <style scoped>
