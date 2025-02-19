@@ -38,7 +38,7 @@
     </header>
 
     <main class="container mx-auto max-w-screen-lg px-4 py-8">
-      <OpcionesEntrada />
+      <OpcionesEntrada :separador="separador" />
 
       <OpcionesSGBD />
 
@@ -56,6 +56,8 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
+
 import Tabs from "@/components/Tabs.vue";
 import Tab from "@/components/Tab.vue";
 import OpcionesEntrada from "./components/OpcionesEntrada.vue";
@@ -65,6 +67,8 @@ import OpcionesSalidaTabla from "./components/OpcionesSalidaTabla.vue";
 import OpcionesInsert from "./components/OpcionesInsert.vue";
 import OpcionesFormato from "./components/OpcionesFormato.vue";
 import SalidaSQL from "./components/SalidaSQL.vue";
+
+const separador = ref(",");
 
 const onPaste = (event) => {
   console.log("Texto pegado:", event.clipboardData.getData("text"));

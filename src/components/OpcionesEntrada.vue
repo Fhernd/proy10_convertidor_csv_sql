@@ -32,47 +32,47 @@
       <div class="grid grid-cols-3 gap-4">
         <!-- Radios (iguales a la versión anterior) -->
         <label class="flex items-center space-x-2">
-          <input type="radio" value="auto" v-model="params.fieldSeparator"
+          <input type="radio" value="auto" v-model="params.separador"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
           <span>Auto detectar</span>
         </label>
         <label class="flex items-center space-x-2">
-          <input type="radio" value="," v-model="params.fieldSeparator"
+          <input type="radio" value="," v-model="params.separador"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
           <span>,</span>
         </label>
         <label class="flex items-center space-x-2">
-          <input type="radio" value=";" v-model="params.fieldSeparator"
+          <input type="radio" value=";" v-model="params.separador"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
           <span>;</span>
         </label>
         <label class="flex items-center space-x-2">
-          <input type="radio" value=":" v-model="params.fieldSeparator"
+          <input type="radio" value=":" v-model="params.separador"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
           <span>:</span>
         </label>
         <label class="flex items-center space-x-2">
-          <input type="radio" value="|" v-model="params.fieldSeparator"
+          <input type="radio" value="|" v-model="params.separador"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
           <span>|</span>
         </label>
         <label class="flex items-center space-x-2">
-          <input type="radio" value="Tab" v-model="params.fieldSeparator"
+          <input type="radio" value="Tab" v-model="params.separador"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
           <span>Tab</span>
         </label>
         <label class="flex items-center space-x-2">
-          <input type="radio" value="_" v-model="params.fieldSeparator"
+          <input type="radio" value="_" v-model="params.separador"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
           <span>_</span>
         </label>
         <label class="flex items-center space-x-2">
-          <input type="radio" value="#" v-model="params.fieldSeparator"
+          <input type="radio" value="#" v-model="params.separador"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
           <span>#</span>
         </label>
         <label class="flex items-center space-x-2">
-          <input type="radio" value="^" v-model="params.fieldSeparator"
+          <input type="radio" value="^" v-model="params.separador"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
           <span>^</span>
         </label>
@@ -96,7 +96,7 @@ export default {
       firstRowHeaders: false,
       limitLines: null,
       skipLines: null,
-      fieldSeparator: "auto",
+      separador: "auto",
     });
 
     const submitParams = () => {
