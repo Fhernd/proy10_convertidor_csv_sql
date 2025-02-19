@@ -87,26 +87,28 @@
   </div>
 </template>
 
-<script>
-import { ref } from "vue";
+<script setup>
+import { ref, watch, defineProps } from 'vue';
 
-export default {
-  setup() {
-    const params = ref({
-      firstRowHeaders: false,
-      limitLines: null,
-      skipLines: null,
-      separador: "auto",
-    });
+const props = defineProps({
+  separador: {
+    type: String,
+    default: ','
+  }
+});
 
-    const submitParams = () => {
-      console.log("Parámetros seleccionados:", params.value);
-    };
+const params = ref({
+  firstRowHeaders: false,
+  limitLines: null,
+  skipLines: null,
+  separador: props.separador,
+});
 
-    return {
-      params,
-      submitParams,
-    };
-  },
+watch(() => props.separador, (newVal) => {
+  params.value.separador = newVal;
+});
+
+const submitParams = () => {
+  console.log("Parámetros seleccionados:", params.value);
 };
 </script>
