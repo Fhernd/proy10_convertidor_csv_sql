@@ -62,16 +62,6 @@
           <span>Tab</span>
         </label>
         <label class="flex items-center space-x-2">
-          <input type="radio" value="_" v-model="params.separador"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
-          <span>_</span>
-        </label>
-        <label class="flex items-center space-x-2">
-          <input type="radio" value="#" v-model="params.separador"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
-          <span>#</span>
-        </label>
-        <label class="flex items-center space-x-2">
           <input type="radio" value="^" v-model="params.separador"
             class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
           <span>^</span>

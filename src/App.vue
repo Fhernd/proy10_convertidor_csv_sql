@@ -68,7 +68,9 @@ import OpcionesInsert from "./components/OpcionesInsert.vue";
 import OpcionesFormato from "./components/OpcionesFormato.vue";
 import SalidaSQL from "./components/SalidaSQL.vue";
 
-const separador = ref(",");
+// import { csvUtils } from '@/utils';
+
+const separador = ref("Tab");
 
 const onPaste = (event) => {
   console.log("Texto pegado:", event.clipboardData.getData("text"));

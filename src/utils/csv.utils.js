@@ -25,3 +25,5 @@ function detectarDelimitador(muestraCsv) {
 
     return detectedDelimiter || ',';
 }
+
+export { detectarDelimitador };
