@@ -68,12 +68,15 @@ import OpcionesInsert from "./components/OpcionesInsert.vue";
 import OpcionesFormato from "./components/OpcionesFormato.vue";
 import SalidaSQL from "./components/SalidaSQL.vue";
 
-// import { csvUtils } from '@/utils';
+import { csvUtils } from '@/utils';
 
-const separador = ref("Tab");
+const separador = ref("auto");
 
 const onPaste = (event) => {
-  console.log("Texto pegado:", event.clipboardData.getData("text"));
+  const textoCsv = event.clipboardData.getData("text");
+  const delimitador = csvUtils.detectarDelimitador(textoCsv);
+  console.log("Delimitador detectado:", delimitador);
+  separador.value = delimitador;
 };
 
 const onInput = (event) => {
