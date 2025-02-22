@@ -7,7 +7,7 @@
             <Tab label="Ingreso datos">
               <div class="tab-content p-4 bg-white shadow rounded-md">
                 <textarea class="w-full h-48 p-2 border border-gray-300 rounded"
-                  placeholder="Escribe aquí..."></textarea>
+                  placeholder="Escribe aquí..." v-model="contenidoCsv"></textarea>
               </div>
             </Tab>
             <Tab label="Subir archivo">
@@ -64,8 +64,11 @@ import SalidaSQL from "./components/SalidaSQL.vue";
 import { csvUtils } from '@/utils';
 
 const separador = ref("auto");
+const contenidoCsv = ref("");
 
-
+const evaluarContenidoCsv = () => {
+  console.log("Contenido CSV:", contenidoCsv.value);
+};
 </script>
 
 <style scoped>
