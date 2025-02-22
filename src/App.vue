@@ -6,8 +6,8 @@
           <template #default="{ activeTab }">
             <Tab label="Ingreso datos">
               <div class="tab-content p-4 bg-white shadow rounded-md">
-                <textarea class="w-full h-48 p-2 border border-gray-300 rounded" placeholder="Escribe aquí..."
-                  @paste="onPaste" @input="onInput"></textarea>
+                <textarea class="w-full h-48 p-2 border border-gray-300 rounded"
+                  placeholder="Escribe aquí..."></textarea>
               </div>
             </Tab>
             <Tab label="Subir archivo">
@@ -24,7 +24,8 @@
           </template>
         </Tabs>
         <button
-          class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none mt-4">Evaluar
+          class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none mt-4"
+          @click="evaluarContenidoCsv">Evaluar
           contenido CSV</button>
       </div>
     </header>
@@ -64,16 +65,7 @@ import { csvUtils } from '@/utils';
 
 const separador = ref("auto");
 
-const onPaste = (event) => {
-  const textoCsv = event.clipboardData.getData("text");
-  const delimitador = csvUtils.detectarDelimitador(textoCsv);
-  console.log("Delimitador detectado:", delimitador);
-  separador.value = delimitador;
-};
 
-const onInput = (event) => {
-  console.log("Texto ingresado:", event.target.value);
-};
 </script>
 
 <style scoped>
