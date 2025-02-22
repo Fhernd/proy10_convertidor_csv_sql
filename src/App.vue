@@ -6,34 +6,26 @@
           <template #default="{ activeTab }">
             <Tab label="Ingreso datos">
               <div class="tab-content p-4 bg-white shadow rounded-md">
-                <textarea
-                  class="w-full h-48 p-2 border border-gray-300 rounded"
-                  placeholder="Escribe aquí..."
-                  @paste="onPaste"
-                  @input="onInput"
-                ></textarea>
+                <textarea class="w-full h-48 p-2 border border-gray-300 rounded" placeholder="Escribe aquí..."
+                  @paste="onPaste" @input="onInput"></textarea>
               </div>
             </Tab>
             <Tab label="Subir archivo">
               <div class="tab-content p-4 bg-white shadow rounded-md">
-                <input
-                  type="file"
-                  accept=".csv"
-                  class="mt-4 p-2 border border-gray-300 rounded cursor-pointer"
-                />
+                <input type="file" accept=".csv" class="mt-4 p-2 border border-gray-300 rounded cursor-pointer" />
               </div>
             </Tab>
             <Tab label="URL">
               <div class="tab-content p-4 bg-white shadow rounded-md">
-                <input
-                  type="url"
-                  class="w-full mt-4 p-2 border border-gray-300 rounded"
-                  placeholder="Ingresa una URL válida"
-                />
+                <input type="url" class="w-full mt-4 p-2 border border-gray-300 rounded"
+                  placeholder="Ingresa una URL válida" />
               </div>
             </Tab>
           </template>
         </Tabs>
+        <button
+          class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none mt-4">Evaluar
+          contenido CSV</button>
       </div>
     </header>
 
