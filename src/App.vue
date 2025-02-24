@@ -6,8 +6,8 @@
           <template #default="{ activeTab }">
             <Tab label="Ingreso datos">
               <div class="tab-content p-4 bg-white shadow rounded-md">
-                <textarea class="w-full h-48 p-2 border border-gray-300 rounded"
-                  placeholder="Escribe aquí..." v-model="contenidoCsv"></textarea>
+                <textarea class="w-full h-48 p-2 border border-gray-300 rounded" placeholder="Escribe aquí..."
+                  v-model="contenidoCsv"></textarea>
               </div>
             </Tab>
             <Tab label="Subir archivo">
@@ -50,6 +50,7 @@
 
 <script setup>
 import { ref } from "vue";
+import Papa from "papaparse";
 
 import Tabs from "@/components/Tabs.vue";
 import Tab from "@/components/Tab.vue";
@@ -67,7 +68,15 @@ const separador = ref("auto");
 const contenidoCsv = ref("");
 
 const evaluarContenidoCsv = () => {
-  console.log("Contenido CSV:", contenidoCsv.value);
+  Papa.parse(contenidoCsv.value, {
+    complete: (results) => {
+      if (results.errors.length === 0) {
+        console.log("Contenido CSV válido:", results.data);
+      } else {
+        console.error("Errores en el contenido CSV:", results.errors);
+      }
+    }
+  });
 };
 </script>
 
