@@ -69,18 +69,21 @@ const contenidoCsv = ref("");
 
 const evaluarContenidoCsv = () => {
   Papa.parse(contenidoCsv.value, {
+    header: true,
+    skipEmptyLines: true,
     error: (error) => {
       console.error("Error al evaluar contenido CSV:", error);
     },
     complete: (results) => {
-      if (results.errors.length === 0) {
-        console.log("Contenido CSV válido:", results.data);
-      } else {
+      if (results.errors.length > 0) {
         console.error("Errores en el contenido CSV:", results.errors);
+      } else {
+        console.log("Contenido CSV válido:", results.data);
       }
     }
   });
 };
+
 </script>
 
 <style scoped>
