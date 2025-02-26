@@ -28,7 +28,7 @@
 
     <!-- Grupo de Radio Buttons: Separador de campos -->
     <div class="mb-4">
-      <label class="block text-gray-700 font-medium mb-2">Delimitador de campos:</label>
+      <label class="block text-gray-700 font-medium mb-2">Separador de campos:</label>
       <div class="grid grid-cols-3 gap-4">
         <!-- Radios (iguales a la versión anterior) -->
         <label class="flex items-center space-x-2">
@@ -91,7 +91,7 @@ const params = ref({
   firstRowHeaders: false,
   limitLines: null,
   skipLines: null,
-  separador: props.delimitador,
+  delimitador: props.delimitador,
 });
 
 watch(() => props.delimitador, (newVal) => {
