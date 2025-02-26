@@ -78,6 +78,7 @@ const evaluarContenidoCsv = () => {
       if (results.errors.length > 0) {
         console.error("Errores en el contenido CSV:", results.errors);
       } else {
+        separador.value = csvUtils.detectarDelimitador(contenidoCsv.value);
         console.log("Contenido CSV válido:", results.data);
       }
     }
