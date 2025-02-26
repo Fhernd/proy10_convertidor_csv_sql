@@ -68,12 +68,6 @@
         </label>
       </div>
     </div>
-
-    <!-- Botón de enviar -->
-    <button @click="submitParams"
-      class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none">
-      Aplicar Parámetros
-    </button>
   </div>
 </template>
 
@@ -97,8 +91,4 @@ const params = ref({
 watch(() => props.delimitador, (newVal) => {
   params.value.delimitador = newVal;
 });
-
-const submitParams = () => {
-  console.log("Parámetros seleccionados:", params.value);
-};
 </script>
