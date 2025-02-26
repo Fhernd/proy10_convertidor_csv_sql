@@ -31,7 +31,7 @@
     </header>
 
     <main class="container mx-auto max-w-screen-lg px-4 py-8">
-      <OpcionesEntrada :separador="separador" />
+      <OpcionesEntrada :delimitador="delimitador" />
 
       <OpcionesSGBD />
 
@@ -64,7 +64,7 @@ import SalidaSQL from "./components/SalidaSQL.vue";
 
 import { csvUtils } from '@/utils';
 
-const separador = ref("auto");
+const delimitador = ref("auto");
 const contenidoCsv = ref("");
 
 const evaluarContenidoCsv = () => {
@@ -78,7 +78,7 @@ const evaluarContenidoCsv = () => {
       if (results.errors.length > 0) {
         console.error("Errores en el contenido CSV:", results.errors);
       } else {
-        separador.value = csvUtils.detectarDelimitador(contenidoCsv.value);
+        delimitador.value = csvUtils.detectarDelimitador(contenidoCsv.value);
         console.log("Contenido CSV válido:", results.data);
       }
     }
