@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps } from 'vue';
+import { ref, watch, defineEmits, defineProps } from 'vue';
 
 const props = defineProps({
   delimitador: {
@@ -91,4 +91,8 @@ const params = ref({
 watch(() => props.delimitador, (newVal) => {
   params.value.delimitador = newVal;
 });
+
+watch(params, (newVal) => {
+  emit('update:params', newVal);
+}, { deep: true });
 </script>
