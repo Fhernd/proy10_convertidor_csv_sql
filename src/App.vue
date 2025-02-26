@@ -31,7 +31,7 @@
     </header>
 
     <main class="container mx-auto max-w-screen-lg px-4 py-8">
-      <OpcionesEntrada :delimitador="delimitador" />
+      <OpcionesEntrada :delimitador="delimitador" @update:params="handleOpcionesEntradaParams" />
 
       <OpcionesSGBD />
 
@@ -85,6 +85,10 @@ const evaluarContenidoCsv = () => {
   });
 };
 
+const handleOpcionesEntradaParams = (newParams) => {
+  params.value = newParams;
+  console.log("Updated params:", params.value);
+};
 </script>
 
 <style scoped>

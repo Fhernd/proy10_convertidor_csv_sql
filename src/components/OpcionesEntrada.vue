@@ -74,6 +74,8 @@
 <script setup>
 import { ref, watch, defineEmits, defineProps } from 'vue';
 
+const emit = defineEmits(['update:params']);
+
 const props = defineProps({
   delimitador: {
     type: String,
