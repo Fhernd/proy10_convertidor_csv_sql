@@ -67,6 +67,13 @@ import { csvUtils } from '@/utils';
 const delimitador = ref("auto");
 const contenidoCsv = ref("");
 
+const params = ref({
+  primeraFilaEncabezados: false,
+  limiteLineas: null,
+  lineasOmitidas: null,
+  delimitador: delimitador.value,
+});
+
 const evaluarContenidoCsv = () => {
   Papa.parse(contenidoCsv.value, {
     header: true,

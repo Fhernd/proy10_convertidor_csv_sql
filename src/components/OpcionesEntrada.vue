@@ -6,7 +6,7 @@
     <!-- Checkbox: Primera fila tiene nombres de columnas -->
     <div class="mb-4">
       <label class="flex items-center space-x-2">
-        <input type="checkbox" v-model="params.firstRowHeaders"
+        <input type="checkbox" v-model="params.primeraFilaEncabezados"
           class="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200" />
         <span class="text-gray-700">Primera fila tiene los nombres de las columnas</span>
       </label>
@@ -15,14 +15,14 @@
     <!-- Campo de texto: Límite de líneas a leer -->
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-1">Límite de líneas a leer:</label>
-      <input type="number" v-model="params.limitLines" placeholder="Ingrese el límite"
+      <input type="number" v-model="params.limiteLineas" placeholder="Ingrese el límite"
         class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500" />
     </div>
 
     <!-- Campo de texto: Saltar líneas -->
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-1">Saltar líneas:</label>
-      <input type="number" v-model="params.skipLines" placeholder="Ingrese el número de líneas a saltar"
+      <input type="number" v-model="params.lineasOmitidas" placeholder="Ingrese el número de líneas a saltar"
         class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500" />
     </div>
 
@@ -84,9 +84,9 @@ const props = defineProps({
 });
 
 const params = ref({
-  firstRowHeaders: false,
-  limitLines: null,
-  skipLines: null,
+  primeraFilaEncabezados: false,
+  limiteLineas: 0,
+  lineasOmitidas: 0,
   delimitador: props.delimitador,
 });
 
