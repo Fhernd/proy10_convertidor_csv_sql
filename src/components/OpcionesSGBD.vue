@@ -25,29 +25,23 @@
                 <option value="custom">Personalizado</option>
             </select>
         </label>
-
-        <button @click="saveConfiguration"
-            class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none">
-            Guardar Configuración
-        </button>
     </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { defineEmits, ref, watch } from "vue";
 
 const selectedDBMS = ref("mysql");
 const syntaxStyle = ref("standard");
 
+const emit = defineEmits(["update:params"]);
 
-const saveConfiguration = () => {
-    const config = {
-        database: selectedDBMS.value,
-        syntax: syntaxStyle.value,
-    };
-    console.log("Configuración guardada:", config);
-    alert("¡Configuración del SGBD guardada correctamente!");
-};
+watch([selectedDBMS, syntaxStyle], ([selectedDBMS, syntaxStyle]) => {
+    emit("update:params", {
+        selectedDBMS,
+        syntaxStyle,
+    });
+});
 </script>
 
 <style scoped></style>
