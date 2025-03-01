@@ -35,7 +35,7 @@
 
       <OpcionesSGBD @update:params="handleOpcionesSgbdParams" />
 
-      <OpcionesSalida :columnas="columnas" />
+      <OpcionesSalida :columnas="columnas" :sgbdSeleccionado="paramsOpcionesSGBD.sgbdSeleccionado" />
 
       <OpcionesSalidaTabla />
 
@@ -68,11 +68,16 @@ const delimitador = ref("auto");
 const contenidoCsv = ref("");
 const columnas = ref([]);
 
-const params = ref({
+const paramsOpcionesEntrada = ref({
   primeraFilaEncabezados: false,
   limiteLineas: null,
   lineasOmitidas: null,
   delimitador: delimitador.value,
+});
+
+const paramsOpcionesSGBD = ref({
+  sgbdSeleccionado: "mysql",
+  tipoSintaxis: "standard",
 });
 
 const evaluarContenidoCsv = () => {
@@ -96,11 +101,12 @@ const evaluarContenidoCsv = () => {
 };
 
 const handleOpcionesEntradaParams = (newParams) => {
-  params.value = newParams;
-  console.log("Updated params:", params.value);
+  paramsOpcionesEntrada.value = newParams;
+  console.log("Updated params:", paramsOpcionesEntrada.value);
 };
 
 const handleOpcionesSgbdParams = (newParams) => {
+  paramsOpcionesSGBD.value = newParams;
   console.log("Updated SGBD params:", newParams);
 };
 </script>
