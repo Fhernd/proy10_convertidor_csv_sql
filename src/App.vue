@@ -35,7 +35,7 @@
 
       <OpcionesSGBD @update:params="handleOpcionesSgbdParams" />
 
-      <OpcionesSalida />
+      <OpcionesSalida :columnas="columnas" />
 
       <OpcionesSalidaTabla />
 
@@ -66,7 +66,7 @@ import { csvUtils } from '@/utils';
 
 const delimitador = ref("auto");
 const contenidoCsv = ref("");
-const encabezados = ref([]);
+const columnas = ref([]);
 
 const params = ref({
   primeraFilaEncabezados: false,
@@ -89,7 +89,7 @@ const evaluarContenidoCsv = () => {
         delimitador.value = csvUtils.detectarDelimitador(contenidoCsv.value);
         console.log("Contenido CSV válido:", results.data);
 
-        encabezados.value = results.meta.fields;
+        columnas.value = results.meta.fields;
       }
     }
   });
