@@ -4,7 +4,7 @@
     </div>
 </template>
 
-<script>
+<script setup>
 import {defineProps, ref } from "vue";
 
 import OpcionesSalidaColumnas from "./OpcionesSalidaColumnas.vue";
@@ -12,4 +12,6 @@ import OpcionesSalidaColumnas from "./OpcionesSalidaColumnas.vue";
 const props = defineProps({
     columnas: Array,
 });
+
+const columnas = ref(props.columnas);
 </script>
