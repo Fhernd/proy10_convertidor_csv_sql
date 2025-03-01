@@ -7,7 +7,7 @@
         <!-- Selección del motor de base de datos -->
         <label class="block mb-4">
             <span class="text-gray-700">Motor de Base de Datos:</span>
-            <select v-model="selectedDBMS"
+            <select v-model="sgbdSeleccionado"
                 class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200">
                 <option value="mysql">MySQL</option>
                 <option value="postgresql">PostgreSQL</option>
@@ -19,7 +19,7 @@
         <!-- Configuración de la sintaxis de salida -->
         <label class="block mb-4">
             <span class="text-gray-700">Sintaxis de salida:</span>
-            <select v-model="syntaxStyle"
+            <select v-model="tipoSintaxis"
                 class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200">
                 <option value="standard">SQL Estándar</option>
                 <option value="custom">Personalizado</option>
@@ -31,17 +31,17 @@
 <script setup>
 import { defineEmits, ref, watch } from "vue";
 
-const selectedDBMS = ref("mysql");
-const syntaxStyle = ref("standard");
+const sgbdSeleccionado = ref("mysql");
+const tipoSintaxis = ref("standard");
 
 const emit = defineEmits(["update:params"]);
 
-watch([selectedDBMS, syntaxStyle], ([selectedDBMS, syntaxStyle]) => {
+watch([sgbdSeleccionado, tipoSintaxis], ([sgbdSeleccionado, tipoSintaxis]) => {
     emit("update:params", {
-        selectedDBMS,
-        syntaxStyle,
+        sgbdSeleccionado,
+        tipoSintaxis,
     });
-});
+}, { deep: true });
 </script>
 
 <style scoped></style>
