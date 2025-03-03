@@ -46,34 +46,14 @@
     </div>
 </template>
 
-<script>
-import { ref } from "vue";
+<script setup>
+import { defineProps, ref } from "vue";
 
-export default {
-    name: "OpcionesSalidaColumnas",
-    props: {
-        // Lista de columnas a configurar
-        columns: {
-            type: Array,
-            required: true,
-        },
-    },
-    setup(props) {
-        // Almacena los tipos seleccionados para cada columna
-        const selectedTypes = ref(Array(props.columns.length).fill(""));
+const props = defineProps({
+    columnas: Array,
+    tiposDatosSgbd: Array,
+});
 
-        // Función para guardar la configuración
-        const saveConfiguration = () => {
-            console.log("Configuración guardada:", selectedTypes.value);
-            alert("¡Configuración guardada correctamente!");
-        };
-
-        return {
-            selectedTypes,
-            saveConfiguration,
-        };
-    },
-};
 </script>
 
 <style scoped>
