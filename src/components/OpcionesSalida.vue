@@ -148,4 +148,22 @@ const mssqlDataTypes = [
     "SYSNAME"
 ];
 
+switch (sgbdSeleccionado.value) {
+    case "mysql":
+        tiposDatosSgbd.value = mysqlDataTypes;
+        break;
+    case "postgres":
+        tiposDatosSgbd.value = postgresDataTypes;
+        break;
+    case "sqlite":
+        tiposDatosSgbd.value = sqliteDataTypes;
+        break;
+    case "mssql":
+        tiposDatosSgbd.value = mssqlDataTypes;
+        break;
+    default:
+        tiposDatosSgbd.value = [];
+        break;
+}
+
 </script>
