@@ -15,7 +15,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(column, index) in columns" :key="index" class="odd:bg-white even:bg-gray-50">
+                <tr v-for="(column, index) in columnas" :key="index" class="odd:bg-white even:bg-gray-50">
                     <!-- Nombre de la columna -->
                     <td class="p-3 border border-gray-300">
                         {{ column }}

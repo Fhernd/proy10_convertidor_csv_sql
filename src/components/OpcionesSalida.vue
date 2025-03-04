@@ -1,6 +1,6 @@
 <template>
     <div class="p-6 bg-white shadow-md rounded-md w-full mt-5">
-        <OpcionesSalidaColumnas :columns="columnas" :tiposDatosSgbd="tiposDatosSgbd" />
+        <OpcionesSalidaColumnas :columnas="columnas" :tiposDatosSgbd="tiposDatosSgbd" />
     </div>
 </template>
 
