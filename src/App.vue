@@ -33,7 +33,7 @@
     <main class="container mx-auto max-w-screen-lg px-4 py-8">
       <OpcionesEntrada :delimitador="delimitador" @update:params="handleOpcionesEntradaParams" />
 
-      <OpcionesSGBD @update:params="handleOpcionesSgbdParams" />
+      <OpcionesSGBD @update:config="handleOpcionesSgbdParams" />
 
       <OpcionesSalida :columnas="columnas" :sgbdSeleccionado="paramsOpcionesSGBD.sgbdSeleccionado" />
 

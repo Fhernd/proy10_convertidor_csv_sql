@@ -54,6 +54,9 @@ const props = defineProps({
     tiposDatosSgbd: Array,
 });
 
+const columnas = ref(props.columnas);
+const tiposDatosSgbd = ref(props.tiposDatosSgbd);
+
 </script>
 
 <style scoped>

@@ -5,8 +5,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from "vue";
-
+import { defineProps, ref, watch } from "vue";
 import OpcionesSalidaColumnas from "./OpcionesSalidaColumnas.vue";
 
 const props = defineProps({
@@ -148,22 +147,31 @@ const mssqlDataTypes = [
     "SYSNAME"
 ];
 
-switch (sgbdSeleccionado.value) {
-    case "mysql":
-        tiposDatosSgbd.value = mysqlDataTypes;
-        break;
-    case "postgres":
-        tiposDatosSgbd.value = postgresDataTypes;
-        break;
-    case "sqlite":
-        tiposDatosSgbd.value = sqliteDataTypes;
-        break;
-    case "mssql":
-        tiposDatosSgbd.value = mssqlDataTypes;
-        break;
-    default:
-        tiposDatosSgbd.value = [];
-        break;
-}
+const updateDataTypes = (sgbd) => {
+    switch (sgbd) {
+        case "mysql":
+            tiposDatosSgbd.value = mysqlDataTypes;
+            break;
+        case "postgresql":
+            tiposDatosSgbd.value = postgresDataTypes;
+            break;
+        case "sqlite":
+            tiposDatosSgbd.value = sqliteDataTypes;
+            break;
+        case "sqlserver":
+            tiposDatosSgbd.value = mssqlDataTypes;
+            break;
+        default:
+            tiposDatosSgbd.value = [];
+            break;
+    }
+};
 
+// Watch for changes in sgbdSeleccionado and update tiposDatosSgbd accordingly
+watch(sgbdSeleccionado, (newVal) => {
+    updateDataTypes(newVal);
+});
+
+// Initialize tiposDatosSgbd based on the initial value of sgbdSeleccionado
+updateDataTypes(sgbdSeleccionado.value);
 </script>
