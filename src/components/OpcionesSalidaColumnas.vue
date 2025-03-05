@@ -47,15 +47,49 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from "vue";
+import { defineProps, ref, watchEffect } from "vue";
 
 const props = defineProps({
     columnas: Array,
-    tiposDatosSgbd: Array,
+    sgbdSeleccionado: String,
 });
 
-const columnas = ref(props.columnas);
-const tiposDatosSgbd = ref(props.tiposDatosSgbd);
+const columnas = ref([]);
+const sgbdSeleccionado = ref("");
+const tiposDatosSgbd = ref([]);
+
+const updateDataTypes = (sgbd) => {
+    const mysqlDataTypes = ["INT", "VARCHAR", "TEXT", "DATETIME", "TINYINT", "DECIMAL", "BIGINT", "BOOLEAN"];
+    const postgresDataTypes = ["BIGINT", "BIT", "BOOLEAN", "CHAR", "DATE", "DECIMAL", "DOUBLE PRECISION", "ENUM"];
+    const sqliteDataTypes = ["INT", "INTEGER", "TINYINT", "SMALLINT", "TEXT", "BLOB", "REAL", "BOOLEAN", "DATE"];
+    const mssqlDataTypes = ["BIGINT", "INT", "SMALLINT", "TINYINT", "BIT", "DECIMAL", "MONEY", "FLOAT"];
+
+    switch (sgbd) {
+        case "mysql":
+            tiposDatosSgbd.value = mysqlDataTypes;
+            break;
+        case "postgresql":
+            tiposDatosSgbd.value = postgresDataTypes;
+            break;
+        case "sqlite":
+            tiposDatosSgbd.value = sqliteDataTypes;
+            break;
+        case "sqlserver":
+            tiposDatosSgbd.value = mssqlDataTypes;
+            break;
+        default:
+            tiposDatosSgbd.value = [];
+            break;
+    }
+};
+
+watchEffect(() => {
+    console.log("Columnas:", props.columnas);
+    
+    columnas.value = props.columnas;
+    sgbdSeleccionado.value = props.sgbdSeleccionado;
+    updateDataTypes(sgbdSeleccionado.value);
+});
 
 </script>
 
