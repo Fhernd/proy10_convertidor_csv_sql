@@ -34,10 +34,10 @@ import { defineEmits, ref, watch } from "vue";
 const sgbdSeleccionado = ref("mysql");
 const tipoSintaxis = ref("standard");
 
-const emit = defineEmits(["update:params"]);
+const emit = defineEmits(["update:config"]);
 
 watch([sgbdSeleccionado, tipoSintaxis], ([sgbdSeleccionado, tipoSintaxis]) => {
-    emit("update:params", {
+    emit("update:config", {
         sgbdSeleccionado,
         tipoSintaxis,
     });

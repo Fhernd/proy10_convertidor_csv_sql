@@ -1,6 +1,6 @@
 <template>
 
-    <h1 class="text-xl font-bold text-gray-800 mb-4">Configuración de Tipos de Datos</h1>
+    <h1 class="text-xl font-bold text-gray-800 mb-4">Configuración de los tipos de datos de las columnas</h1>
     <p class="text-gray-600 mb-6">
         Selecciona el tipo de dato para cada columna del archivo CSV.
     </p>
