@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import Papa from "papaparse";
 
 import Tabs from "@/components/Tabs.vue";
@@ -102,13 +102,17 @@ const evaluarContenidoCsv = () => {
 
 const handleOpcionesEntradaParams = (newParams) => {
   paramsOpcionesEntrada.value = newParams;
-  console.log("Updated params:", paramsOpcionesEntrada.value);
+  console.log("Updated OpcionesEntrada params:", paramsOpcionesEntrada.value);
 };
 
 const handleOpcionesSgbdParams = (newParams) => {
   paramsOpcionesSGBD.value = newParams;
-  console.log("Updated SGBD params:", newParams);
+  console.log("Updated OpcionesSgbd params:", newParams);
 };
+
+watch(delimitador, (newVal) => {
+  paramsOpcionesEntrada.value.delimitador = newVal;
+});
 </script>
 
 <style scoped>
