@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watchEffect } from "vue";
+import { defineProps, watchEffect } from "vue";
 import OpcionesSalidaColumnas from "./OpcionesSalidaColumnas.vue";
 
 const props = defineProps({
@@ -13,11 +13,8 @@ const props = defineProps({
     sgbdSeleccionado: String,
 });
 
-const columnas = ref(props.columnas);
-const sgbdSeleccionado = ref(props.sgbdSeleccionado);
-
 watchEffect(() => {
-    console.log("Columnas:", columnas.value);
-    console.log("SGBD Seleccionado:", sgbdSeleccionado.value);
+    console.log("Columnas:", props.columnas);
+    console.log("SGBD Seleccionado:", props.sgbdSeleccionado);
 });
 </script>

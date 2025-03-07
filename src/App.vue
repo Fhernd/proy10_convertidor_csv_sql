@@ -94,7 +94,7 @@ const evaluarContenidoCsv = () => {
         delimitador.value = csvUtils.detectarDelimitador(contenidoCsv.value);
         console.log("Contenido CSV válido:", results.data);
 
-        columnas.value = results.meta.fields;
+        columnas.value = [...results.meta.fields];
       }
     }
   });
