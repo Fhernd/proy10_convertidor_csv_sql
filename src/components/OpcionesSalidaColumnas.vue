@@ -23,7 +23,7 @@
 
                     <!-- Selector de tipo de dato -->
                     <td class="p-3 border border-gray-300">
-                        <select v-model="columnas[index]"
+                        <select
                             class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200">
                             <option value="" disabled>Selecciona un tipo de dato</option>
                             <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato" :value="tipoDato">
