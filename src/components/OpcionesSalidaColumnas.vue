@@ -23,13 +23,11 @@
 
                     <!-- Selector de tipo de dato -->
                     <td class="p-3 border border-gray-300">
-                        <select v-model="selectedTypes[index]"
+                        <select v-model="columnas[index]"
                             class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200">
                             <option value="" disabled>Selecciona un tipo de dato</option>
-                            <option value="string">Texto</option>
-                            <option value="number">Número</option>
-                            <option value="boolean">Booleano</option>
-                            <option value="date">Fecha</option>
+                            <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato" :value="tipoDato">
+                                {{ tipoDato }} </option>
                         </select>
                     </td>
                 </tr>
@@ -84,7 +82,7 @@ const updateDataTypes = (sgbd) => {
 };
 
 watchEffect(() => {
-    console.log("Columnas:", props.columnas);
+    console.log("OpcionesSalidaColumnas > Columnas:", props.columnas);
     
     columnas.value = props.columnas;
     sgbdSeleccionado.value = props.sgbdSeleccionado;
