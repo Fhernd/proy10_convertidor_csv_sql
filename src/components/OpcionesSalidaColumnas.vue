@@ -23,10 +23,10 @@
 
                     <!-- Selector de tipo de dato -->
                     <td class="p-3 border border-gray-300">
-                        <select
-                            class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200">
-                            <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato" :value="tipoDato">
-                                {{ tipoDato === 'VARCHAR' && sgbdSeleccionado === 'mysql' ? 'VARCHAR' : tipoDato === 'TEXT' && sgbdSeleccionado !== 'mysql' ? 'TEXT' : tipoDato }}
+                        <select class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200">
+                            <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato"
+                                :value="sgbdSeleccionado === 'mysql' && tipoDato === 'TEXT' ? 'VARCHAR' : tipoDato">
+                                {{ tipoDato }}
                             </option>
                         </select>
                     </td>
@@ -83,7 +83,7 @@ const updateDataTypes = (sgbd) => {
 
 watchEffect(() => {
     console.log("OpcionesSalidaColumnas > Columnas:", props.columnas);
-    
+
     columnas.value = props.columnas;
     sgbdSeleccionado.value = props.sgbdSeleccionado;
     updateDataTypes(sgbdSeleccionado.value);
