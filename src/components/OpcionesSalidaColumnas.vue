@@ -25,7 +25,8 @@
                     <td class="p-3 border border-gray-300">
                         <select class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200">
                             <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato"
-                                :value="sgbdSeleccionado === 'mysql' && tipoDato === 'TEXT' ? 'VARCHAR' : tipoDato">
+                                :value="sgbdSeleccionado === 'mysql' && tipoDato === 'VARCHAR' ? 'VARCHAR' : tipoDato"
+                                :selected="sgbdSeleccionado === 'mysql' && tipoDato === 'VARCHAR' ? true : false">
                                 {{ tipoDato }}
                             </option>
                         </select>
