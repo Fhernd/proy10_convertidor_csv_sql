@@ -24,9 +24,13 @@
                     <!-- Selector de tipo de dato -->
                     <td class="p-3 border border-gray-300">
                         <select class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200">
-                            <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato"
-                                :value="sgbdSeleccionado === 'mysql' && tipoDato === 'VARCHAR' ? 'VARCHAR' : tipoDato"
-                                :selected="sgbdSeleccionado === 'mysql' && tipoDato === 'VARCHAR' ? true : false">
+                            <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato" :value="sgbdSeleccionado === 'mysql' && tipoDato === 'VARCHAR' ? 'VARCHAR' :
+                                sgbdSeleccionado === 'sqlserver' && tipoDato === 'TEXT' ? 'TEXT' :
+                                    sgbdSeleccionado === 'postgresql' && tipoDato === 'CHAR' ? 'CHAR' :
+                                        sgbdSeleccionado === 'sqlite' && tipoDato === 'TEXT' ? 'TEXT' : tipoDato" :selected="sgbdSeleccionado === 'mysql' && tipoDato === 'VARCHAR' ? true :
+                    sgbdSeleccionado === 'sqlserver' && tipoDato === 'TEXT' ? true :
+                        sgbdSeleccionado === 'postgresql' && tipoDato === 'CHAR' ? true :
+                            sgbdSeleccionado === 'sqlite' && tipoDato === 'TEXT' ? true : false">
                                 {{ tipoDato }}
                             </option>
                         </select>
@@ -61,7 +65,7 @@ const updateDataTypes = (sgbd) => {
     const mysqlDataTypes = ["INT", "VARCHAR", "TEXT", "DATETIME", "TINYINT", "DECIMAL", "BIGINT", "BOOLEAN"];
     const postgresDataTypes = ["BIGINT", "BIT", "BOOLEAN", "CHAR", "DATE", "DECIMAL", "DOUBLE PRECISION", "ENUM"];
     const sqliteDataTypes = ["INT", "INTEGER", "TINYINT", "SMALLINT", "TEXT", "BLOB", "REAL", "BOOLEAN", "DATE"];
-    const mssqlDataTypes = ["BIGINT", "INT", "SMALLINT", "TINYINT", "BIT", "DECIMAL", "MONEY", "FLOAT"];
+    const mssqlDataTypes = ["BIGINT", "INT", "SMALLINT", "TINYINT", "BIT", "DECIMAL", "MONEY", "FLOAT", "TEXT"];
 
     switch (sgbd) {
         case "mysql":
