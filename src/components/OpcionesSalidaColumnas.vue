@@ -23,7 +23,7 @@
 
                     <!-- Selector de tipo de dato -->
                     <td class="p-3 border border-gray-300">
-                        <select class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200">
+                        <select class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200" v-model="tiposSeleccionados[column]">
                             <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato" :value="sgbdSeleccionado === 'mysql' && tipoDato === 'VARCHAR' ? 'VARCHAR' :
                                 sgbdSeleccionado === 'sqlserver' && tipoDato === 'TEXT' ? 'TEXT' :
                                     sgbdSeleccionado === 'postgresql' && tipoDato === 'CHAR' ? 'CHAR' :
@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watchEffect } from "vue";
+import { defineEmits, defineProps, ref, watchEffect } from "vue";
 
 const props = defineProps({
     columnas: Array,
@@ -52,6 +52,9 @@ const props = defineProps({
 const columnas = ref([]);
 const sgbdSeleccionado = ref("");
 const tiposDatosSgbd = ref([]);
+const tiposSeleccionados = ref({});
+
+const emit = defineEmits(['update:columnas']);
 
 const updateDataTypes = (sgbd) => {
     const mysqlDataTypes = ["INT", "VARCHAR", "TEXT", "DATETIME", "TINYINT", "DECIMAL", "BIGINT", "BOOLEAN"];
@@ -86,6 +89,9 @@ watchEffect(() => {
     updateDataTypes(sgbdSeleccionado.value);
 });
 
+watch([columnas, tiposSeleccionados], () => {
+    emit('update:columnas', { columnas: columnas.value, tiposSeleccionados: tiposSeleccionados.value });
+}, { deep: true });
 </script>
 
 <style scoped>
