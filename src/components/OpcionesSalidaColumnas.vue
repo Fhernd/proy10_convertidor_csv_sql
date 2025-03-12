@@ -39,14 +39,6 @@
             </tbody>
         </table>
     </div>
-
-    <!-- Botón de guardar -->
-    <div class="mt-6">
-        <button @click="saveConfiguration"
-            class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none">
-            Guardar Configuración
-        </button>
-    </div>
 </template>
 
 <script setup>
