@@ -1,5 +1,4 @@
 <template>
-
     <h1 class="text-xl font-bold text-gray-800 mb-4">Configuración de los tipos de datos de las columnas</h1>
     <p class="text-gray-600 mb-6">
         Selecciona el tipo de dato para cada columna del archivo CSV.
@@ -23,14 +22,9 @@
 
                     <!-- Selector de tipo de dato -->
                     <td class="p-3 border border-gray-300">
-                        <select class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200" v-model="tiposSeleccionados[column]">
-                            <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato" :value="sgbdSeleccionado === 'mysql' && tipoDato === 'VARCHAR' ? 'VARCHAR' :
-                                sgbdSeleccionado === 'sqlserver' && tipoDato === 'TEXT' ? 'TEXT' :
-                                    sgbdSeleccionado === 'postgresql' && tipoDato === 'CHAR' ? 'CHAR' :
-                                        sgbdSeleccionado === 'sqlite' && tipoDato === 'TEXT' ? 'TEXT' : tipoDato" :selected="sgbdSeleccionado === 'mysql' && tipoDato === 'VARCHAR' ? true :
-                    sgbdSeleccionado === 'sqlserver' && tipoDato === 'TEXT' ? true :
-                        sgbdSeleccionado === 'postgresql' && tipoDato === 'CHAR' ? true :
-                            sgbdSeleccionado === 'sqlite' && tipoDato === 'TEXT' ? true : false">
+                        <select class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+                            v-model="tiposSeleccionados[column]">
+                            <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato" :value="tipoDato">
                                 {{ tipoDato }}
                             </option>
                         </select>
@@ -42,7 +36,7 @@
 </template>
 
 <script setup>
-import { defineEmits, defineProps, ref, watchEffect } from "vue";
+import { defineEmits, defineProps, ref, watch, watchEffect } from "vue";
 
 const props = defineProps({
     columnas: Array,
@@ -79,21 +73,35 @@ const updateDataTypes = (sgbd) => {
             tiposDatosSgbd.value = [];
             break;
     }
+
+    // Asignar valores predeterminados
+    columnas.value.forEach(col => {
+        if (!tiposSeleccionados.value[col]) {
+            tiposSeleccionados.value[col] = getDefaultType(sgbd);
+        }
+    });
+};
+
+// Función para determinar el valor predeterminado según el SGBD seleccionado
+const getDefaultType = (sgbd) => {
+    switch (sgbd) {
+        case "mysql": return "VARCHAR";
+        case "postgresql": return "CHAR";
+        case "sqlite": return "TEXT";
+        case "sqlserver": return "TEXT";
+        default: return "";
+    }
 };
 
 watchEffect(() => {
-    console.log("OpcionesSalidaColumnas > Columnas:", props.columnas);
-
     columnas.value = props.columnas;
     sgbdSeleccionado.value = props.sgbdSeleccionado;
     updateDataTypes(sgbdSeleccionado.value);
 });
 
+// Emitir cambios al padre cuando se selecciona un nuevo tipo de dato
 watch([columnas, tiposSeleccionados], () => {
     emit('update:columnas', { columnas: columnas.value, tiposSeleccionados: tiposSeleccionados.value });
 }, { deep: true });
-</script>
 
-<style scoped>
-/* Tailwind CSS ya se carga globalmente */
-</style>
+</script>
