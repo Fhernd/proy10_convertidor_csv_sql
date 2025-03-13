@@ -14,7 +14,6 @@ const props = defineProps({
 });
 
 watchEffect(() => {
-    console.log("Columnas:", props.columnas);
-    console.log("SGBD Seleccionado:", props.sgbdSeleccionado);
+    
 });
 </script>

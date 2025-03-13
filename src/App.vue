@@ -92,7 +92,7 @@ const evaluarContenidoCsv = () => {
         console.error("Errores en el contenido CSV:", results.errors);
       } else {
         delimitador.value = csvUtils.detectarDelimitador(contenidoCsv.value);
-        console.log("Contenido CSV válido:", results.data);
+        // console.log("Contenido CSV válido:", results.data);
 
         columnas.value = [...results.meta.fields];
       }
@@ -107,7 +107,6 @@ const handleOpcionesEntradaParams = (newParams) => {
 
 const handleOpcionesSgbdParams = (newParams) => {
   paramsOpcionesSGBD.value = newParams;
-  console.log("Updated OpcionesSgbd params:", newParams);
 };
 
 watch(delimitador, (newVal) => {
