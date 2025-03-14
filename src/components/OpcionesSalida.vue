@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { defineProps, watchEffect } from "vue";
+import { defineProps, ref, watchEffect } from "vue";
 import OpcionesSalidaColumnas from "./OpcionesSalidaColumnas.vue";
 
 const props = defineProps({
