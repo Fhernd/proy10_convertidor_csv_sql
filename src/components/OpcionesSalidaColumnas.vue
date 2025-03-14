@@ -50,6 +50,11 @@ const tiposSeleccionados = ref({});
 
 const emit = defineEmits(['update:columnas']);
 
+/**
+ * Actualiza los tipos de datos disponibles según el SGBD seleccionado.
+ * 
+ * @param sgbd {String} - Nombre del SGBD seleccionado.
+ */
 const updateDataTypes = (sgbd) => {
     const mysqlDataTypes = ["INT", "VARCHAR", "TEXT", "DATETIME", "TINYINT", "DECIMAL", "BIGINT", "BOOLEAN"];
     const postgresDataTypes = ["BIGINT", "BIT", "BOOLEAN", "CHAR", "DATE", "DECIMAL", "DOUBLE PRECISION", "ENUM"];
@@ -74,13 +79,15 @@ const updateDataTypes = (sgbd) => {
             break;
     }
 
-    // Asignar valores predeterminados
+    tiposSeleccionados.value = {};
+
     columnas.value.forEach(col => {
-        if (!tiposSeleccionados.value[col]) {
-            tiposSeleccionados.value[col] = getDefaultType(sgbd);
-        }
+        tiposSeleccionados.value[col] = getDefaultType(sgbd);
     });
+
+    emit('update:columnas', { columnas: columnas.value, tiposSeleccionados: tiposSeleccionados.value });
 };
+
 
 // Función para determinar el valor predeterminado según el SGBD seleccionado
 const getDefaultType = (sgbd) => {
