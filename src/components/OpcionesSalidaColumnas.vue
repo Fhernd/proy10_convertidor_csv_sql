@@ -48,7 +48,7 @@ const sgbdSeleccionado = ref("");
 const tiposDatosSgbd = ref([]);
 const tiposSeleccionados = ref({});
 
-const emit = defineEmits(['update:columnas']);
+const emit = defineEmits(['update:tiposColumnas']);
 
 /**
  * Actualiza los tipos de datos disponibles según el SGBD seleccionado.
@@ -108,7 +108,7 @@ watchEffect(() => {
 
 // Emitir cambios al padre cuando se selecciona un nuevo tipo de dato
 watch([columnas, tiposSeleccionados], () => {
-    emit('update:columnas', { columnas: columnas.value, tiposSeleccionados: tiposSeleccionados.value });
+    emit('update:tiposColumnas', { columnas: columnas.value, tiposSeleccionados: tiposSeleccionados.value });
 }, { deep: true });
 
 </script>
