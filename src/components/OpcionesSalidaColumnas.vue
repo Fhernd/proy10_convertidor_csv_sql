@@ -85,7 +85,7 @@ const updateDataTypes = (sgbd) => {
         tiposSeleccionados.value[col] = getDefaultType(sgbd);
     });
 
-    emit('update:columnas', { columnas: columnas.value, tiposSeleccionados: tiposSeleccionados.value });
+    emit('update:tiposColumnas', { columnas: columnas.value, tiposSeleccionados: tiposSeleccionados.value });
 };
 
 

@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watchEffect } from "vue";
+import { defineEmits, defineProps, ref, watchEffect } from "vue";
 import OpcionesSalidaColumnas from "./OpcionesSalidaColumnas.vue";
 
 const props = defineProps({
@@ -16,6 +16,8 @@ const props = defineProps({
 
 const tiposColumnasSeleccionados = ref({});
 
+const emit = defineEmits(["update:tiposColumnas"]);
+
 /**
  * Actualiza los tipos de datos seleccionados para cada columna.
  * 
@@ -23,7 +25,10 @@ const tiposColumnasSeleccionados = ref({});
  */
 const handleTiposColumnasUpdate = (data) => {
     tiposColumnasSeleccionados.value = data.tiposSeleccionados;
-    console.log("Tipos de columnas actualizados:", tiposColumnasSeleccionados.value);
+
+    emit("update:tiposColumnas", {
+        tiposColumnas: tiposColumnasSeleccionados.value,
+    });
 };
 
 watchEffect(() => {
