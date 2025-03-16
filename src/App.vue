@@ -35,7 +35,8 @@
 
       <OpcionesSGBD @update:config="handleOpcionesSgbdParams" />
 
-      <OpcionesSalida :columnas="columnas" :sgbdSeleccionado="paramsOpcionesSGBD.sgbdSeleccionado" />
+      <OpcionesSalida :columnas="columnas" :sgbdSeleccionado="paramsOpcionesSGBD.sgbdSeleccionado"
+        @update:tiposColumnas="handleTiposColumnasUpdate" />
 
       <OpcionesSalidaTabla />
 
@@ -112,6 +113,10 @@ const handleOpcionesSgbdParams = (newParams) => {
 watch(delimitador, (newVal) => {
   paramsOpcionesEntrada.value.delimitador = newVal;
 });
+
+const handleTiposColumnasUpdate = (data) => {
+  console.log("App > Updated tipos de columnas:", data.tiposColumnas);
+};
 </script>
 
 <style scoped>
