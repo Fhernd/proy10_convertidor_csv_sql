@@ -81,6 +81,8 @@ const paramsOpcionesSGBD = ref({
   tipoSintaxis: "standard",
 });
 
+const tiposColumnasSeleccionados = ref({});
+
 const evaluarContenidoCsv = () => {
   Papa.parse(contenidoCsv.value, {
     header: true,
@@ -116,6 +118,7 @@ watch(delimitador, (newVal) => {
 
 const handleTiposColumnasUpdate = (data) => {
   console.log("App > Updated tipos de columnas:", data.tiposColumnas);
+  tiposColumnasSeleccionados.value = data.tiposColumnas;
 };
 </script>
 
