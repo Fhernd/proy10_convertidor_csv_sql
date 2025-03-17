@@ -28,21 +28,19 @@
                 Selección de columnas que integran la llave primaria
             </label>
         </div>
-
-        <button @click="applyOptions" class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Aplicar Opciones
-        </button>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { defineEmits, ref, watch } from 'vue';
 
 const replaceSpaces = ref(false);
 const allVarchar = ref(false);
 const createView = ref(false);
 const dropTable = ref(false);
 const selectPrimaryKey = ref(false);
+
+const emit = defineEmits(['update:opcionesSalidaTabla']);
 
 const applyOptions = () => {
     const options = {
@@ -56,6 +54,10 @@ const applyOptions = () => {
     console.log("Opciones aplicadas:", options);
     alert("Opciones aplicadas con éxito!");
 };
+
+watch([replaceSpaces, allVarchar, createView, dropTable, selectPrimaryKey], () => {
+    applyOptions();
+}, { deep: true });
 </script>
 
 <style scoped></style>
