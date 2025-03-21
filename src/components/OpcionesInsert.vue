@@ -23,33 +23,27 @@
                     class="mt-1 block w-full p-2 border border-gray-300 rounded focus:ring focus:ring-blue-200">
             </div>
         </div>
-
-        <button @click="applyOptions"
-            class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Aplicar Opciones
-        </button>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { defineEmit, ref, watch } from 'vue';
 
 const useReplace = ref(false);
 const enableInsertMultipleClauses = ref(false);
 const insertMultipleClauses = ref('');
 const additionalPhrase = ref('');
 
-const applyOptions = () => {
-    const options = {
+const emit = defineEmit('update:opcionesInsert');
+
+watch([useReplace, enableInsertMultipleClauses, insertMultipleClauses, additionalPhrase], () => {
+    emit('update:opcionesInsert', {
         useReplace: useReplace.value,
         enableInsertMultipleClauses: enableInsertMultipleClauses.value,
-        insertMultipleClauses: enableInsertMultipleClauses.value ? insertMultipleClauses.value : '',
+        insertMultipleClauses: insertMultipleClauses.value,
         additionalPhrase: additionalPhrase.value,
-    };
-
-    console.log("Opciones aplicadas:", options);
-    alert("Opciones aplicadas con éxito!");
-};
+    });
+});
 </script>
 
 <style scoped></style>
