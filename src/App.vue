@@ -38,7 +38,7 @@
       <OpcionesSalida :columnas="columnas" :sgbdSeleccionado="paramsOpcionesSGBD.sgbdSeleccionado"
         @update:tiposColumnas="handleTiposColumnasUpdate" />
 
-      <OpcionesSalidaTabla />
+      <OpcionesSalidaTabla @update:opcionesSalidaTabla="handleOpcionesSalidaTabla" />
 
       <OpcionesInsert />
 
@@ -81,6 +81,14 @@ const paramsOpcionesSGBD = ref({
   tipoSintaxis: "standard",
 });
 
+const paramsOpcionesSalidaTabla = ref({
+  replaceSpaces: false,
+  allVarchar: false,
+  createView: false,
+  dropTable: false,
+  selectPrimaryKey: false,
+});
+
 const tiposColumnasSeleccionados = ref({});
 
 const evaluarContenidoCsv = () => {
@@ -117,8 +125,11 @@ watch(delimitador, (newVal) => {
 });
 
 const handleTiposColumnasUpdate = (data) => {
-  console.log("App > Updated tipos de columnas:", data.tiposColumnas);
   tiposColumnasSeleccionados.value = data.tiposColumnas;
+};
+
+const handleOpcionesSalidaTabla = (data) => {
+  paramsOpcionesSalidaTabla.value = data;
 };
 </script>
 

@@ -51,8 +51,7 @@ const applyOptions = () => {
         selectPrimaryKey: selectPrimaryKey.value,
     };
 
-    console.log("Opciones aplicadas:", options);
-    alert("Opciones aplicadas con éxito!");
+    emit('update:opcionesSalidaTabla', options);
 };
 
 watch([replaceSpaces, allVarchar, createView, dropTable, selectPrimaryKey], () => {
