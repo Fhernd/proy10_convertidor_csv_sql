@@ -40,7 +40,7 @@
 
       <OpcionesSalidaTabla @update:opcionesSalidaTabla="handleOpcionesSalidaTabla" />
 
-      <OpcionesInsert />
+      <OpcionesInsert @update:opcionesInsert="handleOpcionesInsert" />
 
       <OpcionesFormato />
 
@@ -89,6 +89,13 @@ const paramsOpcionesSalidaTabla = ref({
   selectPrimaryKey: false,
 });
 
+const paramsOpcionesInsert = ref({
+  useReplace: false,
+  enableInsertMultipleClauses: false,
+  insertMultipleClauses: "",
+  additionalPhrase: "",
+});
+
 const tiposColumnasSeleccionados = ref({});
 
 const evaluarContenidoCsv = () => {
@@ -130,6 +137,11 @@ const handleTiposColumnasUpdate = (data) => {
 
 const handleOpcionesSalidaTabla = (data) => {
   paramsOpcionesSalidaTabla.value = data;
+};
+
+const handleOpcionesInsert = (data) => {
+  console.log("App > Opciones de inserción:", data);
+  paramsOpcionesInsert.value = data;
 };
 </script>
 
