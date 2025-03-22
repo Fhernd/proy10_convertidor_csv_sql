@@ -42,7 +42,7 @@
 
       <OpcionesInsert @update:opcionesInsert="handleOpcionesInsert" />
 
-      <OpcionesFormato />
+      <OpcionesFormato @update:opcionesFormato="handleOpcionesFormato" />
 
       <SalidaSQL />
     </main>
@@ -141,6 +141,10 @@ const handleOpcionesSalidaTabla = (data) => {
 
 const handleOpcionesInsert = (data) => {
   paramsOpcionesInsert.value = data;
+};
+
+const handleOpcionesFormato = (data) => {
+  console.log("Opciones de formato:", data);
 };
 </script>
 
