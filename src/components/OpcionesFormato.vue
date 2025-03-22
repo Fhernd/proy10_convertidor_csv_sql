@@ -27,33 +27,28 @@
                 Nombres de tablas y columnas con carácter ` (backtick)
             </label>
         </div>
-
-        <button @click="applyOptions"
-            class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-            Aplicar Opciones
-        </button>
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { defineEmits, ref, watch } from 'vue';
 
 const formatDates = ref('');
 const replaceNulls = ref(false);
 const useSingleQuotes = ref(false);
 const useBackticks = ref(false);
 
-const applyOptions = () => {
-    const options = {
+const emit = defineEmits('update:opcionesFormato');
+
+watch([formatDates, replaceNulls, useSingleQuotes, useBackticks], () => {
+    emit('update:opcionesFormato', {
         formatDates: formatDates.value,
         replaceNulls: replaceNulls.value,
         useSingleQuotes: useSingleQuotes.value,
-        useBackticks: useBackticks.value
-    };
+        useBackticks: useBackticks.value,
+    });
+});
 
-    console.log("Opciones aplicadas:", options);
-    alert("Opciones aplicadas con éxito!");
-};
 </script>
 
 <style scoped></style>

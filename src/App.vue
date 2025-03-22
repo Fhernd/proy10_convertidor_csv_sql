@@ -140,7 +140,6 @@ const handleOpcionesSalidaTabla = (data) => {
 };
 
 const handleOpcionesInsert = (data) => {
-  console.log("App > Opciones de inserción:", data);
   paramsOpcionesInsert.value = data;
 };
 </script>

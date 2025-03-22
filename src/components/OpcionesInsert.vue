@@ -27,14 +27,14 @@
 </template>
 
 <script setup>
-import { defineEmit, ref, watch } from 'vue';
+import { defineEmits, ref, watch } from 'vue';
 
 const useReplace = ref(false);
 const enableInsertMultipleClauses = ref(false);
 const insertMultipleClauses = ref('');
 const additionalPhrase = ref('');
 
-const emit = defineEmit('update:opcionesInsert');
+const emit = defineEmits('update:opcionesInsert');
 
 watch([useReplace, enableInsertMultipleClauses, insertMultipleClauses, additionalPhrase], () => {
     emit('update:opcionesInsert', {
