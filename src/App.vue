@@ -44,7 +44,9 @@
 
       <OpcionesFormato @update:opcionesFormato="handleOpcionesFormato" />
 
-      <SalidaSQL />
+      <SalidaSQL :paramsOpcionesEntrada="paramsOpcionesEntrada" :paramsOpcionesSGBD="paramsOpcionesSGBD"
+        :paramsOpcionesSalidaTabla="paramsOpcionesSalidaTabla" :paramsOpcionesInsert="paramsOpcionesInsert"
+        :tiposColumnasSeleccionados="tiposColumnasSeleccionados" />
     </main>
   </div>
 </template>
