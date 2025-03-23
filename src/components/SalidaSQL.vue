@@ -41,9 +41,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { defineProps, ref } from 'vue';
 
-// SQL Options
+const props = defineProps({
+    paramsOpcionesEntrada: Object,
+    paramsOpcionesSGBD: Object,
+    paramsOpcionesSalidaTabla: Object,
+    paramsOpcionesInsert: Object,
+    tiposColumnasSeleccionados: Object,
+    paramsOpcionesFormato: Object
+});
+
 const sqlOptions = ref([
     { type: 'insert', label: 'CSV a SQL INSERT' },
     { type: 'update', label: 'CSV a SQL UPDATE' },
