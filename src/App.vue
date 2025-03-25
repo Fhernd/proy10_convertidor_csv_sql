@@ -44,9 +44,12 @@
 
       <OpcionesFormato @update:opcionesFormato="handleOpcionesFormato" />
 
-      <SalidaSQL :paramsOpcionesEntrada="paramsOpcionesEntrada" :paramsOpcionesSGBD="paramsOpcionesSGBD"
-        :paramsOpcionesSalidaTabla="paramsOpcionesSalidaTabla" :paramsOpcionesInsert="paramsOpcionesInsert"
-        :tiposColumnasSeleccionados="tiposColumnasSeleccionados" />
+      <SalidaSQL :paramsOpcionesEntrada="paramsOpcionesEntrada" 
+        :tiposColumnasSeleccionados="tiposColumnasSeleccionados"
+        :paramsOpcionesSGBD="paramsOpcionesSGBD"
+        :paramsOpcionesSalidaTabla="paramsOpcionesSalidaTabla"
+        :paramsOpcionesInsert="paramsOpcionesInsert"
+        :paramsOpcionesFormato="paramsOpcionesFormato" />
     </main>
   </div>
 </template>
@@ -98,6 +101,13 @@ const paramsOpcionesInsert = ref({
   additionalPhrase: "",
 });
 
+const paramsOpcionesFormato = ref({
+  formatDates: "",
+  replaceNulls: false,
+  useSingleQuotes: false,
+  useBackticks: false,
+});
+
 const tiposColumnasSeleccionados = ref({});
 
 const evaluarContenidoCsv = () => {
@@ -146,7 +156,7 @@ const handleOpcionesInsert = (data) => {
 };
 
 const handleOpcionesFormato = (data) => {
-  console.log("Opciones de formato:", data);
+  paramsOpcionesFormato.value = data;
 };
 </script>
 
