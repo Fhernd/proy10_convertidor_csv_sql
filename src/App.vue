@@ -47,6 +47,7 @@
       <SalidaSQL :paramsOpcionesEntrada="paramsOpcionesEntrada" 
         :tiposColumnasSeleccionados="tiposColumnasSeleccionados"
         :paramsOpcionesSGBD="paramsOpcionesSGBD"
+        :paramsOpcionesSalida="parmsOpcionesSalida"
         :paramsOpcionesSalidaTabla="paramsOpcionesSalidaTabla"
         :paramsOpcionesInsert="paramsOpcionesInsert"
         :paramsOpcionesFormato="paramsOpcionesFormato" />
@@ -84,6 +85,10 @@ const paramsOpcionesEntrada = ref({
 const paramsOpcionesSGBD = ref({
   sgbdSeleccionado: "mysql",
   tipoSintaxis: "standard",
+});
+
+const parmsOpcionesSalida = ref({
+  tiposDatosColumnas: "insert",
 });
 
 const paramsOpcionesSalidaTabla = ref({
@@ -144,7 +149,7 @@ watch(delimitador, (newVal) => {
 });
 
 const handleTiposColumnasUpdate = (data) => {
-  tiposColumnasSeleccionados.value = data.tiposColumnas;
+  paramsOpcionesSalida.value.tiposDatosColumnas = data.tipoSalida;
 };
 
 const handleOpcionesSalidaTabla = (data) => {
