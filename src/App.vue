@@ -47,7 +47,7 @@
       <SalidaSQL :paramsOpcionesEntrada="paramsOpcionesEntrada" 
         :tiposColumnasSeleccionados="tiposColumnasSeleccionados"
         :paramsOpcionesSGBD="paramsOpcionesSGBD"
-        :paramsOpcionesSalida="parmsOpcionesSalida"
+        :paramsOpcionesSalida="paramsOpcionesSalida"
         :paramsOpcionesSalidaTabla="paramsOpcionesSalidaTabla"
         :paramsOpcionesInsert="paramsOpcionesInsert"
         :paramsOpcionesFormato="paramsOpcionesFormato" />
@@ -111,6 +111,10 @@ const paramsOpcionesFormato = ref({
   replaceNulls: false,
   useSingleQuotes: false,
   useBackticks: false,
+});
+
+const paramsOpcionesSalida = ref({
+  tiposDatosColumnas: "insert",
 });
 
 const tiposColumnasSeleccionados = ref({});
