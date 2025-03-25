@@ -70,6 +70,13 @@ const eolType = ref('\n');
 // Function to generate SQL output (mock implementation)
 const generateSQL = (type) => {
     sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
+
+    // Según los datos y las columnas generar el SQL INSERT correspondiente:
+    const sql = props.datos.map((row) => {
+        return `INSERT INTO table (column1, column2, column3) VALUES ('${row[0]}', '${row[1]}', '${row[2]}');`;
+    }).join('\n');
+
+    sqlOutput.value = sql;
 };
 
 // Function to download SQL file
