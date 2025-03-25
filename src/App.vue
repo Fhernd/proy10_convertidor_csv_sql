@@ -74,6 +74,7 @@ import { csvUtils } from '@/utils';
 const delimitador = ref("auto");
 const contenidoCsv = ref("");
 const columnas = ref([]);
+const datos = ref([]);
 
 const paramsOpcionesEntrada = ref({
   primeraFilaEncabezados: false,
@@ -131,9 +132,11 @@ const evaluarContenidoCsv = () => {
         console.error("Errores en el contenido CSV:", results.errors);
       } else {
         delimitador.value = csvUtils.detectarDelimitador(contenidoCsv.value);
-        // console.log("Contenido CSV válido:", results.data);
-
+        datos.value = [...results.data];
         columnas.value = [...results.meta.fields];
+
+        console.log('Datos:', datos.value);
+        console.log('Columnas:', columnas.value);
       }
     }
   });
