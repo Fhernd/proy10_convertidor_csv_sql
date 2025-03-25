@@ -44,6 +44,8 @@
 import { defineProps, ref } from 'vue';
 
 const props = defineProps({
+    datos: Array,
+    columnas: Array,
     paramsOpcionesEntrada: Object,
     paramsOpcionesSGBD: Object,
     paramsOpcionesSalidaTabla: Object,

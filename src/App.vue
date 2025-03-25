@@ -44,7 +44,10 @@
 
       <OpcionesFormato @update:opcionesFormato="handleOpcionesFormato" />
 
-      <SalidaSQL :paramsOpcionesEntrada="paramsOpcionesEntrada" 
+      <SalidaSQL
+        :datos="datos"
+        :columnas="columnas"
+        :paramsOpcionesEntrada="paramsOpcionesEntrada" 
         :tiposColumnasSeleccionados="tiposColumnasSeleccionados"
         :paramsOpcionesSGBD="paramsOpcionesSGBD"
         :paramsOpcionesSalida="paramsOpcionesSalida"
