@@ -71,9 +71,11 @@ const eolType = ref('\n');
 const generateSQL = (type) => {
     sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
 
-    // Según los datos y las columnas generar el SQL INSERT correspondiente:
+    const columnNames = props.columnas.join(', ');
     const sql = props.datos.map((row) => {
-        return `INSERT INTO table (column1, column2, column3) VALUES ('${row[0]}', '${row[1]}', '${row[2]}');`;
+        const valores = Object.values(row);
+        const values = valores.map((value) => `'${value}'`).join(', ');
+        return `INSERT INTO table (${columnNames}) VALUES (${values});`;
     }).join('\n');
 
     sqlOutput.value = sql;
