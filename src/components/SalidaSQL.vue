@@ -71,7 +71,7 @@ const eolType = ref('\n');
 const generateSQL = (type) => {
     sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
 
-    const columnNames = props.columnas.join(', ');
+    const columnNames = props.columnas.map((col) => `"${col}"`).join(', ');
     const sql = props.datos.map((row) => {
         const valores = Object.values(row);
         const values = valores.map((value) => `'${value}'`).join(', ');
