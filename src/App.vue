@@ -96,6 +96,7 @@ const parmsOpcionesSalida = ref({
 });
 
 const paramsOpcionesSalidaTabla = ref({
+  tableName: "datos",
   replaceSpaces: false,
   allVarchar: false,
   createView: false,
