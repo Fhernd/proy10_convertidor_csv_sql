@@ -161,6 +161,9 @@ watch(delimitador, (newVal) => {
 
 const handleTiposColumnasUpdate = (data) => {
   paramsOpcionesSalida.value.tiposDatosColumnas = data.tipoSalida;
+  if (data.tiposColumnas) {
+    tiposColumnasSeleccionados.value = data.tiposColumnas;
+  }
 };
 
 const handleOpcionesSalidaTabla = (data) => {

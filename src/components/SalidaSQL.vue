@@ -67,18 +67,95 @@ const sqlOutput = ref('');
 const fileName = ref('query.sql');
 const eolType = ref('\n');
 
-// Function to generate SQL output (mock implementation)
+// Function to format value based on SQL data type
+const formatValueByType = (value, dataType) => {
+    if (value === null || value === undefined || value === '') {
+        return 'NULL';
+    }
+
+    const upperType = (dataType || '').toUpperCase();
+    const strValue = String(value).trim();
+    
+    // Boolean types - check first since TINYINT can be boolean
+    if (upperType === 'BOOLEAN' || upperType === 'BIT') {
+        const lowerValue = strValue.toLowerCase();
+        if (lowerValue === 'true' || lowerValue === '1' || lowerValue === 'yes') {
+            return upperType === 'BIT' ? '1' : '1';
+        }
+        if (lowerValue === 'false' || lowerValue === '0' || lowerValue === 'no') {
+            return upperType === 'BIT' ? '0' : '0';
+        }
+        // If it's a boolean type but value doesn't match, try parsing as number
+        const num = parseFloat(value);
+        return isNaN(num) ? 'NULL' : (num ? '1' : '0');
+    }
+    
+    // TINYINT - can be used for boolean (0/1) or small integers
+    if (upperType === 'TINYINT') {
+        const lowerValue = strValue.toLowerCase();
+        // Check if it's a boolean-like value
+        if (lowerValue === 'true' || lowerValue === 'yes') {
+            return '1';
+        }
+        if (lowerValue === 'false' || lowerValue === 'no') {
+            return '0';
+        }
+        // Otherwise treat as integer
+        const num = parseFloat(value);
+        return isNaN(num) ? 'NULL' : Math.round(num).toString();
+    }
+    
+    // Numeric types - no quotes
+    if (upperType === 'INT' || upperType === 'INTEGER' || upperType === 'BIGINT' || 
+        upperType === 'SMALLINT') {
+        const num = parseFloat(value);
+        return isNaN(num) ? 'NULL' : Math.round(num).toString();
+    }
+    
+    // Decimal types - no quotes
+    if (upperType === 'DECIMAL' || upperType === 'FLOAT' || upperType === 'DOUBLE' || 
+        upperType === 'DOUBLE PRECISION' || upperType === 'REAL' || upperType === 'MONEY') {
+        const num = parseFloat(value);
+        return isNaN(num) ? 'NULL' : num.toString();
+    }
+    
+    // Date/Time types
+    if (upperType === 'DATETIME' || upperType === 'DATE' || upperType === 'TIMESTAMP') {
+        return `'${strValue}'`;
+    }
+    
+    // String types - with quotes (escape single quotes)
+    return `'${strValue.replace(/'/g, "''")}'`;
+};
+
+// Function to generate SQL output
 const generateSQL = (type) => {
-    sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
+    if (type === 'insert') {
+        // Get table name from paramsOpcionesSalidaTabla
+        const tableName = props.paramsOpcionesSalidaTabla?.tableName || 'table';
+        
+        // Get column names with proper formatting
+        const columnNames = props.columnas.map((col) => {
+            const columnName = props.paramsOpcionesSalidaTabla?.replaceSpaces 
+                ? col.replace(/\s+/g, '_') 
+                : col;
+            return `"${columnName}"`;
+        }).join(', ');
+        
+        // Generate INSERT statements
+        const sql = props.datos.map((row) => {
+            const values = props.columnas.map((col) => {
+                const value = row[col];
+                const dataType = props.tiposColumnasSeleccionados?.[col] || 'VARCHAR';
+                return formatValueByType(value, dataType);
+            }).join(', ');
+            return `INSERT INTO ${tableName} (${columnNames}) VALUES (${values});`;
+        }).join('\n');
 
-    const columnNames = props.columnas.map((col) => `"${col}"`).join(', ');
-    const sql = props.datos.map((row) => {
-        const valores = Object.values(row);
-        const values = valores.map((value) => `'${value}'`).join(', ');
-        return `INSERT INTO table (${columnNames}) VALUES (${values});`;
-    }).join('\n');
-
-    sqlOutput.value = sql;
+        sqlOutput.value = sql;
+    } else {
+        sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
+    }
 };
 
 // Function to download SQL file
