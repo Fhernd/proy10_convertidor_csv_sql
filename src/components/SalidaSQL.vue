@@ -128,19 +128,62 @@ const formatValueByType = (value, dataType) => {
     return `'${strValue.replace(/'/g, "''")}'`;
 };
 
+// Function to get the appropriate quote character for identifiers based on SGBD
+const getIdentifierQuote = () => {
+    // If useBackticks option is enabled, use backticks
+    if (props.paramsOpcionesFormato?.useBackticks) {
+        return '`';
+    }
+    
+    // Determine quote based on SGBD
+    const sgbd = props.paramsOpcionesSGBD?.sgbdSeleccionado?.toLowerCase() || 'mysql';
+    
+    switch (sgbd) {
+        case 'mysql':
+            // MySQL uses backticks by default for identifiers with spaces/special chars
+            return '`';
+        case 'postgresql':
+        case 'sqlite':
+            // PostgreSQL and SQLite use double quotes
+            return '"';
+        case 'sqlserver':
+            // SQL Server can use brackets or double quotes
+            return '[';
+        default:
+            // Default to backticks for MySQL compatibility
+            return '`';
+    }
+};
+
+// Function to get the closing quote character (for SQL Server brackets)
+const getIdentifierCloseQuote = () => {
+    const sgbd = props.paramsOpcionesSGBD?.sgbdSeleccionado?.toLowerCase() || 'mysql';
+    if (sgbd === 'sqlserver' && !props.paramsOpcionesFormato?.useBackticks) {
+        return ']';
+    }
+    return getIdentifierQuote();
+};
+
 // Function to generate SQL output
 const generateSQL = (type) => {
     if (type === 'insert') {
         // Get table name from paramsOpcionesSalidaTabla
         const tableName = props.paramsOpcionesSalidaTabla?.tableName || 'table';
+        const quoteChar = getIdentifierQuote();
+        const closeQuoteChar = getIdentifierCloseQuote();
         
         // Get column names with proper formatting
         const columnNames = props.columnas.map((col) => {
             const columnName = props.paramsOpcionesSalidaTabla?.replaceSpaces 
                 ? col.replace(/\s+/g, '_') 
                 : col;
-            return `"${columnName}"`;
+            return `${quoteChar}${columnName}${closeQuoteChar}`;
         }).join(', ');
+        
+        // Format table name with quotes if needed
+        const formattedTableName = tableName.includes(' ') || tableName.includes('-')
+            ? `${quoteChar}${tableName}${closeQuoteChar}`
+            : tableName;
         
         // Generate INSERT statements
         const sql = props.datos.map((row) => {
@@ -149,7 +192,7 @@ const generateSQL = (type) => {
                 const dataType = props.tiposColumnasSeleccionados?.[col] || 'VARCHAR';
                 return formatValueByType(value, dataType);
             }).join(', ');
-            return `INSERT INTO ${tableName} (${columnNames}) VALUES (${values});`;
+            return `INSERT INTO ${formattedTableName} (${columnNames}) VALUES (${values});`;
         }).join('\n');
 
         sqlOutput.value = sql;
