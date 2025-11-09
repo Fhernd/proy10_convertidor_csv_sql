@@ -80,7 +80,7 @@ const columnas = ref([]);
 const datos = ref([]);
 
 const paramsOpcionesEntrada = ref({
-  primeraFilaEncabezados: false,
+  primeraFilaEncabezados: true, // Por defecto asumimos que hay encabezados
   limiteLineas: null,
   lineasOmitidas: null,
   delimitador: delimitador.value,
@@ -142,15 +142,80 @@ const evaluarContenidoCsv = () => {
     delimitador.value = delimitadorSeleccionado === 'Tab' ? '\t' : delimitadorSeleccionado;
   }
 
+  // Función para detectar si la primera fila parece ser encabezados
+  const detectarSiEsEncabezados = (csvContent, delimiter) => {
+    const lines = csvContent.split('\n').filter(line => line.trim().length > 0);
+    if (lines.length === 0) return false;
+    
+    const firstLine = lines[0];
+    const secondLine = lines[1];
+    
+    if (!secondLine) return false; // Necesitamos al menos dos líneas para comparar
+    
+    const firstRowFields = firstLine.split(delimiter);
+    const secondRowFields = secondLine.split(delimiter);
+    
+    // Si tienen diferente número de campos, probablemente no es encabezado
+    if (firstRowFields.length !== secondRowFields.length) return false;
+    
+    // Verificar si la primera fila parece texto descriptivo (encabezados)
+    // y la segunda fila parece datos (números, fechas, etc.)
+    let pareceEncabezado = true;
+    let camposTextoEnPrimeraFila = 0;
+    
+    firstRowFields.forEach((field, index) => {
+      const campoPrimera = field.trim();
+      const campoSegunda = secondRowFields[index]?.trim() || '';
+      
+      // Si el campo de la primera fila es texto descriptivo (no numérico puro)
+      // y el campo de la segunda fila es numérico o fecha, probablemente es encabezado
+      const esTextoDescriptivo = campoPrimera.length > 0 && 
+                                  !/^\d+\.?\d*$/.test(campoPrimera) && // No es solo número
+                                  campoPrimera !== 'True' && 
+                                  campoPrimera !== 'False';
+      
+      if (esTextoDescriptivo) {
+        camposTextoEnPrimeraFila++;
+      }
+      
+      // Si la primera fila tiene un número puro y la segunda también, probablemente no es encabezado
+      if (/^\d+\.?\d*$/.test(campoPrimera) && /^\d+\.?\d*$/.test(campoSegunda)) {
+        pareceEncabezado = false;
+      }
+    });
+    
+    // Si más de la mitad de los campos en la primera fila son texto descriptivo,
+    // probablemente es encabezado
+    return pareceEncabezado && camposTextoEnPrimeraFila > firstRowFields.length / 2;
+  };
+
+  // Determinar si la primera fila tiene encabezados
+  // Si el usuario no especificó, intentar detectar automáticamente
+  let tieneEncabezados = paramsOpcionesEntrada.value.primeraFilaEncabezados;
+  
+  // Si no está explícitamente configurado, detectar automáticamente
+  if (tieneEncabezados === undefined || tieneEncabezados === null) {
+    tieneEncabezados = detectarSiEsEncabezados(contenidoCsv.value, delimitadorReal);
+  }
+
   // Configurar opciones de parseo
   const parseOptions = {
     delimiter: delimitadorReal,
     skipEmptyLines: true,
-    header: paramsOpcionesEntrada.value.primeraFilaEncabezados !== false, // true por defecto
+    header: tieneEncabezados,
     error: (error) => {
       console.error("Error al evaluar contenido CSV:", error);
     },
     complete: (results) => {
+      console.log("Resultados del parseo:", {
+        dataLength: results.data?.length,
+        hasFields: !!results.meta?.fields,
+        fields: results.meta?.fields,
+        errors: results.errors,
+        delimitadorUsado: delimitadorReal,
+        tieneEncabezados: tieneEncabezados
+      });
+
       if (results.errors.length > 0) {
         // Filtrar errores de delimitador no detectado si ya tenemos uno detectado
         const relevantErrors = results.errors.filter(err => 
@@ -162,12 +227,113 @@ const evaluarContenidoCsv = () => {
         }
       }
       
-      // Solo procesar si hay datos válidos
-      if (results.data && results.data.length > 0 && results.meta.fields) {
-        datos.value = [...results.data];
-        columnas.value = [...results.meta.fields];
+      // Procesar datos según si tiene encabezados o no
+      if (results.data && results.data.length > 0) {
+        if (tieneEncabezados) {
+          // Si tiene encabezados, usar los campos de meta
+          if (results.meta.fields && results.meta.fields.length > 0) {
+            datos.value = [...results.data];
+            columnas.value = [...results.meta.fields];
+            console.log("Datos procesados con encabezados:", {
+              columnas: columnas.value,
+              cantidadDatos: datos.value.length
+            });
+          } else {
+            console.warn("Se esperaban encabezados pero no se encontraron campos. Intentando extraer de la primera fila...");
+            // Intentar obtener columnas de la primera fila del CSV original
+            const lines = contenidoCsv.value.split('\n').filter(line => line.trim().length > 0);
+            if (lines.length > 0) {
+              const primeraLinea = lines[0];
+              const columnasPrimeraLinea = primeraLinea.split(delimitadorReal).map(col => col.trim());
+              
+              if (columnasPrimeraLinea.length > 0 && columnasPrimeraLinea[0].length > 0) {
+                columnas.value = columnasPrimeraLinea;
+                // Si la primera fila eran encabezados, los datos ya están correctos
+                // Si no, necesitamos ajustar
+                if (results.data[0] && typeof results.data[0] === 'object') {
+                  // Verificar si la primera fila de datos coincide con los encabezados
+                  const primeraFilaDatos = Object.values(results.data[0] || {});
+                  if (primeraFilaDatos.length === columnasPrimeraLinea.length) {
+                    // Los datos ya están parseados correctamente
+                    datos.value = [...results.data];
+                  } else {
+                    // Necesitamos reparsear sin header y luego usar la primera fila como encabezados
+                    const datosSinHeader = results.data.map(row => {
+                      if (Array.isArray(row)) {
+                        const obj = {};
+                        columnasPrimeraLinea.forEach((col, idx) => {
+                          obj[col] = row[idx];
+                        });
+                        return obj;
+                      }
+                      return row;
+                    });
+                    // Omitir la primera fila si eran encabezados
+                    datos.value = datosSinHeader.slice(1);
+                  }
+                } else {
+                  datos.value = [...results.data];
+                }
+                console.log("Columnas extraídas de la primera fila:", columnas.value);
+              }
+            }
+          }
+        } else {
+          // Si el usuario dijo que NO tiene encabezados, pero detectamos que podría tenerlos,
+          // intentar extraerlos de la primera fila de todas formas
+          const detectadoComoEncabezados = detectarSiEsEncabezados(contenidoCsv.value, delimitadorReal);
+          
+          if (detectadoComoEncabezados && results.data.length > 0) {
+            // La primera fila probablemente son encabezados, extraerlos
+            const lines = contenidoCsv.value.split('\n').filter(line => line.trim().length > 0);
+            if (lines.length > 0) {
+              const primeraLinea = lines[0];
+              const columnasPrimeraLinea = primeraLinea.split(delimitadorReal).map(col => col.trim());
+              
+              if (columnasPrimeraLinea.length > 0) {
+                columnas.value = columnasPrimeraLinea;
+                // Convertir los datos de arrays a objetos usando los encabezados
+                datos.value = results.data.slice(1).map(row => {
+                  if (Array.isArray(row)) {
+                    const obj = {};
+                    columnasPrimeraLinea.forEach((col, idx) => {
+                      obj[col] = row[idx];
+                    });
+                    return obj;
+                  }
+                  return row;
+                });
+                console.log("Encabezados detectados automáticamente aunque el checkbox estaba desmarcado:", columnas.value);
+                return; // Salir temprano
+              }
+            }
+          }
+          
+          // Si realmente no tiene encabezados, generar nombres de columnas automáticamente
+          if (results.data[0] && Array.isArray(results.data[0])) {
+            // Los datos vienen como arrays
+            const numColumns = results.data[0].length;
+            columnas.value = Array.from({ length: numColumns }, (_, i) => `Columna${i + 1}`);
+            datos.value = results.data.map(row => {
+              const obj = {};
+              columnas.value.forEach((col, idx) => {
+                obj[col] = row[idx];
+              });
+              return obj;
+            });
+          } else if (results.data[0] && typeof results.data[0] === 'object') {
+            // Los datos vienen como objetos (caso raro sin header)
+            columnas.value = Object.keys(results.data[0]);
+            datos.value = [...results.data];
+          }
+        }
       } else {
-        console.warn("No se pudieron extraer datos del CSV. Verifica el delimitador seleccionado.");
+        console.warn("No se pudieron extraer datos del CSV.", {
+          delimitadorUsado: delimitadorReal,
+          delimitadorSeleccionado: delimitadorSeleccionado,
+          tieneEncabezados: tieneEncabezados,
+          dataLength: results.data?.length
+        });
       }
     }
   };

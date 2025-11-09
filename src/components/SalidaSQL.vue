@@ -15,7 +15,10 @@
             <label class="block text-gray-700 font-bold mb-2">Salida SQL:</label>
             <textarea v-model="sqlOutput"
                 class="w-full p-3 border border-gray-300 rounded h-40 focus:ring focus:ring-blue-200"
-                placeholder="Aquí se generará el código SQL..."></textarea>
+                :placeholder="!props.datos || props.datos.length === 0 ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...'"></textarea>
+            <p v-if="!props.datos || props.datos.length === 0" class="text-sm text-gray-500 mt-1">
+                💡 Primero ingresa datos CSV y presiona "Evaluar contenido CSV"
+            </p>
         </div>
 
         <!-- Third Row: File Name, Download Button, EOL Selector -->
@@ -44,14 +47,38 @@
 import { defineProps, ref } from 'vue';
 
 const props = defineProps({
-    datos: Array,
-    columnas: Array,
-    paramsOpcionesEntrada: Object,
-    paramsOpcionesSGBD: Object,
-    paramsOpcionesSalidaTabla: Object,
-    paramsOpcionesInsert: Object,
-    tiposColumnasSeleccionados: Object,
-    paramsOpcionesFormato: Object
+    datos: {
+        type: Array,
+        default: () => []
+    },
+    columnas: {
+        type: Array,
+        default: () => []
+    },
+    paramsOpcionesEntrada: {
+        type: Object,
+        default: () => ({})
+    },
+    paramsOpcionesSGBD: {
+        type: Object,
+        default: () => ({ sgbdSeleccionado: 'mysql' })
+    },
+    paramsOpcionesSalidaTabla: {
+        type: Object,
+        default: () => ({ tableName: 'table' })
+    },
+    paramsOpcionesInsert: {
+        type: Object,
+        default: () => ({})
+    },
+    tiposColumnasSeleccionados: {
+        type: Object,
+        default: () => ({})
+    },
+    paramsOpcionesFormato: {
+        type: Object,
+        default: () => ({})
+    }
 });
 
 const sqlOptions = ref([
@@ -166,6 +193,25 @@ const getIdentifierCloseQuote = () => {
 
 // Function to generate SQL output
 const generateSQL = (type) => {
+    console.log('Generando SQL tipo:', type);
+    console.log('Datos recibidos:', props.datos);
+    console.log('Columnas recibidas:', props.columnas);
+    console.log('Tipos de columnas:', props.tiposColumnasSeleccionados);
+    console.log('Opciones tabla:', props.paramsOpcionesSalidaTabla);
+    
+    // Validar que haya datos y columnas disponibles
+    if (!props.datos || !Array.isArray(props.datos) || props.datos.length === 0) {
+        sqlOutput.value = '-- Error: No hay datos CSV disponibles. Por favor, evalúa primero el contenido CSV.';
+        console.warn('No hay datos disponibles para generar SQL. Datos:', props.datos);
+        return;
+    }
+
+    if (!props.columnas || !Array.isArray(props.columnas) || props.columnas.length === 0) {
+        sqlOutput.value = '-- Error: No hay columnas disponibles. Por favor, evalúa primero el contenido CSV.';
+        console.warn('No hay columnas disponibles para generar SQL. Columnas:', props.columnas);
+        return;
+    }
+
     if (type === 'insert') {
         // Get table name from paramsOpcionesSalidaTabla
         const tableName = props.paramsOpcionesSalidaTabla?.tableName || 'table';
@@ -196,6 +242,7 @@ const generateSQL = (type) => {
         }).join('\n');
 
         sqlOutput.value = sql;
+        console.log('SQL generado exitosamente:', sql.length, 'caracteres');
     } else {
         sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
     }

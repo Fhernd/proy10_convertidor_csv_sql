@@ -84,7 +84,7 @@ const props = defineProps({
 });
 
 const params = ref({
-  primeraFilaEncabezados: false,
+  primeraFilaEncabezados: true, // Por defecto asumimos que hay encabezados (caso más común)
   limiteLineas: 0,
   lineasOmitidas: 0,
   delimitador: props.delimitador,

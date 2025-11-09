@@ -77,13 +77,17 @@ function detectarDelimitador(muestraCsv) {
  * @returns Carácter delimitador real
  */
 function obtenerDelimitadorReal(delimitador, contenidoCsv = '') {
-    if (delimitador === 'auto') {
+    // Limpiar espacios en blanco del delimitador
+    const delimitadorLimpio = typeof delimitador === 'string' ? delimitador.trim() : delimitador;
+    
+    if (!delimitadorLimpio || delimitadorLimpio === 'auto') {
         return detectarDelimitador(contenidoCsv);
     }
-    if (delimitador === 'Tab' || delimitador === '\t') {
+    if (delimitadorLimpio === 'Tab' || delimitadorLimpio === '\t') {
         return '\t';
     }
-    return delimitador || ',';
+    // Retornar el primer carácter si hay espacios (por seguridad)
+    return delimitadorLimpio.charAt(0) || ',';
 }
 
 export { detectarDelimitador, obtenerDelimitadorReal };
