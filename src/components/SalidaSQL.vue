@@ -231,8 +231,21 @@ const generateSQL = (type) => {
             ? `${quoteChar}${tableName}${closeQuoteChar}`
             : tableName;
         
+        // Aplicar límite si está configurado en paramsOpcionesEntrada
+        let datosParaGenerar = props.datos;
+        const limiteLineas = props.paramsOpcionesEntrada?.limiteLineas;
+        
+        if (limiteLineas && limiteLineas > 0) {
+            datosParaGenerar = props.datos.slice(0, limiteLineas);
+            console.log('Aplicando límite en generación SQL:', {
+                limiteSolicitado: limiteLineas,
+                datosTotales: props.datos.length,
+                datosLimitados: datosParaGenerar.length
+            });
+        }
+        
         // Generate INSERT statements
-        const sql = props.datos.map((row) => {
+        const sql = datosParaGenerar.map((row) => {
             const values = props.columnas.map((col) => {
                 const value = row[col];
                 const dataType = props.tiposColumnasSeleccionados?.[col] || 'VARCHAR';
@@ -242,7 +255,10 @@ const generateSQL = (type) => {
         }).join('\n');
 
         sqlOutput.value = sql;
-        console.log('SQL generado exitosamente:', sql.length, 'caracteres');
+        console.log('SQL generado exitosamente:', {
+            registrosGenerados: datosParaGenerar.length,
+            caracteres: sql.length
+        });
     } else {
         sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
     }

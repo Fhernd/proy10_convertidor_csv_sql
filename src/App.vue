@@ -227,16 +227,46 @@ const evaluarContenidoCsv = () => {
         }
       }
       
+      // Aplicar límite de líneas después del parseo si está configurado
+      let datosProcesados = results.data || [];
+      const datosAntesLimite = datosProcesados.length;
+      
+      // Aplicar "Saltar líneas" primero si está configurado
+      if (paramsOpcionesEntrada.value.lineasOmitidas && paramsOpcionesEntrada.value.lineasOmitidas > 0) {
+        const lineasASaltar = paramsOpcionesEntrada.value.lineasOmitidas;
+        datosProcesados = datosProcesados.slice(lineasASaltar);
+        console.log("Saltando líneas:", {
+          lineasOmitidas: lineasASaltar,
+          datosAntes: datosAntesLimite,
+          datosDespues: datosProcesados.length
+        });
+      }
+      
+      // Aplicar límite de registros (no líneas) si está configurado
+      if (paramsOpcionesEntrada.value.limiteLineas && paramsOpcionesEntrada.value.limiteLineas > 0) {
+        const limiteSolicitado = paramsOpcionesEntrada.value.limiteLineas;
+        const datosAntesLimiteAplicado = datosProcesados.length;
+        datosProcesados = datosProcesados.slice(0, limiteSolicitado);
+        console.log("Aplicando límite de registros:", {
+          limiteSolicitado: limiteSolicitado,
+          datosAntes: datosAntesLimiteAplicado,
+          datosDespues: datosProcesados.length
+        });
+      }
+      
       // Procesar datos según si tiene encabezados o no
-      if (results.data && results.data.length > 0) {
+      if (datosProcesados && datosProcesados.length > 0) {
         if (tieneEncabezados) {
           // Si tiene encabezados, usar los campos de meta
           if (results.meta.fields && results.meta.fields.length > 0) {
-            datos.value = [...results.data];
+            datos.value = [...datosProcesados];
             columnas.value = [...results.meta.fields];
             console.log("Datos procesados con encabezados:", {
               columnas: columnas.value,
-              cantidadDatos: datos.value.length
+              cantidadDatos: datos.value.length,
+              limiteAplicado: paramsOpcionesEntrada.value.limiteLineas || 'ninguno',
+              datosProcesadosLength: datosProcesados.length,
+              datosValueLength: datos.value.length
             });
           } else {
             console.warn("Se esperaban encabezados pero no se encontraron campos. Intentando extraer de la primera fila...");
@@ -248,17 +278,17 @@ const evaluarContenidoCsv = () => {
               
               if (columnasPrimeraLinea.length > 0 && columnasPrimeraLinea[0].length > 0) {
                 columnas.value = columnasPrimeraLinea;
-                // Si la primera fila eran encabezados, los datos ya están correctos
-                // Si no, necesitamos ajustar
-                if (results.data[0] && typeof results.data[0] === 'object') {
+                // Usar datosProcesados que ya tiene el límite y skip aplicados
+                let datosTemp = [];
+                if (datosProcesados[0] && typeof datosProcesados[0] === 'object') {
                   // Verificar si la primera fila de datos coincide con los encabezados
-                  const primeraFilaDatos = Object.values(results.data[0] || {});
+                  const primeraFilaDatos = Object.values(datosProcesados[0] || {});
                   if (primeraFilaDatos.length === columnasPrimeraLinea.length) {
-                    // Los datos ya están parseados correctamente
-                    datos.value = [...results.data];
+                    // Los datos ya están parseados correctamente y con límite aplicado
+                    datosTemp = [...datosProcesados];
                   } else {
                     // Necesitamos reparsear sin header y luego usar la primera fila como encabezados
-                    const datosSinHeader = results.data.map(row => {
+                    const datosSinHeader = datosProcesados.map(row => {
                       if (Array.isArray(row)) {
                         const obj = {};
                         columnasPrimeraLinea.forEach((col, idx) => {
@@ -268,12 +298,13 @@ const evaluarContenidoCsv = () => {
                       }
                       return row;
                     });
-                    // Omitir la primera fila si eran encabezados
-                    datos.value = datosSinHeader.slice(1);
+                    // Omitir la primera fila si eran encabezados (pero ya tenemos límite aplicado)
+                    datosTemp = datosSinHeader.slice(1);
                   }
                 } else {
-                  datos.value = [...results.data];
+                  datosTemp = [...datosProcesados];
                 }
+                datos.value = datosTemp;
                 console.log("Columnas extraídas de la primera fila:", columnas.value);
               }
             }
@@ -283,7 +314,7 @@ const evaluarContenidoCsv = () => {
           // intentar extraerlos de la primera fila de todas formas
           const detectadoComoEncabezados = detectarSiEsEncabezados(contenidoCsv.value, delimitadorReal);
           
-          if (detectadoComoEncabezados && results.data.length > 0) {
+          if (detectadoComoEncabezados && datosProcesados.length > 0) {
             // La primera fila probablemente son encabezados, extraerlos
             const lines = contenidoCsv.value.split('\n').filter(line => line.trim().length > 0);
             if (lines.length > 0) {
@@ -292,8 +323,21 @@ const evaluarContenidoCsv = () => {
               
               if (columnasPrimeraLinea.length > 0) {
                 columnas.value = columnasPrimeraLinea;
+                // Omitir la primera fila que son los encabezados
+                // Pero necesitamos ajustar el límite: si el usuario quiere 3 registros,
+                // necesitamos tomar la primera fila (encabezados) + 3 datos = 4 filas totales
+                // Como ya aplicamos el límite a datosProcesados, necesitamos verificar
+                // si la primera fila está incluida y omitirla
+                let datosSinEncabezados = datosProcesados;
+                
+                // Si la primera fila de datosProcesados parece ser encabezados, omitirla
+                // Pero solo si no se aplicó skip (porque skip ya la habría omitido)
+                if (!paramsOpcionesEntrada.value.lineasOmitidas || paramsOpcionesEntrada.value.lineasOmitidas === 0) {
+                  datosSinEncabezados = datosProcesados.slice(1);
+                }
+                
                 // Convertir los datos de arrays a objetos usando los encabezados
-                datos.value = results.data.slice(1).map(row => {
+                let datosTemp = datosSinEncabezados.map(row => {
                   if (Array.isArray(row)) {
                     const obj = {};
                     columnasPrimeraLinea.forEach((col, idx) => {
@@ -303,28 +347,39 @@ const evaluarContenidoCsv = () => {
                   }
                   return row;
                 });
-                console.log("Encabezados detectados automáticamente aunque el checkbox estaba desmarcado:", columnas.value);
+                
+                // Asegurar que tenemos exactamente el número de registros solicitados
+                if (paramsOpcionesEntrada.value.limiteLineas && paramsOpcionesEntrada.value.limiteLineas > 0) {
+                  datosTemp = datosTemp.slice(0, paramsOpcionesEntrada.value.limiteLineas);
+                }
+                
+                datos.value = datosTemp;
+                console.log("Encabezados detectados automáticamente aunque el checkbox estaba desmarcado:", {
+                  columnas: columnas.value,
+                  cantidadDatos: datos.value.length
+                });
                 return; // Salir temprano
               }
             }
           }
           
           // Si realmente no tiene encabezados, generar nombres de columnas automáticamente
-          if (results.data[0] && Array.isArray(results.data[0])) {
+          if (datosProcesados[0] && Array.isArray(datosProcesados[0])) {
             // Los datos vienen como arrays
-            const numColumns = results.data[0].length;
+            const numColumns = datosProcesados[0].length;
             columnas.value = Array.from({ length: numColumns }, (_, i) => `Columna${i + 1}`);
-            datos.value = results.data.map(row => {
+            let datosTemp = datosProcesados.map(row => {
               const obj = {};
               columnas.value.forEach((col, idx) => {
                 obj[col] = row[idx];
               });
               return obj;
             });
-          } else if (results.data[0] && typeof results.data[0] === 'object') {
+            datos.value = datosTemp;
+          } else if (datosProcesados[0] && typeof datosProcesados[0] === 'object') {
             // Los datos vienen como objetos (caso raro sin header)
-            columnas.value = Object.keys(results.data[0]);
-            datos.value = [...results.data];
+            columnas.value = Object.keys(datosProcesados[0]);
+            datos.value = [...datosProcesados];
           }
         }
       } else {
@@ -338,9 +393,33 @@ const evaluarContenidoCsv = () => {
     }
   };
 
-  // Aplicar límites si están configurados
-  if (paramsOpcionesEntrada.value.limiteLineas && paramsOpcionesEntrada.value.limiteLineas > 0) {
-    parseOptions.preview = paramsOpcionesEntrada.value.limiteLineas;
+  // Aplicar preview para optimizar el parseo (parsear más líneas de las necesarias para manejar skip)
+  // Nota: El límite real de registros se aplicará después del parseo
+  const limiteSolicitado = paramsOpcionesEntrada.value.limiteLineas || 0;
+  const lineasOmitidas = paramsOpcionesEntrada.value.lineasOmitidas || 0;
+  
+  if (limiteSolicitado > 0 || lineasOmitidas > 0) {
+    // Calcular cuántas líneas necesitamos parsear
+    // Si tiene encabezados: 1 (encabezado) + lineasOmitidas + limiteSolicitado
+    // Si no tiene encabezados pero podría tenerlos: lineasOmitidas + limiteSolicitado + 1 (por si acaso)
+    // Si realmente no tiene encabezados: lineasOmitidas + limiteSolicitado
+    let previewLines;
+    if (tieneEncabezados) {
+      previewLines = 1 + lineasOmitidas + limiteSolicitado;
+    } else {
+      // Si no tiene encabezados configurados, pero podría tenerlos, agregar 1 fila extra
+      // para manejar el caso donde la primera fila son encabezados
+      previewLines = lineasOmitidas + limiteSolicitado + 1;
+    }
+    
+    parseOptions.preview = previewLines;
+    
+    console.log("Configurando preview para parseo:", {
+      limiteSolicitado: limiteSolicitado,
+      lineasOmitidas: lineasOmitidas,
+      tieneEncabezados: tieneEncabezados,
+      previewTotal: previewLines
+    });
   }
 
   Papa.parse(contenidoCsv.value, parseOptions);
