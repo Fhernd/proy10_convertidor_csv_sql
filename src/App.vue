@@ -125,25 +125,59 @@ const paramsOpcionesSalida = ref({
 const tiposColumnasSeleccionados = ref({});
 
 const evaluarContenidoCsv = () => {
-  Papa.parse(contenidoCsv.value, {
-    header: true,
+  if (!contenidoCsv.value || contenidoCsv.value.trim().length === 0) {
+    console.warn("No hay contenido CSV para evaluar");
+    return;
+  }
+
+  // Obtener el delimitador real (detectar si es "auto" o usar el seleccionado)
+  const delimitadorSeleccionado = paramsOpcionesEntrada.value.delimitador || delimitador.value;
+  const delimitadorReal = csvUtils.obtenerDelimitadorReal(delimitadorSeleccionado, contenidoCsv.value);
+  
+  // Actualizar el delimitador detectado
+  if (delimitadorSeleccionado === 'auto') {
+    delimitador.value = delimitadorReal;
+  } else {
+    // Si el usuario seleccionó manualmente, convertir "Tab" a '\t' si es necesario
+    delimitador.value = delimitadorSeleccionado === 'Tab' ? '\t' : delimitadorSeleccionado;
+  }
+
+  // Configurar opciones de parseo
+  const parseOptions = {
+    delimiter: delimitadorReal,
     skipEmptyLines: true,
+    header: paramsOpcionesEntrada.value.primeraFilaEncabezados !== false, // true por defecto
     error: (error) => {
       console.error("Error al evaluar contenido CSV:", error);
     },
     complete: (results) => {
       if (results.errors.length > 0) {
-        console.error("Errores en el contenido CSV:", results.errors);
-      } else {
-        delimitador.value = csvUtils.detectarDelimitador(contenidoCsv.value);
+        // Filtrar errores de delimitador no detectado si ya tenemos uno detectado
+        const relevantErrors = results.errors.filter(err => 
+          err.type !== 'Delimiter' || err.code !== 'UndetectableDelimiter'
+        );
+        
+        if (relevantErrors.length > 0) {
+          console.error("Errores en el contenido CSV:", relevantErrors);
+        }
+      }
+      
+      // Solo procesar si hay datos válidos
+      if (results.data && results.data.length > 0 && results.meta.fields) {
         datos.value = [...results.data];
         columnas.value = [...results.meta.fields];
-
-        console.log('Datos:', datos.value);
-        console.log('Columnas:', columnas.value);
+      } else {
+        console.warn("No se pudieron extraer datos del CSV. Verifica el delimitador seleccionado.");
       }
     }
-  });
+  };
+
+  // Aplicar límites si están configurados
+  if (paramsOpcionesEntrada.value.limiteLineas && paramsOpcionesEntrada.value.limiteLineas > 0) {
+    parseOptions.preview = paramsOpcionesEntrada.value.limiteLineas;
+  }
+
+  Papa.parse(contenidoCsv.value, parseOptions);
 };
 
 const handleOpcionesEntradaParams = (newParams) => {
