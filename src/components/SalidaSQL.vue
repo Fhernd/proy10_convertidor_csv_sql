@@ -95,13 +95,19 @@ const fileName = ref('query.sql');
 const eolType = ref('\n');
 
 // Function to format value based on SQL data type
-const formatValueByType = (value, dataType) => {
+const formatValueByType = (value, dataType, forceVarchar = false) => {
     if (value === null || value === undefined || value === '') {
         return 'NULL';
     }
 
-    const upperType = (dataType || '').toUpperCase();
     const strValue = String(value).trim();
+    
+    // Si forceVarchar es true, tratar todo como VARCHAR (con comillas)
+    if (forceVarchar) {
+        return `'${strValue.replace(/'/g, "''")}'`;
+    }
+
+    const upperType = (dataType || '').toUpperCase();
     
     // Boolean types - check first since TINYINT can be boolean
     if (upperType === 'BOOLEAN' || upperType === 'BIT') {
@@ -218,6 +224,13 @@ const generateSQL = (type) => {
     console.log('Tipos de columnas:', props.tiposColumnasSeleccionados);
     console.log('Opciones tabla:', props.paramsOpcionesSalidaTabla);
     
+    // Validación adicional de datos
+    if (props.datos && props.datos.length > 0) {
+        console.log('Primera fila de datos:', props.datos[0]);
+        console.log('Tipo de primera fila:', typeof props.datos[0]);
+        console.log('Claves de primera fila:', Object.keys(props.datos[0] || {}));
+    }
+    
     // Validar que haya datos y columnas disponibles
     if (!props.datos || !Array.isArray(props.datos) || props.datos.length === 0) {
         sqlOutput.value = '-- Error: No hay datos CSV disponibles. Por favor, evalúa primero el contenido CSV.';
@@ -238,12 +251,40 @@ const generateSQL = (type) => {
         const closeQuoteChar = getIdentifierCloseQuote();
         
         // Get column names with proper formatting
-        const columnNames = props.columnas.map((col) => {
-            const columnName = props.paramsOpcionesSalidaTabla?.replaceSpaces 
-                ? col.replace(/\s+/g, '_') 
-                : col;
-            return `${quoteChar}${columnName}${closeQuoteChar}`;
-        }).join(', ');
+        // Validar que las columnas sean strings válidos y no contengan SQL malicioso
+        const columnNames = props.columnas
+            .filter(col => {
+                // Filtrar columnas válidas
+                if (!col || typeof col !== 'string') return false;
+                const trimmed = col.trim();
+                if (trimmed.length === 0) return false;
+                // Rechazar si contiene palabras clave SQL peligrosas que podrían indicar datos malformados
+                const upperCol = trimmed.toUpperCase();
+                if (upperCol.includes('INSERT INTO') || upperCol.includes('VALUES') || 
+                    upperCol.includes('SELECT') || upperCol.includes('DELETE') ||
+                    upperCol.includes('UPDATE') || upperCol.includes('DROP')) {
+                    console.warn('Columna rechazada por contener SQL:', col);
+                    return false;
+                }
+                return true;
+            })
+            .map((col) => {
+                const columnName = props.paramsOpcionesSalidaTabla?.replaceSpaces 
+                    ? col.replace(/\s+/g, '_') 
+                    : col.trim();
+                // Limpiar el nombre de columna de caracteres peligrosos
+                const cleanName = columnName.replace(/[`"'\[\];]/g, '');
+                return `${quoteChar}${cleanName}${closeQuoteChar}`;
+            }).join(', ');
+        
+        if (!columnNames || columnNames.length === 0) {
+            sqlOutput.value = '-- Error: No se pudieron obtener nombres de columnas válidos.';
+            console.error('Error: columnNames vacío', { columnas: props.columnas });
+            return;
+        }
+        
+        console.log('Nombres de columnas formateados:', columnNames);
+        console.log('Columnas originales:', props.columnas);
         
         // Format table name with quotes if needed
         const formattedTableName = tableName.includes(' ') || tableName.includes('-')
@@ -283,15 +324,47 @@ const generateSQL = (type) => {
             });
         }
         
+        // Verificar si todos los campos deben ser VARCHAR
+        const allVarchar = props.paramsOpcionesSalidaTabla?.allVarchar || false;
+        
         // Generate INSERT statements
-        const sql = datosParaGenerar.map((row) => {
-            const values = props.columnas.map((col) => {
-                const value = row[col];
-                const dataType = props.tiposColumnasSeleccionados?.[col] || 'VARCHAR';
-                return formatValueByType(value, dataType);
-            }).join(', ');
+        const sql = datosParaGenerar.map((row, rowIndex) => {
+            // Validar que row sea un objeto válido
+            if (!row || typeof row !== 'object') {
+                console.warn(`Fila ${rowIndex} no es un objeto válido:`, row);
+                return null;
+            }
+            
+            const values = props.columnas
+                .filter(col => col && typeof col === 'string' && col.trim().length > 0)
+                .map((col) => {
+                    // Obtener el valor de la fila usando la clave de columna
+                    let value = row[col];
+                    
+                    // Si el valor es undefined o la clave no existe, intentar obtenerlo de otra forma
+                    if (value === undefined && row.hasOwnProperty && !row.hasOwnProperty(col)) {
+                        // Intentar buscar la clave sin espacios o con diferentes formatos
+                        const keys = Object.keys(row);
+                        const matchingKey = keys.find(k => k.trim() === col.trim());
+                        if (matchingKey) {
+                            value = row[matchingKey];
+                        }
+                    }
+                    
+                    // Si allVarchar está activado, usar 'VARCHAR' como tipo, sino usar el tipo seleccionado
+                    const dataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[col] || 'VARCHAR');
+                    return formatValueByType(value, dataType, allVarchar);
+                }).join(', ');
+            
+            if (!values || values.length === 0) {
+                console.warn(`Fila ${rowIndex} no tiene valores válidos:`, row);
+                return null;
+            }
+            
             return `INSERT INTO ${formattedTableName} (${columnNames}) VALUES (${values});`;
-        }).join('\n');
+        })
+        .filter(stmt => stmt !== null) // Filtrar statements nulos
+        .join('\n');
 
         sqlOutput.value = sql;
         console.log('SQL generado exitosamente:', {
