@@ -326,9 +326,85 @@ const generateSQL = (type) => {
         
         // Verificar si todos los campos deben ser VARCHAR
         const allVarchar = props.paramsOpcionesSalidaTabla?.allVarchar || false;
+        const createView = props.paramsOpcionesSalidaTabla?.createView || false;
+        const dropTable = props.paramsOpcionesSalidaTabla?.dropTable || false;
+        const sgbd = props.paramsOpcionesSGBD?.sgbdSeleccionado?.toLowerCase() || 'mysql';
+        
+        // Función para generar definiciones de columnas para CREATE TABLE
+        const generateColumnDefinitions = () => {
+            return props.columnas
+                .filter(col => col && typeof col === 'string' && col.trim().length > 0)
+                .map((col) => {
+                    const columnName = props.paramsOpcionesSalidaTabla?.replaceSpaces 
+                        ? col.replace(/\s+/g, '_') 
+                        : col.trim();
+                    const cleanName = columnName.replace(/[`"'\[\];]/g, '');
+                    const formattedColumnName = `${quoteChar}${cleanName}${closeQuoteChar}`;
+                    
+                    // Obtener el tipo de dato
+                    let dataType = 'VARCHAR(255)';
+                    if (allVarchar) {
+                        // Determinar el tipo VARCHAR según el SGBD
+                        switch (sgbd) {
+                            case 'mysql':
+                                dataType = 'VARCHAR(255)';
+                                break;
+                            case 'postgresql':
+                                dataType = 'VARCHAR(255)';
+                                break;
+                            case 'sqlite':
+                                dataType = 'TEXT';
+                                break;
+                            case 'sqlserver':
+                                dataType = 'VARCHAR(255)';
+                                break;
+                            default:
+                                dataType = 'VARCHAR(255)';
+                        }
+                    } else {
+                        const selectedType = props.tiposColumnasSeleccionados?.[col] || 'VARCHAR';
+                        dataType = selectedType;
+                        
+                        // Agregar tamaño por defecto para tipos de string si no lo tienen
+                        const upperType = dataType.toUpperCase();
+                        if ((upperType === 'VARCHAR' || upperType === 'CHAR' || upperType === 'NVARCHAR' || upperType === 'NCHAR') && 
+                            !dataType.includes('(')) {
+                            // Agregar tamaño por defecto según el SGBD
+                            if (sgbd === 'sqlserver' && (upperType === 'NVARCHAR' || upperType === 'NCHAR')) {
+                                dataType += '(255)';
+                            } else {
+                                dataType += '(255)';
+                            }
+                        }
+                        
+                        // Para tipos numéricos DECIMAL/NUMERIC sin parámetros, agregar (10,2) por defecto
+                        if ((upperType === 'DECIMAL' || upperType === 'NUMERIC') && !dataType.includes('(')) {
+                            dataType += '(10,2)';
+                        }
+                    }
+                    
+                    return `${formattedColumnName} ${dataType}`;
+                }).join(',\n    ');
+        };
+        
+        // Construir el SQL completo
+        let sqlStatements = [];
+        
+        // Si createView está activado, generar CREATE TABLE primero
+        if (createView) {
+            // DROP TABLE si está configurado
+            if (dropTable) {
+                sqlStatements.push(`DROP TABLE IF EXISTS ${formattedTableName};`);
+            }
+            
+            // CREATE TABLE
+            const columnDefinitions = generateColumnDefinitions();
+            sqlStatements.push(`CREATE TABLE ${formattedTableName} (\n    ${columnDefinitions}\n);`);
+            sqlStatements.push(''); // Línea en blanco
+        }
         
         // Generate INSERT statements
-        const sql = datosParaGenerar.map((row, rowIndex) => {
+        const insertStatements = datosParaGenerar.map((row, rowIndex) => {
             // Validar que row sea un objeto válido
             if (!row || typeof row !== 'object') {
                 console.warn(`Fila ${rowIndex} no es un objeto válido:`, row);
@@ -363,9 +439,27 @@ const generateSQL = (type) => {
             
             return `INSERT INTO ${formattedTableName} (${columnNames}) VALUES (${values});`;
         })
-        .filter(stmt => stmt !== null) // Filtrar statements nulos
-        .join('\n');
-
+        .filter(stmt => stmt !== null); // Filtrar statements nulos
+        
+        sqlStatements.push(...insertStatements);
+        
+        // Si createView está activado, crear la vista después de los INSERTs
+        if (createView) {
+            // Generar nombre de vista (nombre_tabla_view)
+            let viewNameBase = `${tableName}_view`;
+            const formattedViewName = viewNameBase.includes(' ') || viewNameBase.includes('-')
+                ? `${quoteChar}${viewNameBase}${closeQuoteChar}`
+                : viewNameBase;
+            
+            sqlStatements.push(''); // Línea en blanco
+            // DROP VIEW si existe (para evitar errores si la vista ya existe)
+            sqlStatements.push(`DROP VIEW IF EXISTS ${formattedViewName};`);
+            sqlStatements.push(`CREATE VIEW ${formattedViewName} AS`);
+            sqlStatements.push(`SELECT ${columnNames}`);
+            sqlStatements.push(`FROM ${formattedTableName};`);
+        }
+        
+        const sql = sqlStatements.join('\n');
         sqlOutput.value = sql;
         console.log('SQL generado exitosamente:', {
             registrosGenerados: datosParaGenerar.length,

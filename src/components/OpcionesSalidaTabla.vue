@@ -21,7 +21,7 @@
 
             <label class="flex items-center">
                 <input v-model="createView" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
-                Agregar vista o tabla
+                Crear vista
             </label>
 
             <label class="flex items-center">
