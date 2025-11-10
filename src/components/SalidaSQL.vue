@@ -132,24 +132,43 @@ const formatValueByType = (value, dataType) => {
         return isNaN(num) ? 'NULL' : Math.round(num).toString();
     }
     
-    // Numeric types - no quotes
+    // Numeric types - no quotes (TINYINT ya se maneja arriba para booleanos)
     if (upperType === 'INT' || upperType === 'INTEGER' || upperType === 'BIGINT' || 
-        upperType === 'SMALLINT') {
+        upperType === 'SMALLINT' || upperType === 'MEDIUMINT') {
         const num = parseFloat(value);
         return isNaN(num) ? 'NULL' : Math.round(num).toString();
     }
     
     // Decimal types - no quotes
-    if (upperType === 'DECIMAL' || upperType === 'FLOAT' || upperType === 'DOUBLE' || 
-        upperType === 'DOUBLE PRECISION' || upperType === 'REAL' || upperType === 'MONEY') {
+    if (upperType === 'DECIMAL' || upperType === 'NUMERIC' || upperType === 'FLOAT' || 
+        upperType === 'DOUBLE' || upperType === 'DOUBLE PRECISION' || upperType === 'REAL' || 
+        upperType === 'MONEY' || upperType === 'SMALLMONEY') {
         const num = parseFloat(value);
         return isNaN(num) ? 'NULL' : num.toString();
     }
     
-    // Date/Time types
-    if (upperType === 'DATETIME' || upperType === 'DATE' || upperType === 'TIMESTAMP') {
+    // Date/Time types - all should be wrapped in quotes
+    // MySQL date/time types
+    if (upperType === 'DATE' || upperType === 'TIME' || upperType === 'DATETIME' || 
+        upperType === 'TIMESTAMP' || upperType === 'YEAR') {
         return `'${strValue}'`;
     }
+    
+    // PostgreSQL date/time types
+    if (upperType === 'TIMESTAMP WITHOUT TIME ZONE' || 
+        upperType === 'TIMESTAMP WITH TIME ZONE' ||
+        upperType === 'TIME WITH TIME ZONE' ||
+        upperType === 'INTERVAL') {
+        return `'${strValue}'`;
+    }
+    
+    // SQL Server date/time types
+    if (upperType === 'DATETIME2' || upperType === 'SMALLDATETIME' || 
+        upperType === 'DATETIMEOFFSET') {
+        return `'${strValue}'`;
+    }
+    
+    // SQLite date/time types (DATE, TIME, DATETIME, TIMESTAMP already covered above)
     
     // String types - with quotes (escape single quotes)
     return `'${strValue.replace(/'/g, "''")}'`;

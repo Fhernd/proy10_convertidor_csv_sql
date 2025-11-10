@@ -56,10 +56,68 @@ const emit = defineEmits(['update:tiposColumnas']);
  * @param sgbd {String} - Nombre del SGBD seleccionado.
  */
 const updateDataTypes = (sgbd) => {
-    const mysqlDataTypes = ["INT", "VARCHAR", "TEXT", "DATETIME", "TINYINT", "DECIMAL", "BIGINT", "BOOLEAN"];
-    const postgresDataTypes = ["BIGINT", "BIT", "BOOLEAN", "CHAR", "DATE", "DECIMAL", "DOUBLE PRECISION", "ENUM"];
-    const sqliteDataTypes = ["INT", "INTEGER", "TINYINT", "SMALLINT", "TEXT", "BLOB", "REAL", "BOOLEAN", "DATE"];
-    const mssqlDataTypes = ["BIGINT", "INT", "SMALLINT", "TINYINT", "BIT", "DECIMAL", "MONEY", "FLOAT", "TEXT"];
+    // MySQL data types
+    const mysqlDataTypes = [
+        // Numeric types
+        "INT", "TINYINT", "SMALLINT", "MEDIUMINT", "BIGINT", 
+        "DECIMAL", "FLOAT", "DOUBLE",
+        // String types
+        "VARCHAR", "CHAR", "TEXT", "TINYTEXT", "MEDIUMTEXT", "LONGTEXT",
+        // Date/Time types
+        "DATE", "TIME", "DATETIME", "TIMESTAMP", "YEAR",
+        // Other types
+        "BOOLEAN", "BIT", "BLOB", "JSON"
+    ];
+    
+    // PostgreSQL data types
+    const postgresDataTypes = [
+        // Numeric types
+        "BIGINT", "INTEGER", "SMALLINT", "DECIMAL", "NUMERIC",
+        "REAL", "DOUBLE PRECISION", "MONEY",
+        // String types
+        "CHAR", "VARCHAR", "TEXT",
+        // Date/Time types
+        "DATE", 
+        "TIME", 
+        "TIME WITH TIME ZONE",
+        "TIMESTAMP", 
+        "TIMESTAMP WITHOUT TIME ZONE",
+        "TIMESTAMP WITH TIME ZONE",
+        "INTERVAL",
+        // Other types
+        "BOOLEAN", "BIT", "BIT VARYING", "BYTEA", "JSON", "JSONB", "UUID", "ENUM"
+    ];
+    
+    // SQLite data types
+    const sqliteDataTypes = [
+        // Numeric types
+        "INT", "INTEGER", "TINYINT", "SMALLINT", "MEDIUMINT", "BIGINT",
+        "REAL", "DOUBLE", "FLOAT", "NUMERIC", "DECIMAL",
+        // String types
+        "TEXT", "CHAR", "VARCHAR",
+        // Date/Time types
+        "DATE", "TIME", "DATETIME", "TIMESTAMP",
+        // Other types
+        "BOOLEAN", "BLOB"
+    ];
+    
+    // SQL Server data types
+    const mssqlDataTypes = [
+        // Numeric types
+        "BIGINT", "INT", "SMALLINT", "TINYINT",
+        "DECIMAL", "NUMERIC", "FLOAT", "REAL", "MONEY", "SMALLMONEY",
+        // String types
+        "CHAR", "VARCHAR", "TEXT", "NCHAR", "NVARCHAR", "NTEXT",
+        // Date/Time types
+        "DATE", 
+        "TIME",
+        "DATETIME", 
+        "DATETIME2",
+        "SMALLDATETIME",
+        "DATETIMEOFFSET",
+        // Other types
+        "BIT", "BINARY", "VARBINARY", "IMAGE", "XML", "UNIQUEIDENTIFIER"
+    ];
 
     switch (sgbd) {
         case "mysql":
