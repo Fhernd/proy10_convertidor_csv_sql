@@ -232,25 +232,29 @@ const evaluarContenidoCsv = () => {
       const datosAntesLimite = datosProcesados.length;
       
       // Aplicar "Saltar líneas" primero si está configurado
-      if (paramsOpcionesEntrada.value.lineasOmitidas && paramsOpcionesEntrada.value.lineasOmitidas > 0) {
-        const lineasASaltar = paramsOpcionesEntrada.value.lineasOmitidas;
-        datosProcesados = datosProcesados.slice(lineasASaltar);
+      // Convertir a número para asegurar que funcione correctamente
+      const lineasOmitidasValue = Number(paramsOpcionesEntrada.value.lineasOmitidas) || 0;
+      if (lineasOmitidasValue > 0) {
+        datosProcesados = datosProcesados.slice(lineasOmitidasValue);
         console.log("Saltando líneas:", {
-          lineasOmitidas: lineasASaltar,
+          lineasOmitidas: lineasOmitidasValue,
           datosAntes: datosAntesLimite,
-          datosDespues: datosProcesados.length
+          datosDespues: datosProcesados.length,
+          primerosRegistrosSaltados: datosAntesLimite > 0 ? `Registros 1-${lineasOmitidasValue}` : 'ninguno'
         });
       }
       
       // Aplicar límite de registros (no líneas) si está configurado
-      if (paramsOpcionesEntrada.value.limiteLineas && paramsOpcionesEntrada.value.limiteLineas > 0) {
-        const limiteSolicitado = paramsOpcionesEntrada.value.limiteLineas;
+      // Convertir a número para asegurar que funcione correctamente
+      const limiteLineasValue = Number(paramsOpcionesEntrada.value.limiteLineas) || 0;
+      if (limiteLineasValue > 0) {
         const datosAntesLimiteAplicado = datosProcesados.length;
-        datosProcesados = datosProcesados.slice(0, limiteSolicitado);
+        datosProcesados = datosProcesados.slice(0, limiteLineasValue);
         console.log("Aplicando límite de registros:", {
-          limiteSolicitado: limiteSolicitado,
+          limiteSolicitado: limiteLineasValue,
           datosAntes: datosAntesLimiteAplicado,
-          datosDespues: datosProcesados.length
+          datosDespues: datosProcesados.length,
+          registrosGenerados: datosProcesados.length
         });
       }
       

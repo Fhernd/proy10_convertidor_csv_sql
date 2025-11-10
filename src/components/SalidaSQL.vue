@@ -231,16 +231,36 @@ const generateSQL = (type) => {
             ? `${quoteChar}${tableName}${closeQuoteChar}`
             : tableName;
         
-        // Aplicar límite si está configurado en paramsOpcionesEntrada
+        // Aplicar skip y límite si están configurados en paramsOpcionesEntrada
+        // Nota: Los datos ya deberían venir limitados desde App.vue, pero aplicamos
+        // skip y límite aquí también por seguridad y para manejar cambios dinámicos
         let datosParaGenerar = props.datos;
-        const limiteLineas = props.paramsOpcionesEntrada?.limiteLineas;
         
-        if (limiteLineas && limiteLineas > 0) {
-            datosParaGenerar = props.datos.slice(0, limiteLineas);
+        // Convertir a números para asegurar que funcionen correctamente
+        const lineasOmitidasValue = Number(props.paramsOpcionesEntrada?.lineasOmitidas) || 0;
+        const limiteLineasValue = Number(props.paramsOpcionesEntrada?.limiteLineas) || 0;
+        
+        // Aplicar skip primero si está configurado
+        if (lineasOmitidasValue > 0) {
+            const datosAntesSkip = datosParaGenerar.length;
+            datosParaGenerar = datosParaGenerar.slice(lineasOmitidasValue);
+            console.log('Aplicando skip en generación SQL:', {
+                lineasOmitidas: lineasOmitidasValue,
+                datosAntes: datosAntesSkip,
+                datosDespues: datosParaGenerar.length,
+                primerosRegistrosSaltados: datosAntesSkip > 0 ? `Registros 1-${lineasOmitidasValue}` : 'ninguno'
+            });
+        }
+        
+        // Aplicar límite después del skip si está configurado
+        if (limiteLineasValue > 0) {
+            const datosAntesLimite = datosParaGenerar.length;
+            datosParaGenerar = datosParaGenerar.slice(0, limiteLineasValue);
             console.log('Aplicando límite en generación SQL:', {
-                limiteSolicitado: limiteLineas,
-                datosTotales: props.datos.length,
-                datosLimitados: datosParaGenerar.length
+                limiteSolicitado: limiteLineasValue,
+                datosAntes: datosAntesLimite,
+                datosDespues: datosParaGenerar.length,
+                registrosGenerados: datosParaGenerar.length
             });
         }
         
