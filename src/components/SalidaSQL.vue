@@ -330,6 +330,25 @@ const generateSQL = (type) => {
         const dropTable = props.paramsOpcionesSalidaTabla?.dropTable || false;
         const sgbd = props.paramsOpcionesSGBD?.sgbdSeleccionado?.toLowerCase() || 'mysql';
         
+        // Verificar si se debe usar REPLACE en lugar de INSERT
+        const useReplace = props.paramsOpcionesInsert?.useReplace || false;
+        const additionalPhrase = props.paramsOpcionesInsert?.additionalPhrase || '';
+        
+        // Determinar la palabra clave a usar (INSERT o REPLACE)
+        const insertKeyword = useReplace ? 'REPLACE' : 'INSERT';
+        
+        // Construir la frase adicional si existe
+        const keywordWithPhrase = additionalPhrase.trim() 
+            ? `${insertKeyword} ${additionalPhrase.trim()}` 
+            : insertKeyword;
+        
+        console.log('Configuración de inserción:', {
+            useReplace: useReplace,
+            insertKeyword: insertKeyword,
+            keywordWithPhrase: keywordWithPhrase,
+            additionalPhrase: additionalPhrase
+        });
+        
         // Función para generar definiciones de columnas para CREATE TABLE
         const generateColumnDefinitions = () => {
             const primaryKeyColumns = props.paramsOpcionesSalidaTabla?.primaryKeyColumns || [];
@@ -474,13 +493,14 @@ const generateSQL = (type) => {
                 return null;
             }
             
-            return `INSERT INTO ${formattedTableName} (${columnNames}) VALUES (${values});`;
+            // Usar INSERT o REPLACE según la configuración
+            return `${keywordWithPhrase} INTO ${formattedTableName} (${columnNames}) VALUES (${values});`;
         })
         .filter(stmt => stmt !== null); // Filtrar statements nulos
         
         sqlStatements.push(...insertStatements);
         
-        // Si createView está activado, crear la vista después de los INSERTs
+        // Si createView está activado, crear la vista después de los INSERT/REPLACE statements
         if (createView) {
             // Generar nombre de vista (nombre_tabla_view)
             let viewNameBase = `${tableName}_view`;
