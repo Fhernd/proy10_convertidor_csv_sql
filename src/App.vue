@@ -38,7 +38,7 @@
       <OpcionesSalida :columnas="columnas" :sgbdSeleccionado="paramsOpcionesSGBD.sgbdSeleccionado"
         @update:tiposColumnas="handleTiposColumnasUpdate" />
 
-      <OpcionesSalidaTabla @update:opcionesSalidaTabla="handleOpcionesSalidaTabla" />
+      <OpcionesSalidaTabla :columnas="columnas" @update:opcionesSalidaTabla="handleOpcionesSalidaTabla" />
 
       <OpcionesInsert @update:opcionesInsert="handleOpcionesInsert" />
 

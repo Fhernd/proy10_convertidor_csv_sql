@@ -332,13 +332,22 @@ const generateSQL = (type) => {
         
         // Función para generar definiciones de columnas para CREATE TABLE
         const generateColumnDefinitions = () => {
-            return props.columnas
+            const primaryKeyColumns = props.paramsOpcionesSalidaTabla?.primaryKeyColumns || [];
+            const hasPrimaryKey = primaryKeyColumns.length > 0;
+            
+            // Función auxiliar para formatear nombre de columna
+            const formatColumnName = (col) => {
+                const columnName = props.paramsOpcionesSalidaTabla?.replaceSpaces 
+                    ? col.replace(/\s+/g, '_') 
+                    : col.trim();
+                return columnName.replace(/[`"'\[\];]/g, '');
+            };
+            
+            // Generar definiciones de columnas
+            const columnDefs = props.columnas
                 .filter(col => col && typeof col === 'string' && col.trim().length > 0)
                 .map((col) => {
-                    const columnName = props.paramsOpcionesSalidaTabla?.replaceSpaces 
-                        ? col.replace(/\s+/g, '_') 
-                        : col.trim();
-                    const cleanName = columnName.replace(/[`"'\[\];]/g, '');
+                    const cleanName = formatColumnName(col);
                     const formattedColumnName = `${quoteChar}${cleanName}${closeQuoteChar}`;
                     
                     // Obtener el tipo de dato
@@ -383,28 +392,51 @@ const generateSQL = (type) => {
                         }
                     }
                     
-                    return `${formattedColumnName} ${dataType}`;
-                }).join(',\n    ');
+                    return `    ${formattedColumnName} ${dataType}`;
+                });
+            
+            // Agregar definición de PRIMARY KEY si hay columnas seleccionadas
+            if (hasPrimaryKey) {
+                const pkColumnNames = primaryKeyColumns
+                    .filter(col => props.columnas.includes(col))
+                    .map(col => {
+                        const cleanName = formatColumnName(col);
+                        return `${quoteChar}${cleanName}${closeQuoteChar}`;
+                    })
+                    .join(', ');
+                
+                if (pkColumnNames) {
+                    columnDefs.push(`    PRIMARY KEY (${pkColumnNames})`);
+                }
+            }
+            
+            return columnDefs.join(',\n');
         };
         
         // Construir el SQL completo
         let sqlStatements = [];
         
-        // Si "Eliminar tabla si existe antes de crearla" está activado, generar DROP TABLE y CREATE TABLE
-        if (dropTable) {
-            // 1. Eliminar la tabla si existe
-            sqlStatements.push(`DROP TABLE IF EXISTS ${formattedTableName};`);
+        // Verificar si hay llave primaria seleccionada
+        const primaryKeyColumns = props.paramsOpcionesSalidaTabla?.primaryKeyColumns || [];
+        const hasPrimaryKey = primaryKeyColumns.length > 0;
+        
+        // Si hay llave primaria seleccionada, "Eliminar tabla si existe" está activado, o "Crear vista" está activado,
+        // generar DROP TABLE y CREATE TABLE
+        if (hasPrimaryKey || dropTable || createView) {
+            // 1. Eliminar la tabla si existe (siempre cuando hay llave primaria o dropTable está activado)
+            if (hasPrimaryKey || dropTable) {
+                sqlStatements.push(`DROP TABLE IF EXISTS ${formattedTableName};`);
+            }
             
             // 2. Definir la tabla según el nombre y los tipos de datos de las columnas
             const columnDefinitions = generateColumnDefinitions();
-            sqlStatements.push(`CREATE TABLE ${formattedTableName} (\n    ${columnDefinitions}\n);`);
-            sqlStatements.push(''); // Línea en blanco
-        }
-        
-        // Si createView está activado pero dropTable no, también generar CREATE TABLE
-        if (createView && !dropTable) {
-            const columnDefinitions = generateColumnDefinitions();
-            sqlStatements.push(`CREATE TABLE IF NOT EXISTS ${formattedTableName} (\n    ${columnDefinitions}\n);`);
+            if (hasPrimaryKey || dropTable) {
+                // Si hay llave primaria o dropTable, usar CREATE TABLE (sin IF NOT EXISTS)
+                sqlStatements.push(`CREATE TABLE ${formattedTableName} (\n${columnDefinitions}\n);`);
+            } else if (createView) {
+                // Si solo createView está activado, usar CREATE TABLE IF NOT EXISTS
+                sqlStatements.push(`CREATE TABLE IF NOT EXISTS ${formattedTableName} (\n${columnDefinitions}\n);`);
+            }
             sqlStatements.push(''); // Línea en blanco
         }
         
