@@ -390,16 +390,21 @@ const generateSQL = (type) => {
         // Construir el SQL completo
         let sqlStatements = [];
         
-        // Si createView está activado, generar CREATE TABLE primero
-        if (createView) {
-            // DROP TABLE si está configurado
-            if (dropTable) {
-                sqlStatements.push(`DROP TABLE IF EXISTS ${formattedTableName};`);
-            }
+        // Si "Eliminar tabla si existe antes de crearla" está activado, generar DROP TABLE y CREATE TABLE
+        if (dropTable) {
+            // 1. Eliminar la tabla si existe
+            sqlStatements.push(`DROP TABLE IF EXISTS ${formattedTableName};`);
             
-            // CREATE TABLE
+            // 2. Definir la tabla según el nombre y los tipos de datos de las columnas
             const columnDefinitions = generateColumnDefinitions();
             sqlStatements.push(`CREATE TABLE ${formattedTableName} (\n    ${columnDefinitions}\n);`);
+            sqlStatements.push(''); // Línea en blanco
+        }
+        
+        // Si createView está activado pero dropTable no, también generar CREATE TABLE
+        if (createView && !dropTable) {
+            const columnDefinitions = generateColumnDefinitions();
+            sqlStatements.push(`CREATE TABLE IF NOT EXISTS ${formattedTableName} (\n    ${columnDefinitions}\n);`);
             sqlStatements.push(''); // Línea en blanco
         }
         
