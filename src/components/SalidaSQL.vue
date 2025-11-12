@@ -333,6 +333,8 @@ const generateSQL = (type) => {
         // Verificar si se debe usar REPLACE en lugar de INSERT
         const useReplace = props.paramsOpcionesInsert?.useReplace || false;
         const additionalPhrase = props.paramsOpcionesInsert?.additionalPhrase || '';
+        const enableInsertMultipleClauses = props.paramsOpcionesInsert?.enableInsertMultipleClauses || false;
+        const insertMultipleClauses = Number(props.paramsOpcionesInsert?.insertMultipleClauses) || 0;
         
         // Determinar la palabra clave a usar (INSERT o REPLACE)
         const insertKeyword = useReplace ? 'REPLACE' : 'INSERT';
@@ -346,7 +348,9 @@ const generateSQL = (type) => {
             useReplace: useReplace,
             insertKeyword: insertKeyword,
             keywordWithPhrase: keywordWithPhrase,
-            additionalPhrase: additionalPhrase
+            additionalPhrase: additionalPhrase,
+            enableInsertMultipleClauses: enableInsertMultipleClauses,
+            insertMultipleClauses: insertMultipleClauses
         });
         
         // Función para generar definiciones de columnas para CREATE TABLE
@@ -459,8 +463,9 @@ const generateSQL = (type) => {
             sqlStatements.push(''); // Línea en blanco
         }
         
-        // Generate INSERT statements
-        const insertStatements = datosParaGenerar.map((row, rowIndex) => {
+        // Generate INSERT/REPLACE statements
+        // Función auxiliar para generar los valores de una fila
+        const generateRowValues = (row, rowIndex) => {
             // Validar que row sea un objeto válido
             if (!row || typeof row !== 'object') {
                 console.warn(`Fila ${rowIndex} no es un objeto válido:`, row);
@@ -493,10 +498,47 @@ const generateSQL = (type) => {
                 return null;
             }
             
-            // Usar INSERT o REPLACE según la configuración
-            return `${keywordWithPhrase} INTO ${formattedTableName} (${columnNames}) VALUES (${values});`;
-        })
-        .filter(stmt => stmt !== null); // Filtrar statements nulos
+            return `(${values})`;
+        };
+        
+        // Generar statements según la configuración
+        let insertStatements = [];
+        
+        if (enableInsertMultipleClauses) {
+            // Modo múltiples cláusulas: agrupar valores en una o más sentencias
+            const chunkSize = insertMultipleClauses > 0 ? insertMultipleClauses : datosParaGenerar.length;
+            const validRows = [];
+            
+            // Generar todos los valores primero
+            datosParaGenerar.forEach((row, rowIndex) => {
+                const rowValues = generateRowValues(row, rowIndex);
+                if (rowValues) {
+                    validRows.push(rowValues);
+                }
+            });
+            
+            // Agrupar en chunks según el tamaño especificado
+            for (let i = 0; i < validRows.length; i += chunkSize) {
+                const chunk = validRows.slice(i, i + chunkSize);
+                const valuesClause = chunk.join(',\n    ');
+                const statement = `${keywordWithPhrase} INTO ${formattedTableName} (${columnNames}) VALUES \n    ${valuesClause};`;
+                insertStatements.push(statement);
+            }
+            
+            console.log('Generando INSERT/REPLACE con múltiples cláusulas:', {
+                totalRegistros: validRows.length,
+                chunkSize: chunkSize,
+                totalSentencias: insertStatements.length
+            });
+        } else {
+            // Modo normal: una sentencia por registro
+            datosParaGenerar.forEach((row, rowIndex) => {
+                const rowValues = generateRowValues(row, rowIndex);
+                if (rowValues) {
+                    insertStatements.push(`${keywordWithPhrase} INTO ${formattedTableName} (${columnNames}) VALUES ${rowValues};`);
+                }
+            });
+        }
         
         sqlStatements.push(...insertStatements);
         
