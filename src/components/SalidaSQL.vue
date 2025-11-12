@@ -269,13 +269,32 @@ const generateSQL = (type) => {
                 return true;
             })
             .map((col) => {
-                const columnName = props.paramsOpcionesSalidaTabla?.replaceSpaces 
-                    ? col.replace(/\s+/g, '_') 
-                    : col.trim();
-                // Limpiar el nombre de columna de caracteres peligrosos
+                let columnName = col.trim();
+                
+                // Si replaceSpaces está activado, reemplazar espacios con guiones bajos
+                if (props.paramsOpcionesSalidaTabla?.replaceSpaces) {
+                    columnName = columnName.replace(/\s+/g, '_');
+                }
+                
+                // Eliminar saltos de línea y caracteres de control
+                columnName = columnName.replace(/[\r\n\t]/g, ' ');
+                // Normalizar espacios múltiples a uno solo
+                columnName = columnName.replace(/\s+/g, ' ').trim();
+                
+                // Limpiar el nombre de columna de caracteres peligrosos pero mantener espacios si no se reemplazan
+                // Solo eliminar caracteres que definitivamente causan problemas SQL
                 const cleanName = columnName.replace(/[`"'\[\];]/g, '');
+                
+                // Validar que el nombre no esté vacío después de la limpieza
+                if (!cleanName || cleanName.length === 0) {
+                    console.warn('Nombre de columna vacío después de limpieza:', col);
+                    return null;
+                }
+                
                 return `${quoteChar}${cleanName}${closeQuoteChar}`;
-            }).join(', ');
+            })
+            .filter(name => name !== null)
+            .join(', ');
         
         if (!columnNames || columnNames.length === 0) {
             sqlOutput.value = '-- Error: No se pudieron obtener nombres de columnas válidos.';
@@ -383,9 +402,19 @@ const generateSQL = (type) => {
             
             // Función auxiliar para formatear nombre de columna
             const formatColumnName = (col) => {
-                const columnName = props.paramsOpcionesSalidaTabla?.replaceSpaces 
-                    ? col.replace(/\s+/g, '_') 
-                    : col.trim();
+                let columnName = col.trim();
+                
+                // Si replaceSpaces está activado, reemplazar espacios con guiones bajos
+                if (props.paramsOpcionesSalidaTabla?.replaceSpaces) {
+                    columnName = columnName.replace(/\s+/g, '_');
+                }
+                
+                // Eliminar saltos de línea y caracteres de control
+                columnName = columnName.replace(/[\r\n\t]/g, ' ');
+                // Normalizar espacios múltiples a uno solo
+                columnName = columnName.replace(/\s+/g, ' ').trim();
+                
+                // Limpiar el nombre de columna de caracteres peligrosos
                 return columnName.replace(/[`"'\[\];]/g, '');
             };
             

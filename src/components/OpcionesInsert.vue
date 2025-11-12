@@ -19,29 +19,23 @@
 
             <div>
                 <label class="block text-gray-700 mb-1">Agregar frase después de las palabras clave INSERT/REPLACE</label>
-                <input 
+                <select 
                     v-model="additionalPhrase" 
-                    type="text"
-                    :class="[
-                        'mt-1 block w-full p-2 border rounded focus:ring focus:ring-blue-200',
-                        isValidPhrase ? 'border-gray-300' : 'border-red-500'
-                    ]"
-                    :placeholder="placeholderText"
-                    @input="validatePhrase">
-                <div v-if="!isValidPhrase && additionalPhrase.trim()" class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-800">
-                    ⚠️ La frase ingresada no es válida{{ useReplace ? ' con REPLACE' : '' }} para {{ sgbdName }}. 
-                    <span v-if="suggestedPhrases.length > 0">
-                        Frases válidas: <strong>{{ suggestedPhrases.join(', ') }}</strong>
-                    </span>
-                    <span v-else-if="useReplace">
-                        REPLACE no soporta modificadores adicionales.
-                    </span>
+                    :disabled="useReplace || validPhrases.length === 0"
+                    class="mt-1 block w-full p-2 border border-gray-300 rounded focus:ring focus:ring-blue-200 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                    <option value="">(Ninguna)</option>
+                    <option v-for="phrase in validPhrases" :key="phrase" :value="phrase">
+                        {{ phrase }}
+                    </option>
+                </select>
+                <div v-if="useReplace" class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+                    ⚠️ REPLACE no soporta modificadores adicionales.
                 </div>
-                <div v-if="isValidPhrase && additionalPhrase.trim()" class="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-800">
-                    ✓ Frase válida para {{ sgbdName }}
+                <div v-else-if="validPhrases.length === 0" class="mt-2 p-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-600">
+                    ℹ️ No hay modificadores disponibles para {{ sgbdName }}.
                 </div>
-                <div v-if="validPhrases.length > 0" class="mt-2 text-xs text-gray-600">
-                    <strong>Frases válidas para {{ sgbdName }}:</strong> {{ validPhrases.join(', ') }}
+                <div v-else-if="additionalPhrase" class="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-800">
+                    ✓ Modificador seleccionado: <strong>{{ additionalPhrase }}</strong>
                 </div>
             </div>
         </div>
@@ -70,7 +64,6 @@ const useReplace = ref(false);
 const enableInsertMultipleClauses = ref(false);
 const insertMultipleClauses = ref('');
 const additionalPhrase = ref('');
-const isValidPhrase = ref(true);
 
 const emit = defineEmits('update:opcionesInsert');
 
@@ -92,69 +85,26 @@ const sgbdName = computed(() => {
     return names[sgbd] || 'MySQL';
 });
 
-// Computed para el placeholder
-const placeholderText = computed(() => {
-    if (validPhrases.value.length === 0) {
-        return `No hay modificadores disponibles para ${sgbdName.value}`;
-    }
-    return `Ejemplo: ${validPhrases.value[0]}`;
-});
-
-// Función para validar la frase
-const validatePhrase = () => {
-    const phrase = additionalPhrase.value.trim().toUpperCase();
-    
-    if (!phrase) {
-        isValidPhrase.value = true;
-        return;
-    }
-    
-    // Verificar si la frase está en la lista de válidas
-    let isValid = validPhrases.value.includes(phrase);
-    
-    // Si se usa REPLACE, algunas frases no son válidas
-    // REPLACE no soporta IGNORE, LOW_PRIORITY, HIGH_PRIORITY, DELAYED
-    if (useReplace.value && phrase) {
-        const invalidForReplace = ['IGNORE', 'LOW_PRIORITY', 'HIGH_PRIORITY', 'DELAYED'];
-        if (invalidForReplace.includes(phrase)) {
-            isValid = false;
-        }
-    }
-    
-    isValidPhrase.value = isValid;
-};
-
-// Computed para sugerencias
-const suggestedPhrases = computed(() => {
-    if (isValidPhrase.value || !additionalPhrase.value.trim()) {
-        return [];
-    }
-    
-    const phrase = additionalPhrase.value.trim().toUpperCase();
-    // Buscar frases similares
-    return validPhrases.value.filter(p => 
-        p.includes(phrase) || phrase.includes(p)
-    );
-});
-
+// Watch para emitir cambios y limpiar additionalPhrase cuando se usa REPLACE
 watch([useReplace, enableInsertMultipleClauses, insertMultipleClauses, additionalPhrase], () => {
-    validatePhrase();
+    // Si se activa REPLACE, limpiar la frase adicional ya que REPLACE no la soporta
+    if (useReplace.value && additionalPhrase.value) {
+        additionalPhrase.value = '';
+    }
+    
     emit('update:opcionesInsert', {
         useReplace: useReplace.value,
         enableInsertMultipleClauses: enableInsertMultipleClauses.value,
         insertMultipleClauses: insertMultipleClauses.value,
-        additionalPhrase: isValidPhrase.value ? additionalPhrase.value : '',
+        additionalPhrase: useReplace.value ? '' : additionalPhrase.value,
     });
 });
 
-// Revalidar cuando cambia useReplace
-watch(useReplace, () => {
-    validatePhrase();
-});
-
-// Validar cuando cambia el SGBD
-watch(() => props.sgbdSeleccionado, () => {
-    validatePhrase();
+// Limpiar additionalPhrase cuando se activa REPLACE
+watch(useReplace, (newValue) => {
+    if (newValue && additionalPhrase.value) {
+        additionalPhrase.value = '';
+    }
 });
 </script>
 
