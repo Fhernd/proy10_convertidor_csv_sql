@@ -102,9 +102,9 @@ const formatValueByType = (value, dataType, forceVarchar = false) => {
 
     const strValue = String(value).trim();
     
-    // Si forceVarchar es true, tratar todo como VARCHAR (con comillas)
+    // Si forceVarchar es true, tratar todo como VARCHAR (con comillas dobles)
     if (forceVarchar) {
-        return `'${strValue.replace(/'/g, "''")}'`;
+        return `"${strValue.replace(/"/g, '""')}"`;
     }
 
     const upperType = (dataType || '').toUpperCase();
@@ -153,11 +153,11 @@ const formatValueByType = (value, dataType, forceVarchar = false) => {
         return isNaN(num) ? 'NULL' : num.toString();
     }
     
-    // Date/Time types - all should be wrapped in quotes
+    // Date/Time types - all should be wrapped in double quotes
     // MySQL date/time types
     if (upperType === 'DATE' || upperType === 'TIME' || upperType === 'DATETIME' || 
         upperType === 'TIMESTAMP' || upperType === 'YEAR') {
-        return `'${strValue}'`;
+        return `"${strValue}"`;
     }
     
     // PostgreSQL date/time types
@@ -165,19 +165,19 @@ const formatValueByType = (value, dataType, forceVarchar = false) => {
         upperType === 'TIMESTAMP WITH TIME ZONE' ||
         upperType === 'TIME WITH TIME ZONE' ||
         upperType === 'INTERVAL') {
-        return `'${strValue}'`;
+        return `"${strValue}"`;
     }
     
     // SQL Server date/time types
     if (upperType === 'DATETIME2' || upperType === 'SMALLDATETIME' || 
         upperType === 'DATETIMEOFFSET') {
-        return `'${strValue}'`;
+        return `"${strValue}"`;
     }
     
     // SQLite date/time types (DATE, TIME, DATETIME, TIMESTAMP already covered above)
     
-    // String types - with quotes (escape single quotes)
-    return `'${strValue.replace(/'/g, "''")}'`;
+    // String types - with double quotes (escape double quotes by doubling them)
+    return `"${strValue.replace(/"/g, '""')}"`;
 };
 
 // Function to get the appropriate quote character for identifiers based on SGBD
