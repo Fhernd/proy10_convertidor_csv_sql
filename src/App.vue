@@ -40,7 +40,7 @@
 
       <OpcionesSalidaTabla :columnas="columnas" @update:opcionesSalidaTabla="handleOpcionesSalidaTabla" />
 
-      <OpcionesInsert @update:opcionesInsert="handleOpcionesInsert" />
+      <OpcionesInsert :sgbdSeleccionado="paramsOpcionesSGBD.sgbdSeleccionado" @update:opcionesInsert="handleOpcionesInsert" />
 
       <OpcionesFormato @update:opcionesFormato="handleOpcionesFormato" />
 

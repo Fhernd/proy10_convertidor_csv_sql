@@ -332,16 +332,39 @@ const generateSQL = (type) => {
         
         // Verificar si se debe usar REPLACE en lugar de INSERT
         const useReplace = props.paramsOpcionesInsert?.useReplace || false;
-        const additionalPhrase = props.paramsOpcionesInsert?.additionalPhrase || '';
+        let additionalPhrase = props.paramsOpcionesInsert?.additionalPhrase || '';
         const enableInsertMultipleClauses = props.paramsOpcionesInsert?.enableInsertMultipleClauses || false;
         const insertMultipleClauses = Number(props.paramsOpcionesInsert?.insertMultipleClauses) || 0;
+        
+        // Validar frase adicional según el SGBD
+        const validPhrasesBySGBD = {
+            mysql: ['IGNORE', 'LOW_PRIORITY', 'HIGH_PRIORITY', 'DELAYED'],
+            postgresql: [],
+            sqlite: [],
+            sqlserver: []
+        };
+        
+        const validPhrases = validPhrasesBySGBD[sgbd] || [];
+        const phraseUpper = additionalPhrase.trim().toUpperCase();
+        
+        // Si se usa REPLACE, no se permiten modificadores adicionales
+        if (useReplace && additionalPhrase.trim()) {
+            console.warn(`REPLACE no soporta modificadores adicionales. Se omitirá "${additionalPhrase}".`);
+            additionalPhrase = '';
+        }
+        
+        // Si la frase no es válida para el SGBD, limpiarla
+        if (additionalPhrase.trim() && !validPhrases.includes(phraseUpper)) {
+            console.warn(`Frase adicional "${additionalPhrase}" no es válida para ${sgbd}. Se omitirá.`);
+            additionalPhrase = '';
+        }
         
         // Determinar la palabra clave a usar (INSERT o REPLACE)
         const insertKeyword = useReplace ? 'REPLACE' : 'INSERT';
         
-        // Construir la frase adicional si existe
-        const keywordWithPhrase = additionalPhrase.trim() 
-            ? `${insertKeyword} ${additionalPhrase.trim()}` 
+        // Construir la frase adicional si existe y es válida (solo para INSERT)
+        const keywordWithPhrase = (!useReplace && additionalPhrase.trim()) 
+            ? `${insertKeyword} ${additionalPhrase.trim().toUpperCase()}` 
             : insertKeyword;
         
         console.log('Configuración de inserción:', {
