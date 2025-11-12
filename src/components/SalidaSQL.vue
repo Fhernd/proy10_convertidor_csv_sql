@@ -196,11 +196,6 @@ const formatValueByType = (value, dataType, forceVarchar = false, useSingleQuote
 
 // Function to get the appropriate quote character for identifiers based on SGBD
 const getIdentifierQuote = () => {
-    // If useBackticks option is enabled, use backticks
-    if (props.paramsOpcionesFormato?.useBackticks) {
-        return '`';
-    }
-    
     // Determine quote based on SGBD
     const sgbd = props.paramsOpcionesSGBD?.sgbdSeleccionado?.toLowerCase() || 'mysql';
     
@@ -224,7 +219,7 @@ const getIdentifierQuote = () => {
 // Function to get the closing quote character (for SQL Server brackets)
 const getIdentifierCloseQuote = () => {
     const sgbd = props.paramsOpcionesSGBD?.sgbdSeleccionado?.toLowerCase() || 'mysql';
-    if (sgbd === 'sqlserver' && !props.paramsOpcionesFormato?.useBackticks) {
+    if (sgbd === 'sqlserver') {
         return ']';
     }
     return getIdentifierQuote();

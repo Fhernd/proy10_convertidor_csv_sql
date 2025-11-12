@@ -115,7 +115,6 @@ const paramsOpcionesFormato = ref({
   formatDates: "",
   replaceNulls: false,
   useSingleQuotes: false,
-  useBackticks: false,
 });
 
 const paramsOpcionesSalida = ref({

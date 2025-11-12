@@ -40,12 +40,6 @@
                     class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
                 Utilizar comillas simples para las cadenas de caracteres
             </label>
-
-            <label class="flex items-center">
-                <input v-model="useBackticks" type="checkbox"
-                    class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
-                Nombres de tablas y columnas con carácter ` (backtick)
-            </label>
         </div>
     </div>
 </template>
@@ -57,7 +51,6 @@ const selectedDateFormat = ref('');
 const customDateFormat = ref('');
 const replaceNulls = ref(false);
 const useSingleQuotes = ref(false);
-const useBackticks = ref(false);
 
 const emit = defineEmits('update:opcionesFormato');
 
@@ -69,12 +62,11 @@ const formatDates = computed(() => {
     return selectedDateFormat.value || '';
 });
 
-watch([selectedDateFormat, customDateFormat, replaceNulls, useSingleQuotes, useBackticks], () => {
+watch([selectedDateFormat, customDateFormat, replaceNulls, useSingleQuotes], () => {
     emit('update:opcionesFormato', {
         formatDates: formatDates.value,
         replaceNulls: replaceNulls.value,
         useSingleQuotes: useSingleQuotes.value,
-        useBackticks: useBackticks.value,
     });
 });
 
