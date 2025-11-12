@@ -95,16 +95,30 @@ const fileName = ref('query.sql');
 const eolType = ref('\n');
 
 // Function to format value based on SQL data type
-const formatValueByType = (value, dataType, forceVarchar = false) => {
+const formatValueByType = (value, dataType, forceVarchar = false, useSingleQuotes = false) => {
     if (value === null || value === undefined || value === '') {
         return 'NULL';
     }
 
     const strValue = String(value).trim();
     
-    // Si forceVarchar es true, tratar todo como VARCHAR (con comillas dobles)
+    // Determinar qué tipo de comillas usar
+    const quoteChar = useSingleQuotes ? "'" : '"';
+    
+    // Función auxiliar para escapar comillas según el tipo
+    const escapeQuotes = (str) => {
+        if (useSingleQuotes) {
+            // Escapar comillas simples duplicándolas
+            return str.replace(/'/g, "''");
+        } else {
+            // Escapar comillas dobles duplicándolas
+            return str.replace(/"/g, '""');
+        }
+    };
+    
+    // Si forceVarchar es true, tratar todo como VARCHAR
     if (forceVarchar) {
-        return `"${strValue.replace(/"/g, '""')}"`;
+        return `${quoteChar}${escapeQuotes(strValue)}${quoteChar}`;
     }
 
     const upperType = (dataType || '').toUpperCase();
@@ -153,11 +167,11 @@ const formatValueByType = (value, dataType, forceVarchar = false) => {
         return isNaN(num) ? 'NULL' : num.toString();
     }
     
-    // Date/Time types - all should be wrapped in double quotes
+    // Date/Time types - wrapped in quotes (single or double based on option)
     // MySQL date/time types
     if (upperType === 'DATE' || upperType === 'TIME' || upperType === 'DATETIME' || 
         upperType === 'TIMESTAMP' || upperType === 'YEAR') {
-        return `"${strValue}"`;
+        return `${quoteChar}${escapeQuotes(strValue)}${quoteChar}`;
     }
     
     // PostgreSQL date/time types
@@ -165,19 +179,19 @@ const formatValueByType = (value, dataType, forceVarchar = false) => {
         upperType === 'TIMESTAMP WITH TIME ZONE' ||
         upperType === 'TIME WITH TIME ZONE' ||
         upperType === 'INTERVAL') {
-        return `"${strValue}"`;
+        return `${quoteChar}${escapeQuotes(strValue)}${quoteChar}`;
     }
     
     // SQL Server date/time types
     if (upperType === 'DATETIME2' || upperType === 'SMALLDATETIME' || 
         upperType === 'DATETIMEOFFSET') {
-        return `"${strValue}"`;
+        return `${quoteChar}${escapeQuotes(strValue)}${quoteChar}`;
     }
     
     // SQLite date/time types (DATE, TIME, DATETIME, TIMESTAMP already covered above)
     
-    // String types - with double quotes (escape double quotes by doubling them)
-    return `"${strValue.replace(/"/g, '""')}"`;
+    // String types - with quotes (single or double based on option)
+    return `${quoteChar}${escapeQuotes(strValue)}${quoteChar}`;
 };
 
 // Function to get the appropriate quote character for identifiers based on SGBD
@@ -516,6 +530,9 @@ const generateSQL = (type) => {
         }
         
         // Generate INSERT/REPLACE statements
+        // Obtener la opción de comillas simples una sola vez
+        const useSingleQuotes = props.paramsOpcionesFormato?.useSingleQuotes || false;
+        
         // Función auxiliar para generar los valores de una fila
         const generateRowValues = (row, rowIndex) => {
             // Validar que row sea un objeto válido
@@ -542,7 +559,7 @@ const generateSQL = (type) => {
                     
                     // Si allVarchar está activado, usar 'VARCHAR' como tipo, sino usar el tipo seleccionado
                     const dataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[col] || 'VARCHAR');
-                    return formatValueByType(value, dataType, allVarchar);
+                    return formatValueByType(value, dataType, allVarchar, useSingleQuotes);
                 }).join(', ');
             
             if (!values || values.length === 0) {
