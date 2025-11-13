@@ -6,13 +6,27 @@
           <template #default="{ activeTab }">
             <Tab label="Ingreso datos">
               <div class="tab-content p-4 bg-white shadow rounded-md">
-                <textarea class="w-full h-48 p-2 border border-gray-300 rounded" placeholder="Escribe aquí..."
-                  v-model="contenidoCsv"></textarea>
+                <textarea 
+                  class="w-full h-48 p-2 border border-gray-300 rounded" 
+                  placeholder="Escribe aquí..."
+                  v-model="contenidoCsv"
+                  @input="limpiarEstadoArchivo"></textarea>
               </div>
             </Tab>
             <Tab label="Subir archivo">
               <div class="tab-content p-4 bg-white shadow rounded-md">
-                <input type="file" accept=".csv" class="mt-4 p-2 border border-gray-300 rounded cursor-pointer" />
+                <input 
+                  type="file" 
+                  ref="fileInput"
+                  accept=".csv,.CSV"
+                  @change="handleFileSelect"
+                  class="mt-4 p-2 border border-gray-300 rounded cursor-pointer w-full" />
+                <p v-if="archivoSeleccionado" class="mt-2 text-sm text-gray-600">
+                  Archivo seleccionado: <strong>{{ archivoSeleccionado.name }}</strong>
+                </p>
+                <p v-if="errorArchivo" class="mt-2 text-sm text-red-600">
+                  ⚠️ {{ errorArchivo }}
+                </p>
               </div>
             </Tab>
             <Tab label="URL">
@@ -78,6 +92,9 @@ const delimitador = ref("auto");
 const contenidoCsv = ref("");
 const columnas = ref([]);
 const datos = ref([]);
+const fileInput = ref(null);
+const archivoSeleccionado = ref(null);
+const errorArchivo = ref("");
 
 const paramsOpcionesEntrada = ref({
   primeraFilaEncabezados: true, // Por defecto asumimos que hay encabezados
@@ -123,11 +140,124 @@ const paramsOpcionesSalida = ref({
 
 const tiposColumnasSeleccionados = ref({});
 
-const evaluarContenidoCsv = () => {
-  if (!contenidoCsv.value || contenidoCsv.value.trim().length === 0) {
-    console.warn("No hay contenido CSV para evaluar");
+// Función para limpiar el estado del archivo cuando se edita manualmente
+const limpiarEstadoArchivo = () => {
+  if (archivoSeleccionado.value) {
+    archivoSeleccionado.value = null;
+    if (fileInput.value) {
+      fileInput.value.value = '';
+    }
+  }
+  errorArchivo.value = "";
+};
+
+// Función para validar y leer archivo CSV
+const handleFileSelect = (event) => {
+  errorArchivo.value = "";
+  archivoSeleccionado.value = null;
+  
+  const file = event.target.files?.[0];
+  
+  if (!file) {
     return;
   }
+  
+  // Validar extensión del archivo (.csv o .CSV)
+  const fileName = file.name.toLowerCase();
+  if (!fileName.endsWith('.csv')) {
+    errorArchivo.value = "El archivo debe tener extensión .csv o .CSV";
+    if (fileInput.value) {
+      fileInput.value.value = '';
+    }
+    return;
+  }
+  
+  // Validar tipo MIME (texto plano)
+  const validMimeTypes = [
+    'text/csv',
+    'text/plain',
+    'application/csv',
+    'text/comma-separated-values',
+    'application/vnd.ms-excel' // Excel también puede generar CSV
+  ];
+  
+  // Algunos navegadores pueden no reportar el tipo MIME correctamente,
+  // así que solo validamos si está presente y no es válido
+  if (file.type && file.type.length > 0 && !validMimeTypes.includes(file.type)) {
+    // Verificar si el tipo contiene algo sospechoso
+    if (!file.type.includes('text') && !file.type.includes('csv') && !file.type.includes('plain')) {
+      errorArchivo.value = "El archivo debe ser de tipo texto plano (CSV)";
+      if (fileInput.value) {
+        fileInput.value.value = '';
+      }
+      return;
+    }
+  }
+  
+  // Leer el contenido del archivo
+  const reader = new FileReader();
+  
+  reader.onload = (e) => {
+    try {
+      const contenido = e.target.result;
+      
+      // Validar que el contenido sea texto (no binario)
+      if (typeof contenido !== 'string') {
+        errorArchivo.value = "No se pudo leer el archivo como texto plano";
+        if (fileInput.value) {
+          fileInput.value.value = '';
+        }
+        return;
+      }
+      
+      // Asignar el contenido y marcar el archivo como seleccionado
+      contenidoCsv.value = contenido;
+      archivoSeleccionado.value = file;
+      
+      console.log("Archivo CSV cargado exitosamente:", {
+        nombre: file.name,
+        tamaño: file.size,
+        tipo: file.type,
+        contenidoLength: contenido.length
+      });
+      
+      // Opcionalmente, evaluar automáticamente el contenido
+      // evaluarContenidoCsv();
+    } catch (error) {
+      console.error("Error al leer el archivo:", error);
+      errorArchivo.value = "Error al leer el archivo: " + error.message;
+      if (fileInput.value) {
+        fileInput.value.value = '';
+      }
+    }
+  };
+  
+  reader.onerror = () => {
+    errorArchivo.value = "Error al leer el archivo";
+    if (fileInput.value) {
+      fileInput.value.value = '';
+    }
+  };
+  
+  // Leer como texto
+  reader.readAsText(file, 'UTF-8');
+};
+
+const evaluarContenidoCsv = () => {
+  // Si hay un archivo seleccionado pero no hay contenido, intentar leerlo de nuevo
+  if (archivoSeleccionado.value && (!contenidoCsv.value || contenidoCsv.value.trim().length === 0)) {
+    handleFileSelect({ target: { files: [archivoSeleccionado.value] } });
+    return;
+  }
+  
+  if (!contenidoCsv.value || contenidoCsv.value.trim().length === 0) {
+    console.warn("No hay contenido CSV para evaluar");
+    errorArchivo.value = "No hay contenido CSV para evaluar. Por favor, selecciona un archivo o ingresa datos.";
+    return;
+  }
+  
+  // Limpiar error si hay contenido
+  errorArchivo.value = "";
 
   // Obtener el delimitador real (detectar si es "auto" o usar el seleccionado)
   const delimitadorSeleccionado = paramsOpcionesEntrada.value.delimitador || delimitador.value;
