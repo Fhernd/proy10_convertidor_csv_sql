@@ -15,18 +15,39 @@
             </Tab>
             <Tab label="Subir archivo">
               <div class="tab-content p-4 bg-white shadow rounded-md">
-                <input 
-                  type="file" 
-                  ref="fileInput"
-                  accept=".csv,.CSV"
-                  @change="handleFileSelect"
-                  class="mt-4 p-2 border border-gray-300 rounded cursor-pointer w-full" />
-                <p v-if="archivoSeleccionado" class="mt-2 text-sm text-gray-600">
-                  Archivo seleccionado: <strong>{{ archivoSeleccionado.name }}</strong>
-                </p>
-                <p v-if="errorArchivo" class="mt-2 text-sm text-red-600">
-                  ⚠️ {{ errorArchivo }}
-                </p>
+                <div class="mb-4">
+                  <label class="block text-gray-700 font-semibold mb-2">Seleccionar archivo CSV</label>
+                  <input 
+                    type="file" 
+                    ref="fileInput"
+                    accept=".csv,.CSV"
+                    @change="handleFileSelect"
+                    class="p-2 border border-gray-300 rounded cursor-pointer w-full" />
+                  <p v-if="archivoSeleccionado" class="mt-2 text-sm text-gray-600">
+                    ✓ Archivo seleccionado: <strong>{{ archivoSeleccionado.name }}</strong>
+                    <span class="text-gray-500"> ({{ formatFileSize(archivoSeleccionado.size) }})</span>
+                  </p>
+                  <p v-if="errorArchivo" class="mt-2 text-sm text-red-600">
+                    ⚠️ {{ errorArchivo }}
+                  </p>
+                </div>
+                
+                <div v-if="contenidoCsv || archivoSeleccionado" class="mt-4">
+                  <label class="block text-gray-700 font-semibold mb-2">
+                    Contenido del archivo
+                    <span v-if="archivoSeleccionado" class="text-sm font-normal text-gray-500">
+                      (puedes editar el contenido si es necesario)
+                    </span>
+                  </label>
+                  <textarea 
+                    v-model="contenidoCsv"
+                    class="w-full h-64 p-3 border border-gray-300 rounded font-mono text-sm focus:ring focus:ring-blue-200 focus:outline-none"
+                    placeholder="El contenido del archivo CSV aparecerá aquí después de seleccionarlo..."
+                    @input="limpiarEstadoArchivo"></textarea>
+                  <p v-if="contenidoCsv" class="mt-2 text-xs text-gray-500">
+                    {{ contenidoCsv.split('\n').length }} líneas • {{ contenidoCsv.length }} caracteres
+                  </p>
+                </div>
               </div>
             </Tab>
             <Tab label="URL">
@@ -140,13 +161,22 @@ const paramsOpcionesSalida = ref({
 
 const tiposColumnasSeleccionados = ref({});
 
+// Función para formatear el tamaño del archivo
+const formatFileSize = (bytes) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+};
+
 // Función para limpiar el estado del archivo cuando se edita manualmente
 const limpiarEstadoArchivo = () => {
-  if (archivoSeleccionado.value) {
-    archivoSeleccionado.value = null;
-    if (fileInput.value) {
-      fileInput.value.value = '';
-    }
+  // Solo limpiar el estado del archivo si el contenido fue modificado significativamente
+  // (más de solo espacios en blanco)
+  if (archivoSeleccionado.value && contenidoCsv.value.trim().length > 0) {
+    // No limpiar automáticamente, permitir edición
+    // El usuario puede seguir editando el contenido del archivo cargado
   }
   errorArchivo.value = "";
 };
