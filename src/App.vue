@@ -2,7 +2,31 @@
   <div class="min-h-screen bg-gray-50 text-gray-800">
     <header class="sticky top-0 z-10 bg-white shadow-md">
       <div class="container mx-auto max-w-screen-lg px-4 py-2">
-        <Tabs>
+        <!-- Botón para colapsar/expandir sección de entrada -->
+        <div class="flex items-center justify-between mb-2">
+          <h2 class="text-lg font-bold text-gray-700">Entrada de Datos CSV</h2>
+          <button
+            @click="toggleEntradaDatos"
+            class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            :aria-expanded="entradaDatosExpandida"
+            :aria-label="entradaDatosExpandida ? 'Colapsar sección de entrada' : 'Expandir sección de entrada'">
+            <span>{{ entradaDatosExpandida ? 'Ocultar' : 'Mostrar' }}</span>
+            <svg 
+              class="w-5 h-5 transition-transform duration-300"
+              :class="{ 'rotate-180': !entradaDatosExpandida }"
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Sección colapsable de entrada de datos -->
+        <div 
+          class="overflow-hidden transition-all duration-300 ease-in-out"
+          :class="entradaDatosExpandida ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'">
+          <Tabs>
           <template #default="{ activeTab }">
             <Tab label="Ingreso datos">
               <div class="tab-content p-4 bg-white shadow rounded-md">
@@ -97,11 +121,41 @@
               </div>
             </Tab>
           </template>
-        </Tabs>
-        <button
-          class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none mt-4"
-          @click="evaluarContenidoCsv">Evaluar
-          contenido CSV</button>
+          </Tabs>
+          <button
+            class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none mt-4 transition-colors duration-200"
+            @click="evaluarContenidoCsv">Evaluar
+            contenido CSV</button>
+        </div>
+        
+        <!-- Indicador cuando está colapsado -->
+        <div 
+          v-if="!entradaDatosExpandida && contenidoCsv"
+          class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md shadow-sm">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 flex-1 min-w-0">
+              <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div class="flex-1 min-w-0">
+                <span class="text-sm text-blue-800 font-medium block truncate">
+                  CSV cargado: {{ contenidoCsv.split('\n').length }} líneas • {{ contenidoCsv.length.toLocaleString() }} caracteres
+                </span>
+                <span v-if="archivoSeleccionado" class="text-xs text-blue-600 block truncate">
+                  Archivo: {{ archivoSeleccionado.name }}
+                </span>
+                <span v-if="urlCsv && !archivoSeleccionado" class="text-xs text-blue-600 block truncate">
+                  URL: {{ urlCsv }}
+                </span>
+              </div>
+            </div>
+            <button
+              @click="toggleEntradaDatos"
+              class="ml-3 flex-shrink-0 text-sm text-blue-600 hover:text-blue-800 font-medium underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1">
+              Ver contenido
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -160,6 +214,7 @@ const urlInput = ref(null);
 const urlCsv = ref("");
 const cargandoUrl = ref(false);
 const errorUrl = ref("");
+const entradaDatosExpandida = ref(true); // Por defecto expandida
 
 const paramsOpcionesEntrada = ref({
   primeraFilaEncabezados: true, // Por defecto asumimos que hay encabezados
@@ -204,6 +259,11 @@ const paramsOpcionesSalida = ref({
 });
 
 const tiposColumnasSeleccionados = ref({});
+
+// Función para alternar el estado de colapsado/expandido de la sección de entrada
+const toggleEntradaDatos = () => {
+  entradaDatosExpandida.value = !entradaDatosExpandida.value;
+};
 
 // Función para formatear el tamaño del archivo
 const formatFileSize = (bytes) => {
@@ -304,6 +364,10 @@ const cargarCsvDesdeUrl = async () => {
       }
     }
     
+    // Opcionalmente colapsar la sección después de cargar (mejora UX)
+    // Descomentar la siguiente línea si quieres que se colapse automáticamente
+    // entradaDatosExpandida.value = false;
+    
     console.log("CSV cargado desde URL exitosamente:", {
       url: urlCsv.value,
       tamaño: contenido.length,
@@ -391,6 +455,10 @@ const handleFileSelect = (event) => {
       // Asignar el contenido y marcar el archivo como seleccionado
       contenidoCsv.value = contenido;
       archivoSeleccionado.value = file;
+      
+      // Opcionalmente colapsar la sección después de cargar (mejora UX)
+      // Descomentar la siguiente línea si quieres que se colapse automáticamente
+      // entradaDatosExpandida.value = false;
       
       console.log("Archivo CSV cargado exitosamente:", {
         nombre: file.name,
