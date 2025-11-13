@@ -52,8 +52,48 @@
             </Tab>
             <Tab label="URL">
               <div class="tab-content p-4 bg-white shadow rounded-md">
-                <input type="url" class="w-full mt-4 p-2 border border-gray-300 rounded"
-                  placeholder="Ingresa una URL válida" />
+                <div class="mb-4">
+                  <label class="block text-gray-700 font-semibold mb-2">Ingresar URL del archivo CSV</label>
+                  <div class="flex gap-2">
+                    <input 
+                      type="url" 
+                      ref="urlInput"
+                      v-model="urlCsv"
+                      @keyup.enter="cargarCsvDesdeUrl"
+                      class="flex-1 p-2 border border-gray-300 rounded focus:ring focus:ring-blue-200 focus:outline-none"
+                      placeholder="https://ejemplo.com/archivo.csv" />
+                    <button
+                      @click="cargarCsvDesdeUrl"
+                      :disabled="cargandoUrl"
+                      class="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed">
+                      <span v-if="!cargandoUrl">Cargar</span>
+                      <span v-else>Cargando...</span>
+                    </button>
+                  </div>
+                  <p v-if="urlCsv && !errorUrl" class="mt-2 text-sm text-gray-600">
+                    URL: <strong class="break-all">{{ urlCsv }}</strong>
+                  </p>
+                  <p v-if="errorUrl" class="mt-2 text-sm text-red-600">
+                    ⚠️ {{ errorUrl }}
+                  </p>
+                </div>
+                
+                <div v-if="contenidoCsv || urlCsv" class="mt-4">
+                  <label class="block text-gray-700 font-semibold mb-2">
+                    Contenido del archivo CSV
+                    <span v-if="urlCsv" class="text-sm font-normal text-gray-500">
+                      (puedes editar el contenido si es necesario)
+                    </span>
+                  </label>
+                  <textarea 
+                    v-model="contenidoCsv"
+                    class="w-full h-64 p-3 border border-gray-300 rounded font-mono text-sm focus:ring focus:ring-blue-200 focus:outline-none"
+                    placeholder="El contenido del archivo CSV aparecerá aquí después de cargarlo desde la URL..."
+                    @input="limpiarEstadoUrl"></textarea>
+                  <p v-if="contenidoCsv" class="mt-2 text-xs text-gray-500">
+                    {{ contenidoCsv.split('\n').length }} líneas • {{ contenidoCsv.length }} caracteres
+                  </p>
+                </div>
               </div>
             </Tab>
           </template>
@@ -116,6 +156,10 @@ const datos = ref([]);
 const fileInput = ref(null);
 const archivoSeleccionado = ref(null);
 const errorArchivo = ref("");
+const urlInput = ref(null);
+const urlCsv = ref("");
+const cargandoUrl = ref(false);
+const errorUrl = ref("");
 
 const paramsOpcionesEntrada = ref({
   primeraFilaEncabezados: true, // Por defecto asumimos que hay encabezados
@@ -179,6 +223,110 @@ const limpiarEstadoArchivo = () => {
     // El usuario puede seguir editando el contenido del archivo cargado
   }
   errorArchivo.value = "";
+};
+
+// Función para limpiar el estado de la URL cuando se edita manualmente
+const limpiarEstadoUrl = () => {
+  errorUrl.value = "";
+};
+
+// Función para cargar CSV desde una URL
+const cargarCsvDesdeUrl = async () => {
+  errorUrl.value = "";
+  cargandoUrl.value = true;
+  
+  // Validar que la URL no esté vacía
+  if (!urlCsv.value || urlCsv.value.trim().length === 0) {
+    errorUrl.value = "Por favor, ingresa una URL válida";
+    cargandoUrl.value = false;
+    return;
+  }
+  
+  // Validar formato básico de URL
+  let urlValida;
+  try {
+    urlValida = new URL(urlCsv.value.trim());
+  } catch (error) {
+    errorUrl.value = "La URL ingresada no es válida. Debe tener el formato: https://ejemplo.com/archivo.csv";
+    cargandoUrl.value = false;
+    return;
+  }
+  
+  // Validar que sea HTTP o HTTPS
+  if (!['http:', 'https:'].includes(urlValida.protocol)) {
+    errorUrl.value = "La URL debe usar el protocolo HTTP o HTTPS";
+    cargandoUrl.value = false;
+    return;
+  }
+  
+  try {
+    // Intentar cargar el contenido desde la URL
+    const response = await fetch(urlCsv.value.trim(), {
+      method: 'GET',
+      headers: {
+        'Accept': 'text/csv,text/plain,application/csv,*/*'
+      },
+      mode: 'cors' // Permitir CORS si el servidor lo permite
+    });
+    
+    // Verificar si la respuesta es exitosa
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status} ${response.statusText}`);
+    }
+    
+    // Obtener el tipo de contenido
+    const contentType = response.headers.get('content-type') || '';
+    
+    // Validar que sea texto (aunque algunos servidores pueden no enviar el header correcto)
+    if (contentType && !contentType.includes('text') && !contentType.includes('csv') && !contentType.includes('plain')) {
+      console.warn('El tipo de contenido no es texto plano:', contentType);
+      // Continuar de todas formas, ya que algunos servidores no envían el header correcto
+    }
+    
+    // Leer el contenido como texto
+    const contenido = await response.text();
+    
+    // Validar que el contenido no esté vacío
+    if (!contenido || contenido.trim().length === 0) {
+      errorUrl.value = "El archivo CSV está vacío o no contiene datos";
+      cargandoUrl.value = false;
+      return;
+    }
+    
+    // Asignar el contenido
+    contenidoCsv.value = contenido;
+    
+    // Limpiar estados de archivo si había uno seleccionado
+    if (archivoSeleccionado.value) {
+      archivoSeleccionado.value = null;
+      if (fileInput.value) {
+        fileInput.value.value = '';
+      }
+    }
+    
+    console.log("CSV cargado desde URL exitosamente:", {
+      url: urlCsv.value,
+      tamaño: contenido.length,
+      tipo: contentType,
+      líneas: contenido.split('\n').length
+    });
+    
+  } catch (error) {
+    console.error("Error al cargar CSV desde URL:", error);
+    
+    // Manejar diferentes tipos de errores
+    if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+      errorUrl.value = "Error de conexión. Verifica que la URL sea accesible y que no haya problemas de CORS. Algunos servidores no permiten acceso desde navegadores.";
+    } else if (error.message.includes('HTTP')) {
+      errorUrl.value = error.message;
+    } else if (error.name === 'TypeError') {
+      errorUrl.value = "Error de red. Verifica tu conexión a internet y que la URL sea correcta.";
+    } else {
+      errorUrl.value = `Error al cargar el archivo: ${error.message}`;
+    }
+  } finally {
+    cargandoUrl.value = false;
+  }
 };
 
 // Función para validar y leer archivo CSV
@@ -280,14 +428,33 @@ const evaluarContenidoCsv = () => {
     return;
   }
   
-  if (!contenidoCsv.value || contenidoCsv.value.trim().length === 0) {
-    console.warn("No hay contenido CSV para evaluar");
-    errorArchivo.value = "No hay contenido CSV para evaluar. Por favor, selecciona un archivo o ingresa datos.";
+  // Si hay una URL pero no hay contenido, intentar cargarlo
+  if (urlCsv.value && (!contenidoCsv.value || contenidoCsv.value.trim().length === 0)) {
+    cargarCsvDesdeUrl();
     return;
   }
   
-  // Limpiar error si hay contenido
+  if (!contenidoCsv.value || contenidoCsv.value.trim().length === 0) {
+    console.warn("No hay contenido CSV para evaluar");
+    const mensajeError = archivoSeleccionado.value 
+      ? "No hay contenido CSV para evaluar. Por favor, selecciona un archivo."
+      : urlCsv.value
+      ? "No hay contenido CSV para evaluar. Por favor, carga el contenido desde la URL."
+      : "No hay contenido CSV para evaluar. Por favor, selecciona un archivo, ingresa una URL o ingresa datos manualmente.";
+    
+    if (archivoSeleccionado.value) {
+      errorArchivo.value = mensajeError;
+    } else if (urlCsv.value) {
+      errorUrl.value = mensajeError;
+    } else {
+      errorArchivo.value = mensajeError;
+    }
+    return;
+  }
+  
+  // Limpiar errores si hay contenido
   errorArchivo.value = "";
+  errorUrl.value = "";
 
   // Obtener el delimitador real (detectar si es "auto" o usar el seleccionado)
   const delimitadorSeleccionado = paramsOpcionesEntrada.value.delimitador || delimitador.value;
