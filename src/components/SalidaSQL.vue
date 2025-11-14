@@ -56,11 +56,14 @@
 
             <div class="flex items-center gap-2 ml-auto">
                 <label for="eol-select" class="font-bold text-gray-700">EOL:</label>
-                <select id="eol-select" v-model="eolType"
-                    class="p-2 border border-gray-300 rounded focus:ring focus:ring-blue-200">
-                    <option value="\n">LF (Unix/Linux)</option>
-                    <option value="\r\n">CRLF (Windows)</option>
-                    <option value="\r">CR (Old Mac)</option>
+                <select 
+                    id="eol-select" 
+                    v-model="eolType"
+                    class="p-2 border border-gray-300 rounded focus:ring focus:ring-blue-200"
+                    title="Selecciona el tipo de fin de línea para el archivo descargado">
+                    <option :value="'\n'">LF (Unix/Linux)</option>
+                    <option :value="'\r\n'">CRLF (Windows)</option>
+                    <option :value="'\r'">CR (Old Mac)</option>
                 </select>
             </div>
         </div>
@@ -781,11 +784,39 @@ const copiarAlHacerClick = async (event) => {
 
 // Function to download SQL file
 const downloadSQL = () => {
-    const blob = new Blob([sqlOutput.value.replace(/\n/g, eolType.value)], { type: "text/sql" });
+    // Verificar que haya contenido SQL para descargar
+    if (!sqlOutput.value || sqlOutput.value.trim().length === 0) {
+        console.warn('No hay contenido SQL para descargar');
+        alert('No hay contenido SQL para descargar. Por favor, genera SQL primero.');
+        return;
+    }
+    
+    // Normalizar todos los tipos de EOL a \n primero
+    // Esto maneja archivos que pueden tener \r\n (Windows), \r (Mac antiguo), o \n (Unix)
+    let contenidoNormalizado = sqlOutput.value
+        .replace(/\r\n/g, '\n')  // Reemplazar CRLF con LF
+        .replace(/\r/g, '\n');    // Reemplazar CR con LF
+    
+    // Aplicar el EOL seleccionado
+    const contenidoConEOL = contenidoNormalizado.replace(/\n/g, eolType.value);
+    
+    // Crear el blob con el contenido y el EOL correcto
+    const blob = new Blob([contenidoConEOL], { type: "text/sql" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = fileName.value;
     link.click();
+    
+    // Limpiar el objeto URL después de un breve delay
+    setTimeout(() => {
+        URL.revokeObjectURL(link.href);
+    }, 100);
+    
+    console.log('Archivo SQL descargado:', {
+        nombre: fileName.value,
+        eol: eolType.value === '\n' ? 'LF' : eolType.value === '\r\n' ? 'CRLF' : 'CR',
+        tamaño: contenidoConEOL.length
+    });
 };
 </script>
 
