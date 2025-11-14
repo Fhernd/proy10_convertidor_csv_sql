@@ -47,7 +47,8 @@
         <!-- Third Row: File Name, Download Button, EOL Selector -->
         <div class="flex flex-wrap items-center gap-2">
             <input v-model="fileName" type="text" placeholder="Nombre del archivo de salida"
-                class="p-2 border border-gray-300 rounded w-1/3 focus:ring focus:ring-blue-200">
+                class="p-2 border border-gray-300 rounded w-1/3 focus:ring focus:ring-blue-200"
+                :title="`Formato: NOMBRE_TABLA-FechaHora.sql (se genera automáticamente al crear SQL)`">
 
             <button @click="downloadSQL" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                 Descargar SQL
@@ -117,6 +118,31 @@ const sqlOutput = ref('');
 const fileName = ref('query.sql');
 const eolType = ref('\n');
 const copiadoExitoso = ref(false);
+
+// Función para generar el nombre del archivo con formato: NOMBRE_TABLA-FechaHora.sql
+const generarNombreArchivo = () => {
+    const tableName = props.paramsOpcionesSalidaTabla?.tableName || 'datos';
+    
+    // Limpiar el nombre de la tabla: reemplazar espacios y caracteres especiales con guiones bajos
+    const nombreTablaLimpio = tableName
+        .replace(/[^a-zA-Z0-9_]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '')
+        .toUpperCase();
+    
+    // Generar fecha y hora en formato: YYYYMMDD-HHmmss
+    const ahora = new Date();
+    const año = ahora.getFullYear();
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const dia = String(ahora.getDate()).padStart(2, '0');
+    const horas = String(ahora.getHours()).padStart(2, '0');
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    const segundos = String(ahora.getSeconds()).padStart(2, '0');
+    
+    const fechaHora = `${año}${mes}${dia}-${horas}${minutos}${segundos}`;
+    
+    return `${nombreTablaLimpio}-${fechaHora}.sql`;
+};
 
 // Function to format value based on SQL data type
 const formatValueByType = (value, dataType, forceVarchar = false, useSingleQuotes = false) => {
@@ -648,9 +674,14 @@ const generateSQL = (type) => {
         
         const sql = sqlStatements.join('\n');
         sqlOutput.value = sql;
+        
+        // Actualizar el nombre del archivo con el formato: NOMBRE_TABLA-FechaHora.sql
+        fileName.value = generarNombreArchivo();
+        
         console.log('SQL generado exitosamente:', {
             registrosGenerados: datosParaGenerar.length,
-            caracteres: sql.length
+            caracteres: sql.length,
+            nombreArchivo: fileName.value
         });
     } else {
         sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
