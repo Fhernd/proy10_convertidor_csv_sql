@@ -12,7 +12,27 @@
 
         <!-- Second Row: SQL Output -->
         <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2">Salida SQL:</label>
+            <div class="flex items-center justify-between mb-2">
+                <label class="block text-gray-700 font-bold">Salida SQL:</label>
+                <button
+                    @click="copiarAlPortapapeles"
+                    :disabled="!sqlOutput || sqlOutput.trim().length === 0"
+                    :class="[
+                        'flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500',
+                        sqlOutput && sqlOutput.trim().length > 0
+                            ? 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ]"
+                    :title="sqlOutput && sqlOutput.trim().length > 0 ? 'Copiar SQL al portapapeles' : 'No hay contenido para copiar'">
+                    <svg v-if="copiadoExitoso" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span>{{ copiadoExitoso ? 'Copiado!' : 'Copiar' }}</span>
+                </button>
+            </div>
             <textarea v-model="sqlOutput"
                 class="w-full p-3 border border-gray-300 rounded h-40 focus:ring focus:ring-blue-200"
                 :placeholder="!props.datos || props.datos.length === 0 ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...'"></textarea>
@@ -93,6 +113,7 @@ const sqlOptions = ref([
 const sqlOutput = ref('');
 const fileName = ref('query.sql');
 const eolType = ref('\n');
+const copiadoExitoso = ref(false);
 
 // Function to format value based on SQL data type
 const formatValueByType = (value, dataType, forceVarchar = false, useSingleQuotes = false) => {
@@ -630,6 +651,61 @@ const generateSQL = (type) => {
         });
     } else {
         sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
+    }
+};
+
+// Function to copy SQL to clipboard
+const copiarAlPortapapeles = async () => {
+    // Verificar que haya contenido
+    if (!sqlOutput.value || sqlOutput.value.trim().length === 0) {
+        return;
+    }
+    
+    try {
+        // Usar la Clipboard API moderna
+        await navigator.clipboard.writeText(sqlOutput.value);
+        
+        // Mostrar feedback visual
+        copiadoExitoso.value = true;
+        
+        // Restaurar el estado después de 2 segundos
+        setTimeout(() => {
+            copiadoExitoso.value = false;
+        }, 2000);
+        
+        console.log('SQL copiado al portapapeles exitosamente');
+    } catch (error) {
+        console.error('Error al copiar al portapapeles:', error);
+        
+        // Fallback para navegadores que no soportan Clipboard API
+        try {
+            // Crear un elemento textarea temporal
+            const textarea = document.createElement('textarea');
+            textarea.value = sqlOutput.value;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-999999px';
+            textarea.style.top = '-999999px';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            
+            // Intentar copiar usando el comando execCommand (deprecated pero funciona como fallback)
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            if (successful) {
+                copiadoExitoso.value = true;
+                setTimeout(() => {
+                    copiadoExitoso.value = false;
+                }, 2000);
+                console.log('SQL copiado al portapapeles usando fallback');
+            } else {
+                alert('No se pudo copiar al portapapeles. Por favor, selecciona el texto manualmente.');
+            }
+        } catch (fallbackError) {
+            console.error('Error en fallback de copia:', fallbackError);
+            alert('No se pudo copiar al portapapeles. Por favor, selecciona el texto manualmente.');
+        }
     }
 };
 
