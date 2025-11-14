@@ -30,12 +30,15 @@
                     <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
-                    <span>{{ copiadoExitoso ? 'Copiado!' : 'Copiar' }}</span>
+                    <span>{{ copiadoExitoso ? '¡Copiado!' : 'Copiar' }}</span>
                 </button>
             </div>
-            <textarea v-model="sqlOutput"
-                class="w-full p-3 border border-gray-300 rounded h-40 focus:ring focus:ring-blue-200"
-                :placeholder="!props.datos || props.datos.length === 0 ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...'"></textarea>
+            <textarea 
+                v-model="sqlOutput"
+                @click="copiarAlHacerClick"
+                class="w-full p-3 border border-gray-300 rounded h-40 focus:ring focus:ring-blue-200 cursor-pointer"
+                :placeholder="!props.datos || props.datos.length === 0 ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...'"
+                :title="sqlOutput && sqlOutput.trim().length > 0 ? 'Haz clic para copiar al portapapeles' : ''"></textarea>
             <p v-if="!props.datos || props.datos.length === 0" class="text-sm text-gray-500 mt-1">
                 💡 Primero ingresa datos CSV y presiona "Evaluar contenido CSV"
             </p>
@@ -654,26 +657,12 @@ const generateSQL = (type) => {
     }
 };
 
-// Function to copy SQL to clipboard
-const copiarAlPortapapeles = async () => {
-    // Verificar que haya contenido
-    if (!sqlOutput.value || sqlOutput.value.trim().length === 0) {
-        return;
-    }
-    
+// Función auxiliar para copiar al portapapeles (reutilizable)
+const copiarTextoAlPortapapeles = async (texto) => {
     try {
         // Usar la Clipboard API moderna
-        await navigator.clipboard.writeText(sqlOutput.value);
-        
-        // Mostrar feedback visual
-        copiadoExitoso.value = true;
-        
-        // Restaurar el estado después de 2 segundos
-        setTimeout(() => {
-            copiadoExitoso.value = false;
-        }, 2000);
-        
-        console.log('SQL copiado al portapapeles exitosamente');
+        await navigator.clipboard.writeText(texto);
+        return true;
     } catch (error) {
         console.error('Error al copiar al portapapeles:', error);
         
@@ -681,7 +670,7 @@ const copiarAlPortapapeles = async () => {
         try {
             // Crear un elemento textarea temporal
             const textarea = document.createElement('textarea');
-            textarea.value = sqlOutput.value;
+            textarea.value = texto;
             textarea.style.position = 'fixed';
             textarea.style.left = '-999999px';
             textarea.style.top = '-999999px';
@@ -693,19 +682,69 @@ const copiarAlPortapapeles = async () => {
             const successful = document.execCommand('copy');
             document.body.removeChild(textarea);
             
-            if (successful) {
-                copiadoExitoso.value = true;
-                setTimeout(() => {
-                    copiadoExitoso.value = false;
-                }, 2000);
-                console.log('SQL copiado al portapapeles usando fallback');
-            } else {
-                alert('No se pudo copiar al portapapeles. Por favor, selecciona el texto manualmente.');
-            }
+            return successful;
         } catch (fallbackError) {
             console.error('Error en fallback de copia:', fallbackError);
-            alert('No se pudo copiar al portapapeles. Por favor, selecciona el texto manualmente.');
+            return false;
         }
+    }
+};
+
+// Función para mostrar feedback visual de copia exitosa
+const mostrarFeedbackCopia = () => {
+    copiadoExitoso.value = true;
+    setTimeout(() => {
+        copiadoExitoso.value = false;
+    }, 2000);
+};
+
+// Function to copy SQL to clipboard (desde el botón)
+const copiarAlPortapapeles = async () => {
+    // Verificar que haya contenido
+    if (!sqlOutput.value || sqlOutput.value.trim().length === 0) {
+        return;
+    }
+    
+    const exito = await copiarTextoAlPortapapeles(sqlOutput.value);
+    
+    if (exito) {
+        mostrarFeedbackCopia();
+        console.log('SQL copiado al portapapeles exitosamente');
+    } else {
+        alert('No se pudo copiar al portapapeles. Por favor, selecciona el texto manualmente.');
+    }
+};
+
+// Función para copiar al hacer clic en el textarea
+const copiarAlHacerClick = async (event) => {
+    // Verificar que haya contenido
+    if (!sqlOutput.value || sqlOutput.value.trim().length === 0) {
+        return;
+    }
+    
+    // Prevenir la selección de texto por defecto si se desea
+    // Pero permitir que el usuario pueda seleccionar si lo necesita
+    // Solo copiar si no hay texto seleccionado (click simple sin selección)
+    const selection = window.getSelection().toString();
+    if (selection && selection.length > 0) {
+        // Si hay texto seleccionado, no copiar automáticamente
+        // Permitir que el usuario seleccione manualmente si lo desea
+        return;
+    }
+    
+    const exito = await copiarTextoAlPortapapeles(sqlOutput.value);
+    
+    if (exito) {
+        mostrarFeedbackCopia();
+        console.log('SQL copiado al portapapeles al hacer clic en el textarea');
+        
+        // Opcional: seleccionar todo el texto para feedback visual
+        event.target.select();
+        
+        // Deseleccionar después de un breve momento para mejor UX
+        setTimeout(() => {
+            event.target.setSelectionRange(0, 0);
+        }, 100);
     }
 };
 
