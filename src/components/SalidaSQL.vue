@@ -695,33 +695,35 @@ const generateSQL = (type) => {
         const quoteChar = getIdentifierQuote();
         const closeQuoteChar = getIdentifierCloseQuote();
         
-        // Obtener columnas de llave primaria (ID)
+        // Obtener columnas de llave primaria (puede ser simple o compuesta)
         const primaryKeyColumns = props.paramsOpcionesSalidaTabla?.primaryKeyColumns || [];
         
         // Si no hay llaves primarias configuradas, buscar una columna llamada "ID" o "id"
-        let idColumn = null;
+        let primaryKeyCols = [];
         if (primaryKeyColumns.length > 0) {
-            // Usar la primera columna de llave primaria
-            idColumn = primaryKeyColumns[0];
+            // Usar todas las columnas de llave primaria (soporta llave primaria compuesta)
+            primaryKeyCols = primaryKeyColumns.filter(col => 
+                col && typeof col === 'string' && props.columnas.includes(col)
+            );
         } else {
             // Buscar una columna que se llame "ID" o "id"
             const idColumnCandidates = props.columnas.filter(col => 
                 col && typeof col === 'string' && col.trim().toUpperCase() === 'ID'
             );
             if (idColumnCandidates.length > 0) {
-                idColumn = idColumnCandidates[0];
+                primaryKeyCols = [idColumnCandidates[0]];
             }
         }
         
-        if (!idColumn) {
+        if (primaryKeyCols.length === 0) {
             sqlOutput.value = '-- Error: No se encontró una columna ID o llave primaria. Por favor, configura una llave primaria en las opciones de tabla.';
-            console.error('Error: No se encontró columna ID para UPDATE');
+            console.error('Error: No se encontró columna ID o llave primaria para UPDATE');
             return;
         }
         
-        // Obtener todas las columnas excepto la de ID
+        // Obtener todas las columnas excepto las de llave primaria
         const columnasParaActualizar = props.columnas.filter(col => 
-            col && typeof col === 'string' && col.trim() !== idColumn.trim()
+            col && typeof col === 'string' && !primaryKeyCols.some(pkCol => pkCol.trim() === col.trim())
         );
         
         if (columnasParaActualizar.length === 0) {
@@ -750,12 +752,16 @@ const generateSQL = (type) => {
             return `${quoteChar}${cleanName}${closeQuoteChar}`;
         };
         
-        const formattedIdColumn = formatColumnName(idColumn);
+        // Formatear todas las columnas de llave primaria
+        const formattedPrimaryKeyColumns = primaryKeyCols
+            .map(col => formatColumnName(col))
+            .filter(name => name !== null);
+        
         const formattedColumns = columnasParaActualizar
             .map(col => formatColumnName(col))
             .filter(name => name !== null);
         
-        if (!formattedIdColumn || formattedColumns.length === 0) {
+        if (formattedPrimaryKeyColumns.length === 0 || formattedColumns.length === 0) {
             sqlOutput.value = '-- Error: No se pudieron formatear los nombres de columnas válidos.';
             console.error('Error: No se pudieron formatear columnas');
             return;
@@ -794,27 +800,47 @@ const generateSQL = (type) => {
                 return;
             }
             
-            // Obtener el valor del ID
-            let idValue = row[idColumn];
+            // Obtener y formatear los valores de todas las columnas de llave primaria
+            const primaryKeyValues = [];
+            const primaryKeyFormattedColumns = [];
             
-            // Si el valor es undefined, intentar buscar la clave sin espacios
-            if (idValue === undefined && row.hasOwnProperty && !row.hasOwnProperty(idColumn)) {
-                const keys = Object.keys(row);
-                const matchingKey = keys.find(k => k.trim() === idColumn.trim());
-                if (matchingKey) {
-                    idValue = row[matchingKey];
+            for (let i = 0; i < primaryKeyCols.length; i++) {
+                const pkCol = primaryKeyCols[i];
+                let pkValue = row[pkCol];
+                
+                // Si el valor es undefined, intentar buscar la clave sin espacios
+                if (pkValue === undefined && row.hasOwnProperty && !row.hasOwnProperty(pkCol)) {
+                    const keys = Object.keys(row);
+                    const matchingKey = keys.find(k => k.trim() === pkCol.trim());
+                    if (matchingKey) {
+                        pkValue = row[matchingKey];
+                    }
                 }
+                
+                // Validar que el valor de la llave primaria tenga valor
+                if (pkValue === null || pkValue === undefined || pkValue === '') {
+                    console.warn(`Fila ${rowIndex} no tiene valor válido para la columna de llave primaria "${pkCol}":`, row);
+                    return; // Salir del forEach si falta algún valor de PK
+                }
+                
+                // Formatear el valor de la llave primaria
+                const pkDataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[pkCol] || 'VARCHAR');
+                const formattedPkValue = formatValueByType(pkValue, pkDataType, allVarchar, useSingleQuotes);
+                const formattedPkCol = formatColumnName(pkCol);
+                
+                if (!formattedPkCol) {
+                    console.warn(`Fila ${rowIndex}: No se pudo formatear la columna de llave primaria "${pkCol}"`);
+                    return;
+                }
+                
+                primaryKeyValues.push(formattedPkValue);
+                primaryKeyFormattedColumns.push(formattedPkCol);
             }
             
-            // Validar que el ID tenga valor
-            if (idValue === null || idValue === undefined || idValue === '') {
-                console.warn(`Fila ${rowIndex} no tiene valor de ID válido:`, row);
+            // Si no se pudieron obtener todos los valores de PK, saltar esta fila
+            if (primaryKeyValues.length !== primaryKeyCols.length) {
                 return;
             }
-            
-            // Formatear el valor del ID
-            const idDataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[idColumn] || 'VARCHAR');
-            const formattedIdValue = formatValueByType(idValue, idDataType, allVarchar, useSingleQuotes);
             
             // Generar los pares columna=valor para SET
             const setClauses = columnasParaActualizar
@@ -847,8 +873,14 @@ const generateSQL = (type) => {
                 return;
             }
             
+            // Construir la cláusula WHERE con todas las columnas de llave primaria
+            // Si es llave primaria compuesta, usar AND para unir las condiciones
+            const whereClauses = primaryKeyFormattedColumns.map((col, idx) => 
+                `${col} = ${primaryKeyValues[idx]}`
+            ).join(' AND ');
+            
             // Construir la sentencia UPDATE
-            const updateStatement = `UPDATE ${formattedTableName} SET ${setClauses.join(', ')} WHERE ${formattedIdColumn} = ${formattedIdValue};`;
+            const updateStatement = `UPDATE ${formattedTableName} SET ${setClauses.join(', ')} WHERE ${whereClauses};`;
             updateStatements.push(updateStatement);
         });
         
@@ -868,7 +900,8 @@ const generateSQL = (type) => {
             registrosGenerados: updateStatements.length,
             caracteres: sql.length,
             nombreArchivo: fileName.value,
-            columnaID: idColumn
+            columnasLlavePrimaria: primaryKeyCols,
+            esLlavePrimariaCompuesta: primaryKeyCols.length > 1
         });
     } else {
         sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
