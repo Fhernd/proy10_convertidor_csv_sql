@@ -281,6 +281,51 @@ const getIdentifierCloseQuote = () => {
     return getIdentifierQuote();
 };
 
+// Función auxiliar para obtener las columnas de llave primaria
+const obtenerColumnasLlavePrimaria = () => {
+    const primaryKeyColumns = props.paramsOpcionesSalidaTabla?.primaryKeyColumns || [];
+    
+    // Si hay llaves primarias configuradas, usarlas
+    if (primaryKeyColumns.length > 0) {
+        const primaryKeyCols = primaryKeyColumns.filter(col => 
+            col && typeof col === 'string' && props.columnas.includes(col)
+        );
+        if (primaryKeyCols.length > 0) {
+            return primaryKeyCols;
+        }
+    }
+    
+    // Si no hay llaves primarias configuradas, buscar una columna llamada "ID" o "id"
+    const idColumnCandidates = props.columnas.filter(col => 
+        col && typeof col === 'string' && col.trim().toUpperCase() === 'ID'
+    );
+    if (idColumnCandidates.length > 0) {
+        return [idColumnCandidates[0]];
+    }
+    
+    return [];
+};
+
+// Función auxiliar para formatear nombres de columnas (reutilizable)
+const formatColumnName = (col, quoteChar, closeQuoteChar) => {
+    let columnName = col.trim();
+    
+    if (props.paramsOpcionesSalidaTabla?.replaceSpaces) {
+        columnName = columnName.replace(/\s+/g, '_');
+    }
+    
+    columnName = columnName.replace(/[\r\n\t]/g, ' ');
+    columnName = columnName.replace(/\s+/g, ' ').trim();
+    
+    const cleanName = columnName.replace(/[`"'\[\];]/g, '');
+    
+    if (!cleanName || cleanName.length === 0) {
+        return null;
+    }
+    
+    return `${quoteChar}${cleanName}${closeQuoteChar}`;
+};
+
 // Function to generate SQL output
 const generateSQL = (type) => {
     console.log('Generando SQL tipo:', type);
@@ -465,29 +510,25 @@ const generateSQL = (type) => {
             const primaryKeyColumns = props.paramsOpcionesSalidaTabla?.primaryKeyColumns || [];
             const hasPrimaryKey = primaryKeyColumns.length > 0;
             
-            // Función auxiliar para formatear nombre de columna
-            const formatColumnName = (col) => {
-                let columnName = col.trim();
-                
-                // Si replaceSpaces está activado, reemplazar espacios con guiones bajos
-                if (props.paramsOpcionesSalidaTabla?.replaceSpaces) {
-                    columnName = columnName.replace(/\s+/g, '_');
+            // Usar la función auxiliar formatColumnName global (sin comillas, solo limpieza)
+            const formatColumnNameLocal = (col) => {
+                const formatted = formatColumnName(col, quoteChar, closeQuoteChar);
+                // Para CREATE TABLE, necesitamos el nombre sin comillas
+                if (formatted) {
+                    // Remover las comillas que agregó formatColumnName
+                    return formatted.replace(new RegExp(`^${quoteChar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}|${closeQuoteChar.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'g'), '');
                 }
-                
-                // Eliminar saltos de línea y caracteres de control
-                columnName = columnName.replace(/[\r\n\t]/g, ' ');
-                // Normalizar espacios múltiples a uno solo
-                columnName = columnName.replace(/\s+/g, ' ').trim();
-                
-                // Limpiar el nombre de columna de caracteres peligrosos
-                return columnName.replace(/[`"'\[\];]/g, '');
+                return null;
             };
             
             // Generar definiciones de columnas
             const columnDefs = props.columnas
                 .filter(col => col && typeof col === 'string' && col.trim().length > 0)
                 .map((col) => {
-                    const cleanName = formatColumnName(col);
+                    const cleanName = formatColumnNameLocal(col);
+                    if (!cleanName) {
+                        return null;
+                    }
                     const formattedColumnName = `${quoteChar}${cleanName}${closeQuoteChar}`;
                     
                     // Obtener el tipo de dato
@@ -533,16 +574,19 @@ const generateSQL = (type) => {
                     }
                     
                     return `    ${formattedColumnName} ${dataType}`;
-                });
+                })
+                .filter(def => def !== null);
             
             // Agregar definición de PRIMARY KEY si hay columnas seleccionadas
             if (hasPrimaryKey) {
                 const pkColumnNames = primaryKeyColumns
                     .filter(col => props.columnas.includes(col))
                     .map(col => {
-                        const cleanName = formatColumnName(col);
+                        const cleanName = formatColumnNameLocal(col);
+                        if (!cleanName) return null;
                         return `${quoteChar}${cleanName}${closeQuoteChar}`;
                     })
+                    .filter(name => name !== null)
                     .join(', ');
                 
                 if (pkColumnNames) {
@@ -696,24 +740,7 @@ const generateSQL = (type) => {
         const closeQuoteChar = getIdentifierCloseQuote();
         
         // Obtener columnas de llave primaria (puede ser simple o compuesta)
-        const primaryKeyColumns = props.paramsOpcionesSalidaTabla?.primaryKeyColumns || [];
-        
-        // Si no hay llaves primarias configuradas, buscar una columna llamada "ID" o "id"
-        let primaryKeyCols = [];
-        if (primaryKeyColumns.length > 0) {
-            // Usar todas las columnas de llave primaria (soporta llave primaria compuesta)
-            primaryKeyCols = primaryKeyColumns.filter(col => 
-                col && typeof col === 'string' && props.columnas.includes(col)
-            );
-        } else {
-            // Buscar una columna que se llame "ID" o "id"
-            const idColumnCandidates = props.columnas.filter(col => 
-                col && typeof col === 'string' && col.trim().toUpperCase() === 'ID'
-            );
-            if (idColumnCandidates.length > 0) {
-                primaryKeyCols = [idColumnCandidates[0]];
-            }
-        }
+        const primaryKeyCols = obtenerColumnasLlavePrimaria();
         
         if (primaryKeyCols.length === 0) {
             sqlOutput.value = '-- Error: No se encontró una columna ID o llave primaria. Por favor, configura una llave primaria en las opciones de tabla.';
@@ -732,33 +759,13 @@ const generateSQL = (type) => {
             return;
         }
         
-        // Formatear nombres de columnas
-        const formatColumnName = (col) => {
-            let columnName = col.trim();
-            
-            if (props.paramsOpcionesSalidaTabla?.replaceSpaces) {
-                columnName = columnName.replace(/\s+/g, '_');
-            }
-            
-            columnName = columnName.replace(/[\r\n\t]/g, ' ');
-            columnName = columnName.replace(/\s+/g, ' ').trim();
-            
-            const cleanName = columnName.replace(/[`"'\[\];]/g, '');
-            
-            if (!cleanName || cleanName.length === 0) {
-                return null;
-            }
-            
-            return `${quoteChar}${cleanName}${closeQuoteChar}`;
-        };
-        
         // Formatear todas las columnas de llave primaria
         const formattedPrimaryKeyColumns = primaryKeyCols
-            .map(col => formatColumnName(col))
+            .map(col => formatColumnName(col, quoteChar, closeQuoteChar))
             .filter(name => name !== null);
         
         const formattedColumns = columnasParaActualizar
-            .map(col => formatColumnName(col))
+            .map(col => formatColumnName(col, quoteChar, closeQuoteChar))
             .filter(name => name !== null);
         
         if (formattedPrimaryKeyColumns.length === 0 || formattedColumns.length === 0) {
@@ -826,7 +833,7 @@ const generateSQL = (type) => {
                 // Formatear el valor de la llave primaria
                 const pkDataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[pkCol] || 'VARCHAR');
                 const formattedPkValue = formatValueByType(pkValue, pkDataType, allVarchar, useSingleQuotes);
-                const formattedPkCol = formatColumnName(pkCol);
+                const formattedPkCol = formatColumnName(pkCol, quoteChar, closeQuoteChar);
                 
                 if (!formattedPkCol) {
                     console.warn(`Fila ${rowIndex}: No se pudo formatear la columna de llave primaria "${pkCol}"`);
@@ -858,7 +865,7 @@ const generateSQL = (type) => {
                     
                     const dataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[col] || 'VARCHAR');
                     const formattedValue = formatValueByType(value, dataType, allVarchar, useSingleQuotes);
-                    const formattedColName = formatColumnName(col);
+                    const formattedColName = formatColumnName(col, quoteChar, closeQuoteChar);
                     
                     if (!formattedColName) {
                         return null;
@@ -898,6 +905,126 @@ const generateSQL = (type) => {
         
         console.log('SQL UPDATE generado exitosamente:', {
             registrosGenerados: updateStatements.length,
+            caracteres: sql.length,
+            nombreArchivo: fileName.value,
+            columnasLlavePrimaria: primaryKeyCols,
+            esLlavePrimariaCompuesta: primaryKeyCols.length > 1
+        });
+    } else if (type === 'delete') {
+        // Get table name from paramsOpcionesSalidaTabla
+        const tableName = props.paramsOpcionesSalidaTabla?.tableName || 'table';
+        const quoteChar = getIdentifierQuote();
+        const closeQuoteChar = getIdentifierCloseQuote();
+        
+        // Obtener columnas de llave primaria (puede ser simple o compuesta)
+        const primaryKeyCols = obtenerColumnasLlavePrimaria();
+        
+        if (primaryKeyCols.length === 0) {
+            sqlOutput.value = '-- Error: No se encontró una columna ID o llave primaria. Por favor, configura una llave primaria en las opciones de tabla.';
+            console.error('Error: No se encontró columna ID o llave primaria para DELETE');
+            return;
+        }
+        
+        // Format table name with quotes if needed
+        const formattedTableName = tableName.includes(' ') || tableName.includes('-')
+            ? `${quoteChar}${tableName}${closeQuoteChar}`
+            : tableName;
+        
+        // Aplicar skip y límite
+        let datosParaGenerar = props.datos;
+        
+        const lineasOmitidasValue = Number(props.paramsOpcionesEntrada?.lineasOmitidas) || 0;
+        const limiteLineasValue = Number(props.paramsOpcionesEntrada?.limiteLineas) || 0;
+        
+        if (lineasOmitidasValue > 0) {
+            datosParaGenerar = datosParaGenerar.slice(lineasOmitidasValue);
+        }
+        
+        if (limiteLineasValue > 0) {
+            datosParaGenerar = datosParaGenerar.slice(0, limiteLineasValue);
+        }
+        
+        // Verificar si todos los campos deben ser VARCHAR
+        const allVarchar = props.paramsOpcionesSalidaTabla?.allVarchar || false;
+        const useSingleQuotes = props.paramsOpcionesFormato?.useSingleQuotes || false;
+        
+        // Generar statements DELETE
+        const deleteStatements = [];
+        
+        datosParaGenerar.forEach((row, rowIndex) => {
+            // Validar que row sea un objeto válido
+            if (!row || typeof row !== 'object') {
+                console.warn(`Fila ${rowIndex} no es un objeto válido:`, row);
+                return;
+            }
+            
+            // Obtener y formatear los valores de todas las columnas de llave primaria
+            const primaryKeyValues = [];
+            const primaryKeyFormattedColumns = [];
+            
+            for (let i = 0; i < primaryKeyCols.length; i++) {
+                const pkCol = primaryKeyCols[i];
+                let pkValue = row[pkCol];
+                
+                // Si el valor es undefined, intentar buscar la clave sin espacios
+                if (pkValue === undefined && row.hasOwnProperty && !row.hasOwnProperty(pkCol)) {
+                    const keys = Object.keys(row);
+                    const matchingKey = keys.find(k => k.trim() === pkCol.trim());
+                    if (matchingKey) {
+                        pkValue = row[matchingKey];
+                    }
+                }
+                
+                // Validar que el valor de la llave primaria tenga valor
+                if (pkValue === null || pkValue === undefined || pkValue === '') {
+                    console.warn(`Fila ${rowIndex} no tiene valor válido para la columna de llave primaria "${pkCol}":`, row);
+                    return; // Salir del forEach si falta algún valor de PK
+                }
+                
+                // Formatear el valor de la llave primaria
+                const pkDataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[pkCol] || 'VARCHAR');
+                const formattedPkValue = formatValueByType(pkValue, pkDataType, allVarchar, useSingleQuotes);
+                const formattedPkCol = formatColumnName(pkCol, quoteChar, closeQuoteChar);
+                
+                if (!formattedPkCol) {
+                    console.warn(`Fila ${rowIndex}: No se pudo formatear la columna de llave primaria "${pkCol}"`);
+                    return;
+                }
+                
+                primaryKeyValues.push(formattedPkValue);
+                primaryKeyFormattedColumns.push(formattedPkCol);
+            }
+            
+            // Si no se pudieron obtener todos los valores de PK, saltar esta fila
+            if (primaryKeyValues.length !== primaryKeyCols.length) {
+                return;
+            }
+            
+            // Construir la cláusula WHERE con todas las columnas de llave primaria
+            // Si es llave primaria compuesta, usar AND para unir las condiciones
+            const whereClauses = primaryKeyFormattedColumns.map((col, idx) => 
+                `${col} = ${primaryKeyValues[idx]}`
+            ).join(' AND ');
+            
+            // Construir la sentencia DELETE
+            const deleteStatement = `DELETE FROM ${formattedTableName} WHERE ${whereClauses};`;
+            deleteStatements.push(deleteStatement);
+        });
+        
+        if (deleteStatements.length === 0) {
+            sqlOutput.value = '-- Error: No se pudieron generar sentencias DELETE válidas.';
+            console.error('Error: No se generaron sentencias DELETE');
+            return;
+        }
+        
+        const sql = deleteStatements.join('\n');
+        sqlOutput.value = sql;
+        
+        // Actualizar el nombre del archivo
+        fileName.value = generarNombreArchivo();
+        
+        console.log('SQL DELETE generado exitosamente:', {
+            registrosGenerados: deleteStatements.length,
             caracteres: sql.length,
             nombreArchivo: fileName.value,
             columnasLlavePrimaria: primaryKeyCols,
