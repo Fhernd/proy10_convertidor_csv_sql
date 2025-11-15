@@ -1030,6 +1030,242 @@ const generateSQL = (type) => {
             columnasLlavePrimaria: primaryKeyCols,
             esLlavePrimariaCompuesta: primaryKeyCols.length > 1
         });
+    } else if (type === 'merge') {
+        // Get table name from paramsOpcionesSalidaTabla
+        const tableName = props.paramsOpcionesSalidaTabla?.tableName || 'table';
+        const quoteChar = getIdentifierQuote();
+        const closeQuoteChar = getIdentifierCloseQuote();
+        const sgbd = props.paramsOpcionesSGBD?.sgbdSeleccionado?.toLowerCase() || 'mysql';
+        
+        // Obtener columnas de llave primaria (puede ser simple o compuesta)
+        const primaryKeyCols = obtenerColumnasLlavePrimaria();
+        
+        if (primaryKeyCols.length === 0) {
+            sqlOutput.value = '-- Error: No se encontró una columna ID o llave primaria. Por favor, configura una llave primaria en las opciones de tabla.';
+            console.error('Error: No se encontró columna ID o llave primaria para MERGE');
+            return;
+        }
+        
+        // Obtener todas las columnas (incluyendo las de llave primaria para INSERT)
+        const todasLasColumnas = props.columnas.filter(col => 
+            col && typeof col === 'string' && col.trim().length > 0
+        );
+        
+        // Obtener columnas para actualizar (excluyendo las de llave primaria)
+        const columnasParaActualizar = props.columnas.filter(col => 
+            col && typeof col === 'string' && !primaryKeyCols.some(pkCol => pkCol.trim() === col.trim())
+        );
+        
+        if (todasLasColumnas.length === 0) {
+            sqlOutput.value = '-- Error: No hay columnas disponibles para generar MERGE.';
+            console.error('Error: No hay columnas disponibles');
+            return;
+        }
+        
+        // Formatear nombres de columnas
+        const formattedAllColumns = todasLasColumnas
+            .map(col => formatColumnName(col, quoteChar, closeQuoteChar))
+            .filter(name => name !== null);
+        
+        const formattedUpdateColumns = columnasParaActualizar
+            .map(col => formatColumnName(col, quoteChar, closeQuoteChar))
+            .filter(name => name !== null);
+        
+        const formattedPrimaryKeyColumns = primaryKeyCols
+            .map(col => formatColumnName(col, quoteChar, closeQuoteChar))
+            .filter(name => name !== null);
+        
+        if (formattedAllColumns.length === 0 || formattedPrimaryKeyColumns.length === 0) {
+            sqlOutput.value = '-- Error: No se pudieron formatear los nombres de columnas válidos.';
+            console.error('Error: No se pudieron formatear columnas');
+            return;
+        }
+        
+        // Format table name with quotes if needed
+        const formattedTableName = tableName.includes(' ') || tableName.includes('-')
+            ? `${quoteChar}${tableName}${closeQuoteChar}`
+            : tableName;
+        
+        // Aplicar skip y límite
+        let datosParaGenerar = props.datos;
+        
+        const lineasOmitidasValue = Number(props.paramsOpcionesEntrada?.lineasOmitidas) || 0;
+        const limiteLineasValue = Number(props.paramsOpcionesEntrada?.limiteLineas) || 0;
+        
+        if (lineasOmitidasValue > 0) {
+            datosParaGenerar = datosParaGenerar.slice(lineasOmitidasValue);
+        }
+        
+        if (limiteLineasValue > 0) {
+            datosParaGenerar = datosParaGenerar.slice(0, limiteLineasValue);
+        }
+        
+        // Verificar si todos los campos deben ser VARCHAR
+        const allVarchar = props.paramsOpcionesSalidaTabla?.allVarchar || false;
+        const useSingleQuotes = props.paramsOpcionesFormato?.useSingleQuotes || false;
+        
+        // Generar statements MERGE según el SGBD
+        const mergeStatements = [];
+        
+        datosParaGenerar.forEach((row, rowIndex) => {
+            // Validar que row sea un objeto válido
+            if (!row || typeof row !== 'object') {
+                console.warn(`Fila ${rowIndex} no es un objeto válido:`, row);
+                return;
+            }
+            
+            // Obtener y formatear los valores de todas las columnas
+            const allValues = [];
+            const primaryKeyValues = [];
+            const primaryKeyFormattedColumns = [];
+            
+            // Primero, obtener valores de llave primaria
+            for (let i = 0; i < primaryKeyCols.length; i++) {
+                const pkCol = primaryKeyCols[i];
+                let pkValue = row[pkCol];
+                
+                // Si el valor es undefined, intentar buscar la clave sin espacios
+                if (pkValue === undefined && row.hasOwnProperty && !row.hasOwnProperty(pkCol)) {
+                    const keys = Object.keys(row);
+                    const matchingKey = keys.find(k => k.trim() === pkCol.trim());
+                    if (matchingKey) {
+                        pkValue = row[matchingKey];
+                    }
+                }
+                
+                // Validar que el valor de la llave primaria tenga valor
+                if (pkValue === null || pkValue === undefined || pkValue === '') {
+                    console.warn(`Fila ${rowIndex} no tiene valor válido para la columna de llave primaria "${pkCol}":`, row);
+                    return;
+                }
+                
+                // Formatear el valor de la llave primaria
+                const pkDataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[pkCol] || 'VARCHAR');
+                const formattedPkValue = formatValueByType(pkValue, pkDataType, allVarchar, useSingleQuotes);
+                const formattedPkCol = formatColumnName(pkCol, quoteChar, closeQuoteChar);
+                
+                if (!formattedPkCol) {
+                    console.warn(`Fila ${rowIndex}: No se pudo formatear la columna de llave primaria "${pkCol}"`);
+                    return;
+                }
+                
+                primaryKeyValues.push(formattedPkValue);
+                primaryKeyFormattedColumns.push(formattedPkCol);
+            }
+            
+            // Si no se pudieron obtener todos los valores de PK, saltar esta fila
+            if (primaryKeyValues.length !== primaryKeyCols.length) {
+                return;
+            }
+            
+            // Obtener valores de todas las columnas (en el mismo orden que formattedAllColumns)
+            todasLasColumnas.forEach((col) => {
+                let value = row[col];
+                
+                // Si el valor es undefined, intentar buscar la clave sin espacios
+                if (value === undefined && row.hasOwnProperty && !row.hasOwnProperty(col)) {
+                    const keys = Object.keys(row);
+                    const matchingKey = keys.find(k => k.trim() === col.trim());
+                    if (matchingKey) {
+                        value = row[matchingKey];
+                    }
+                }
+                
+                const dataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[col] || 'VARCHAR');
+                const formattedValue = formatValueByType(value, dataType, allVarchar, useSingleQuotes);
+                allValues.push(formattedValue);
+            });
+            
+            if (allValues.length !== todasLasColumnas.length) {
+                console.warn(`Fila ${rowIndex} no tiene valores válidos para todas las columnas:`, row);
+                return;
+            }
+            
+            // Generar los pares columna=valor para UPDATE
+            const updateClauses = columnasParaActualizar
+                .map((col, idx) => {
+                    const colIndex = todasLasColumnas.indexOf(col);
+                    if (colIndex === -1) return null;
+                    
+                    const formattedColName = formattedUpdateColumns[idx];
+                    if (!formattedColName) return null;
+                    
+                    return `${formattedColName} = ${allValues[colIndex]}`;
+                })
+                .filter(clause => clause !== null);
+            
+            // Construir la sentencia MERGE según el SGBD
+            let mergeStatement = '';
+            
+            if (sgbd === 'sqlserver') {
+                // SQL Server: MERGE ... WHEN MATCHED THEN UPDATE ... WHEN NOT MATCHED THEN INSERT
+                const valuesList = allValues.join(', ');
+                const columnsList = formattedAllColumns.join(', ');
+                
+                // Construir la subconsulta VALUES para USING
+                const valuesAliases = formattedAllColumns.map((col, idx) => `${allValues[idx]} AS ${col}`).join(', ');
+                const onClauses = primaryKeyFormattedColumns.map((col, idx) => 
+                    `target.${col} = source.${col}`
+                ).join(' AND ');
+                
+                mergeStatement = `MERGE ${formattedTableName} AS target\n`;
+                mergeStatement += `USING (SELECT ${valuesAliases}) AS source\n`;
+                mergeStatement += `ON ${onClauses}\n`;
+                mergeStatement += `WHEN MATCHED THEN\n`;
+                mergeStatement += `    UPDATE SET ${updateClauses.join(', ')}\n`;
+                mergeStatement += `WHEN NOT MATCHED THEN\n`;
+                mergeStatement += `    INSERT (${columnsList}) VALUES (${valuesList});`;
+            } else if (sgbd === 'postgresql' || sgbd === 'sqlite') {
+                // PostgreSQL y SQLite: INSERT ... ON CONFLICT ... DO UPDATE SET
+                const valuesList = allValues.join(', ');
+                const columnsList = formattedAllColumns.join(', ');
+                const conflictColumns = formattedPrimaryKeyColumns.join(', ');
+                
+                mergeStatement = `INSERT INTO ${formattedTableName} (${columnsList})\n`;
+                mergeStatement += `VALUES (${valuesList})\n`;
+                mergeStatement += `ON CONFLICT (${conflictColumns})\n`;
+                mergeStatement += `DO UPDATE SET ${updateClauses.join(', ')};`;
+            } else if (sgbd === 'mysql') {
+                // MySQL: INSERT ... ON DUPLICATE KEY UPDATE
+                const valuesList = allValues.join(', ');
+                const columnsList = formattedAllColumns.join(', ');
+                
+                mergeStatement = `INSERT INTO ${formattedTableName} (${columnsList})\n`;
+                mergeStatement += `VALUES (${valuesList})\n`;
+                mergeStatement += `ON DUPLICATE KEY UPDATE ${updateClauses.join(', ')};`;
+            } else {
+                // Por defecto, usar sintaxis MySQL
+                const valuesList = allValues.join(', ');
+                const columnsList = formattedAllColumns.join(', ');
+                
+                mergeStatement = `INSERT INTO ${formattedTableName} (${columnsList})\n`;
+                mergeStatement += `VALUES (${valuesList})\n`;
+                mergeStatement += `ON DUPLICATE KEY UPDATE ${updateClauses.join(', ')};`;
+            }
+            
+            mergeStatements.push(mergeStatement);
+        });
+        
+        if (mergeStatements.length === 0) {
+            sqlOutput.value = '-- Error: No se pudieron generar sentencias MERGE válidas.';
+            console.error('Error: No se generaron sentencias MERGE');
+            return;
+        }
+        
+        const sql = mergeStatements.join('\n\n');
+        sqlOutput.value = sql;
+        
+        // Actualizar el nombre del archivo
+        fileName.value = generarNombreArchivo();
+        
+        console.log('SQL MERGE generado exitosamente:', {
+            registrosGenerados: mergeStatements.length,
+            caracteres: sql.length,
+            nombreArchivo: fileName.value,
+            columnasLlavePrimaria: primaryKeyCols,
+            esLlavePrimariaCompuesta: primaryKeyCols.length > 1,
+            sgbd: sgbd
+        });
     } else {
         sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
     }
