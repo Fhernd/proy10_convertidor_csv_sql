@@ -689,6 +689,187 @@ const generateSQL = (type) => {
             caracteres: sql.length,
             nombreArchivo: fileName.value
         });
+    } else if (type === 'update') {
+        // Get table name from paramsOpcionesSalidaTabla
+        const tableName = props.paramsOpcionesSalidaTabla?.tableName || 'table';
+        const quoteChar = getIdentifierQuote();
+        const closeQuoteChar = getIdentifierCloseQuote();
+        
+        // Obtener columnas de llave primaria (ID)
+        const primaryKeyColumns = props.paramsOpcionesSalidaTabla?.primaryKeyColumns || [];
+        
+        // Si no hay llaves primarias configuradas, buscar una columna llamada "ID" o "id"
+        let idColumn = null;
+        if (primaryKeyColumns.length > 0) {
+            // Usar la primera columna de llave primaria
+            idColumn = primaryKeyColumns[0];
+        } else {
+            // Buscar una columna que se llame "ID" o "id"
+            const idColumnCandidates = props.columnas.filter(col => 
+                col && typeof col === 'string' && col.trim().toUpperCase() === 'ID'
+            );
+            if (idColumnCandidates.length > 0) {
+                idColumn = idColumnCandidates[0];
+            }
+        }
+        
+        if (!idColumn) {
+            sqlOutput.value = '-- Error: No se encontró una columna ID o llave primaria. Por favor, configura una llave primaria en las opciones de tabla.';
+            console.error('Error: No se encontró columna ID para UPDATE');
+            return;
+        }
+        
+        // Obtener todas las columnas excepto la de ID
+        const columnasParaActualizar = props.columnas.filter(col => 
+            col && typeof col === 'string' && col.trim() !== idColumn.trim()
+        );
+        
+        if (columnasParaActualizar.length === 0) {
+            sqlOutput.value = '-- Error: No hay columnas para actualizar (todas las columnas son parte de la llave primaria).';
+            console.error('Error: No hay columnas para actualizar');
+            return;
+        }
+        
+        // Formatear nombres de columnas
+        const formatColumnName = (col) => {
+            let columnName = col.trim();
+            
+            if (props.paramsOpcionesSalidaTabla?.replaceSpaces) {
+                columnName = columnName.replace(/\s+/g, '_');
+            }
+            
+            columnName = columnName.replace(/[\r\n\t]/g, ' ');
+            columnName = columnName.replace(/\s+/g, ' ').trim();
+            
+            const cleanName = columnName.replace(/[`"'\[\];]/g, '');
+            
+            if (!cleanName || cleanName.length === 0) {
+                return null;
+            }
+            
+            return `${quoteChar}${cleanName}${closeQuoteChar}`;
+        };
+        
+        const formattedIdColumn = formatColumnName(idColumn);
+        const formattedColumns = columnasParaActualizar
+            .map(col => formatColumnName(col))
+            .filter(name => name !== null);
+        
+        if (!formattedIdColumn || formattedColumns.length === 0) {
+            sqlOutput.value = '-- Error: No se pudieron formatear los nombres de columnas válidos.';
+            console.error('Error: No se pudieron formatear columnas');
+            return;
+        }
+        
+        // Format table name with quotes if needed
+        const formattedTableName = tableName.includes(' ') || tableName.includes('-')
+            ? `${quoteChar}${tableName}${closeQuoteChar}`
+            : tableName;
+        
+        // Aplicar skip y límite
+        let datosParaGenerar = props.datos;
+        
+        const lineasOmitidasValue = Number(props.paramsOpcionesEntrada?.lineasOmitidas) || 0;
+        const limiteLineasValue = Number(props.paramsOpcionesEntrada?.limiteLineas) || 0;
+        
+        if (lineasOmitidasValue > 0) {
+            datosParaGenerar = datosParaGenerar.slice(lineasOmitidasValue);
+        }
+        
+        if (limiteLineasValue > 0) {
+            datosParaGenerar = datosParaGenerar.slice(0, limiteLineasValue);
+        }
+        
+        // Verificar si todos los campos deben ser VARCHAR
+        const allVarchar = props.paramsOpcionesSalidaTabla?.allVarchar || false;
+        const useSingleQuotes = props.paramsOpcionesFormato?.useSingleQuotes || false;
+        
+        // Generar statements UPDATE
+        const updateStatements = [];
+        
+        datosParaGenerar.forEach((row, rowIndex) => {
+            // Validar que row sea un objeto válido
+            if (!row || typeof row !== 'object') {
+                console.warn(`Fila ${rowIndex} no es un objeto válido:`, row);
+                return;
+            }
+            
+            // Obtener el valor del ID
+            let idValue = row[idColumn];
+            
+            // Si el valor es undefined, intentar buscar la clave sin espacios
+            if (idValue === undefined && row.hasOwnProperty && !row.hasOwnProperty(idColumn)) {
+                const keys = Object.keys(row);
+                const matchingKey = keys.find(k => k.trim() === idColumn.trim());
+                if (matchingKey) {
+                    idValue = row[matchingKey];
+                }
+            }
+            
+            // Validar que el ID tenga valor
+            if (idValue === null || idValue === undefined || idValue === '') {
+                console.warn(`Fila ${rowIndex} no tiene valor de ID válido:`, row);
+                return;
+            }
+            
+            // Formatear el valor del ID
+            const idDataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[idColumn] || 'VARCHAR');
+            const formattedIdValue = formatValueByType(idValue, idDataType, allVarchar, useSingleQuotes);
+            
+            // Generar los pares columna=valor para SET
+            const setClauses = columnasParaActualizar
+                .map((col) => {
+                    let value = row[col];
+                    
+                    // Si el valor es undefined, intentar buscar la clave sin espacios
+                    if (value === undefined && row.hasOwnProperty && !row.hasOwnProperty(col)) {
+                        const keys = Object.keys(row);
+                        const matchingKey = keys.find(k => k.trim() === col.trim());
+                        if (matchingKey) {
+                            value = row[matchingKey];
+                        }
+                    }
+                    
+                    const dataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[col] || 'VARCHAR');
+                    const formattedValue = formatValueByType(value, dataType, allVarchar, useSingleQuotes);
+                    const formattedColName = formatColumnName(col);
+                    
+                    if (!formattedColName) {
+                        return null;
+                    }
+                    
+                    return `${formattedColName} = ${formattedValue}`;
+                })
+                .filter(clause => clause !== null);
+            
+            if (setClauses.length === 0) {
+                console.warn(`Fila ${rowIndex} no tiene valores válidos para actualizar:`, row);
+                return;
+            }
+            
+            // Construir la sentencia UPDATE
+            const updateStatement = `UPDATE ${formattedTableName} SET ${setClauses.join(', ')} WHERE ${formattedIdColumn} = ${formattedIdValue};`;
+            updateStatements.push(updateStatement);
+        });
+        
+        if (updateStatements.length === 0) {
+            sqlOutput.value = '-- Error: No se pudieron generar sentencias UPDATE válidas.';
+            console.error('Error: No se generaron sentencias UPDATE');
+            return;
+        }
+        
+        const sql = updateStatements.join('\n');
+        sqlOutput.value = sql;
+        
+        // Actualizar el nombre del archivo
+        fileName.value = generarNombreArchivo();
+        
+        console.log('SQL UPDATE generado exitosamente:', {
+            registrosGenerados: updateStatements.length,
+            caracteres: sql.length,
+            nombreArchivo: fileName.value,
+            columnaID: idColumn
+        });
     } else {
         sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
     }
