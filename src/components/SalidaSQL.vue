@@ -50,8 +50,11 @@
                 class="p-2 border border-gray-300 rounded w-1/3 focus:ring focus:ring-blue-200"
                 :title="`Formato: NOMBRE_TABLA-FechaHora.sql (se genera automáticamente al crear SQL)`">
 
-            <button @click="downloadSQL" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                Descargar SQL
+            <button @click="downloadSQL" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                <span>Descargar SQL</span>
             </button>
 
             <div class="flex items-center gap-2 ml-auto">
