@@ -14,6 +14,10 @@
         type: String,
         required: true,
       },
+      icon: {
+        type: String,
+        default: null,
+      },
     },
     setup(props) {
       const registerTab = inject("registerTab");
@@ -26,6 +30,7 @@
   
       const tabData = {
         label: props.label,
+        icon: props.icon,
       };
   
       registerTab(tabData);

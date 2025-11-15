@@ -28,7 +28,7 @@
           :class="entradaDatosExpandida ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'">
           <Tabs>
           <template #default="{ activeTab }">
-            <Tab label="Ingreso datos">
+            <Tab label="Ingreso datos" icon="edit">
               <div class="tab-content p-4 bg-white shadow rounded-md">
                 <textarea 
                   class="w-full h-48 p-2 border border-gray-300 rounded" 
@@ -37,7 +37,7 @@
                   @input="limpiarEstadoArchivo"></textarea>
               </div>
             </Tab>
-            <Tab label="Subir archivo">
+            <Tab label="Subir archivo" icon="upload">
               <div class="tab-content p-4 bg-white shadow rounded-md">
                 <div class="mb-4">
                   <label class="block text-gray-700 font-semibold mb-2">Seleccionar archivo CSV</label>
@@ -74,7 +74,7 @@
                 </div>
               </div>
             </Tab>
-            <Tab label="URL">
+            <Tab label="URL" icon="link">
               <div class="tab-content p-4 bg-white shadow rounded-md">
                 <div class="mb-4">
                   <label class="block text-gray-700 font-semibold mb-2">Ingresar URL del archivo CSV</label>
