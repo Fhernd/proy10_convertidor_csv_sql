@@ -1266,6 +1266,156 @@ const generateSQL = (type) => {
             esLlavePrimariaCompuesta: primaryKeyCols.length > 1,
             sgbd: sgbd
         });
+    } else if (type === 'select') {
+        // Get table name from paramsOpcionesSalidaTabla
+        const tableName = props.paramsOpcionesSalidaTabla?.tableName || 'table';
+        const quoteChar = getIdentifierQuote();
+        const closeQuoteChar = getIdentifierCloseQuote();
+        
+        // Obtener columnas de llave primaria (puede ser simple o compuesta)
+        const primaryKeyCols = obtenerColumnasLlavePrimaria();
+        
+        if (primaryKeyCols.length === 0) {
+            sqlOutput.value = '-- Error: No se encontró una columna ID o llave primaria. Por favor, configura una llave primaria en las opciones de tabla.';
+            console.error('Error: No se encontró columna ID o llave primaria para SELECT');
+            return;
+        }
+        
+        // Obtener todas las columnas del CSV
+        const todasLasColumnas = props.columnas.filter(col => 
+            col && typeof col === 'string' && col.trim().length > 0
+        );
+        
+        if (todasLasColumnas.length === 0) {
+            sqlOutput.value = '-- Error: No hay columnas disponibles para generar SELECT.';
+            console.error('Error: No hay columnas disponibles');
+            return;
+        }
+        
+        // Formatear nombres de columnas para el SELECT
+        const formattedAllColumns = todasLasColumnas
+            .map(col => formatColumnName(col, quoteChar, closeQuoteChar))
+            .filter(name => name !== null);
+        
+        const formattedPrimaryKeyColumns = primaryKeyCols
+            .map(col => formatColumnName(col, quoteChar, closeQuoteChar))
+            .filter(name => name !== null);
+        
+        if (formattedAllColumns.length === 0 || formattedPrimaryKeyColumns.length === 0) {
+            sqlOutput.value = '-- Error: No se pudieron formatear los nombres de columnas válidos.';
+            console.error('Error: No se pudieron formatear columnas');
+            return;
+        }
+        
+        // Format table name with quotes if needed
+        const formattedTableName = tableName.includes(' ') || tableName.includes('-')
+            ? `${quoteChar}${tableName}${closeQuoteChar}`
+            : tableName;
+        
+        // Aplicar skip y límite
+        let datosParaGenerar = props.datos;
+        
+        const lineasOmitidasValue = Number(props.paramsOpcionesEntrada?.lineasOmitidas) || 0;
+        const limiteLineasValue = Number(props.paramsOpcionesEntrada?.limiteLineas) || 0;
+        
+        if (lineasOmitidasValue > 0) {
+            datosParaGenerar = datosParaGenerar.slice(lineasOmitidasValue);
+        }
+        
+        if (limiteLineasValue > 0) {
+            datosParaGenerar = datosParaGenerar.slice(0, limiteLineasValue);
+        }
+        
+        // Verificar si todos los campos deben ser VARCHAR
+        const allVarchar = props.paramsOpcionesSalidaTabla?.allVarchar || false;
+        const useSingleQuotes = props.paramsOpcionesFormato?.useSingleQuotes || false;
+        
+        // Generar statements SELECT
+        const selectStatements = [];
+        
+        datosParaGenerar.forEach((row, rowIndex) => {
+            // Validar que row sea un objeto válido
+            if (!row || typeof row !== 'object') {
+                console.warn(`Fila ${rowIndex} no es un objeto válido:`, row);
+                return;
+            }
+            
+            // Obtener y formatear los valores de todas las columnas de llave primaria
+            const primaryKeyValues = [];
+            const primaryKeyFormattedColumns = [];
+            
+            for (let i = 0; i < primaryKeyCols.length; i++) {
+                const pkCol = primaryKeyCols[i];
+                let pkValue = row[pkCol];
+                
+                // Si el valor es undefined, intentar buscar la clave sin espacios
+                if (pkValue === undefined && row.hasOwnProperty && !row.hasOwnProperty(pkCol)) {
+                    const keys = Object.keys(row);
+                    const matchingKey = keys.find(k => k.trim() === pkCol.trim());
+                    if (matchingKey) {
+                        pkValue = row[matchingKey];
+                    }
+                }
+                
+                // Validar que el valor de la llave primaria tenga valor
+                if (pkValue === null || pkValue === undefined || pkValue === '') {
+                    console.warn(`Fila ${rowIndex} no tiene valor válido para la columna de llave primaria "${pkCol}":`, row);
+                    return; // Salir del forEach si falta algún valor de PK
+                }
+                
+                // Formatear el valor de la llave primaria
+                const pkDataType = allVarchar ? 'VARCHAR' : (props.tiposColumnasSeleccionados?.[pkCol] || 'VARCHAR');
+                const formattedPkValue = formatValueByType(pkValue, pkDataType, allVarchar, useSingleQuotes);
+                const formattedPkCol = formatColumnName(pkCol, quoteChar, closeQuoteChar);
+                
+                if (!formattedPkCol) {
+                    console.warn(`Fila ${rowIndex}: No se pudo formatear la columna de llave primaria "${pkCol}"`);
+                    return;
+                }
+                
+                primaryKeyValues.push(formattedPkValue);
+                primaryKeyFormattedColumns.push(formattedPkCol);
+            }
+            
+            // Si no se pudieron obtener todos los valores de PK, saltar esta fila
+            if (primaryKeyValues.length !== primaryKeyCols.length) {
+                return;
+            }
+            
+            // Construir la cláusula WHERE con todas las columnas de llave primaria
+            // Si es llave primaria compuesta, usar AND para unir las condiciones
+            const whereClauses = primaryKeyFormattedColumns.map((col, idx) => 
+                `${col} = ${primaryKeyValues[idx]}`
+            ).join(' AND ');
+            
+            // Construir la lista de columnas para el SELECT
+            const columnsList = formattedAllColumns.join(', ');
+            
+            // Construir la sentencia SELECT
+            const selectStatement = `SELECT ${columnsList} FROM ${formattedTableName} WHERE ${whereClauses};`;
+            selectStatements.push(selectStatement);
+        });
+        
+        if (selectStatements.length === 0) {
+            sqlOutput.value = '-- Error: No se pudieron generar sentencias SELECT válidas.';
+            console.error('Error: No se generaron sentencias SELECT');
+            return;
+        }
+        
+        const sql = selectStatements.join('\n');
+        sqlOutput.value = sql;
+        
+        // Actualizar el nombre del archivo
+        fileName.value = generarNombreArchivo();
+        
+        console.log('SQL SELECT generado exitosamente:', {
+            registrosGenerados: selectStatements.length,
+            caracteres: sql.length,
+            nombreArchivo: fileName.value,
+            columnasLlavePrimaria: primaryKeyCols,
+            esLlavePrimariaCompuesta: primaryKeyCols.length > 1,
+            totalColumnas: formattedAllColumns.length
+        });
     } else {
         sqlOutput.value = `-- SQL Generated for ${type.toUpperCase()}\nSELECT * FROM table;`;
     }
