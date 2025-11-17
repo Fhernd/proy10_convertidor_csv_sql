@@ -16,7 +16,7 @@
                 :class="[
                     'font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 transform',
                     hayDatosDisponibles
-                        ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white cursor-pointer hover:scale-105 hover:shadow-lg active:scale-95'
+                        ? 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white cursor-pointer hover:scale-105 hover:shadow-lg active:scale-95'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm'
                 ]"
                 :title="hayDatosDisponibles ? `Generar ${option.label}` : 'Primero evalúa el contenido CSV'">
