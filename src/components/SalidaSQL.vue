@@ -5,7 +5,14 @@
         <!-- First Row: Buttons -->
         <div class="flex flex-wrap justify-center gap-2 mb-4">
             <button v-for="(option, index) in sqlOptions" :key="index" @click="generateSQL(option.type)"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                :disabled="!hayDatosDisponibles"
+                :class="[
+                    'font-bold py-2 px-4 rounded transition-colors duration-200',
+                    hayDatosDisponibles
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ]"
+                :title="hayDatosDisponibles ? `Generar ${option.label}` : 'Primero evalúa el contenido CSV'">
                 {{ option.label }}
             </button>
         </div>
@@ -36,9 +43,17 @@
             <textarea 
                 v-model="sqlOutput"
                 @click="copiarAlHacerClick"
-                class="w-full p-3 border border-gray-300 rounded h-40 focus:ring focus:ring-blue-200 cursor-pointer"
-                :placeholder="!props.datos || props.datos.length === 0 ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...'"
-                :title="sqlOutput && sqlOutput.trim().length > 0 ? 'Haz clic para copiar al portapapeles' : ''"></textarea>
+                :disabled="!hayDatosDisponibles"
+                :class="[
+                    'w-full p-3 border rounded h-40 transition-colors duration-200',
+                    hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0
+                        ? 'border-gray-300 focus:ring focus:ring-blue-200 cursor-pointer'
+                        : hayDatosDisponibles
+                            ? 'border-gray-300 focus:ring focus:ring-blue-200 cursor-text'
+                            : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                ]"
+                :placeholder="!hayDatosDisponibles ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...'"
+                :title="hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0 ? 'Haz clic para copiar al portapapeles' : hayDatosDisponibles ? 'Genera SQL usando los botones de arriba' : 'Primero evalúa el contenido CSV'"></textarea>
             <p v-if="!props.datos || props.datos.length === 0" class="text-sm text-gray-500 mt-1">
                 💡 Primero ingresa datos CSV y presiona "Evaluar contenido CSV"
             </p>
@@ -47,10 +62,24 @@
         <!-- Third Row: File Name, Download Button, EOL Selector -->
         <div class="flex flex-wrap items-center gap-2">
             <input v-model="fileName" type="text" placeholder="Nombre del archivo de salida"
-                class="p-2 border border-gray-300 rounded w-1/3 focus:ring focus:ring-blue-200"
-                :title="`Formato: NOMBRE_TABLA-FechaHora.sql (se genera automáticamente al crear SQL)`">
+                :disabled="!hayDatosDisponibles"
+                :class="[
+                    'p-2 border rounded w-1/3 transition-colors duration-200',
+                    hayDatosDisponibles
+                        ? 'border-gray-300 focus:ring focus:ring-blue-200'
+                        : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                ]"
+                :title="hayDatosDisponibles ? `Formato: NOMBRE_TABLA-FechaHora.sql (se genera automáticamente al crear SQL)` : 'Primero evalúa el contenido CSV'">
 
-            <button @click="downloadSQL" class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200">
+            <button @click="downloadSQL" 
+                :disabled="!hayDatosDisponibles || !sqlOutput || sqlOutput.trim().length === 0"
+                :class="[
+                    'flex items-center gap-2 font-bold py-2 px-4 rounded transition-colors duration-200',
+                    hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0
+                        ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ]"
+                :title="hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0 ? 'Descargar SQL generado' : 'Primero genera SQL'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
@@ -58,12 +87,18 @@
             </button>
 
             <div class="flex items-center gap-2 ml-auto">
-                <label for="eol-select" class="font-bold text-gray-700">EOL:</label>
+                <label for="eol-select" :class="['font-bold', hayDatosDisponibles ? 'text-gray-700' : 'text-gray-400']">EOL:</label>
                 <select 
                     id="eol-select" 
                     v-model="eolType"
-                    class="p-2 border border-gray-300 rounded focus:ring focus:ring-blue-200"
-                    title="Selecciona el tipo de fin de línea para el archivo descargado">
+                    :disabled="!hayDatosDisponibles"
+                    :class="[
+                        'p-2 border rounded transition-colors duration-200',
+                        hayDatosDisponibles
+                            ? 'border-gray-300 focus:ring focus:ring-blue-200'
+                            : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                    ]"
+                    :title="hayDatosDisponibles ? 'Selecciona el tipo de fin de línea para el archivo descargado' : 'Primero evalúa el contenido CSV'">
                     <option :value="'\n'">LF (Unix/Linux)</option>
                     <option :value="'\r\n'">CRLF (Windows)</option>
                     <option :value="'\r'">CR (Old Mac)</option>
@@ -74,7 +109,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref } from 'vue';
+import { defineProps, ref, computed } from 'vue';
 
 const props = defineProps({
     datos: {
@@ -124,6 +159,12 @@ const sqlOutput = ref('');
 const fileName = ref('query.sql');
 const eolType = ref('\n');
 const copiadoExitoso = ref(false);
+
+// Computed para determinar si hay datos CSV disponibles
+const hayDatosDisponibles = computed(() => {
+    return props.datos && Array.isArray(props.datos) && props.datos.length > 0 &&
+           props.columnas && Array.isArray(props.columnas) && props.columnas.length > 0;
+});
 
 // Función para generar el nombre del archivo con formato: NOMBRE_TABLA-FechaHora.sql
 const generarNombreArchivo = () => {

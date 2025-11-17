@@ -1,6 +1,6 @@
 <template>
-    <div class="p-6 bg-white shadow-md rounded-md w-full mt-5">
-        <OpcionesSalidaColumnas :columnas="columnas" :sgbdSeleccionado="sgbdSeleccionado"
+    <div class="p-6 bg-white shadow-md rounded-md w-full mt-5" :class="{ 'opacity-60 pointer-events-none': disabled }">
+        <OpcionesSalidaColumnas :columnas="columnas" :sgbdSeleccionado="sgbdSeleccionado" :disabled="disabled"
             @update:tiposColumnas="handleTiposColumnasUpdate" />
     </div>
 </template>
@@ -12,6 +12,10 @@ import OpcionesSalidaColumnas from "./OpcionesSalidaColumnas.vue";
 const props = defineProps({
     columnas: Array,
     sgbdSeleccionado: String,
+    disabled: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const tiposColumnasSeleccionados = ref({});

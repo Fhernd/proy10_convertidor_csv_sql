@@ -22,7 +22,14 @@
 
                     <!-- Selector de tipo de dato -->
                     <td class="p-3 border border-gray-300">
-                        <select class="w-full p-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+                        <select 
+                            :disabled="disabled"
+                            :class="[
+                                'w-full p-2 border rounded-md transition-colors duration-200',
+                                disabled
+                                    ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                                    : 'border-gray-300 focus:ring focus:ring-blue-200'
+                            ]"
                             v-model="tiposSeleccionados[column]">
                             <option v-for="tipoDato in tiposDatosSgbd" :key="tipoDato" :value="tipoDato">
                                 {{ tipoDato }}
@@ -41,6 +48,10 @@ import { defineEmits, defineProps, ref, watch, watchEffect } from "vue";
 const props = defineProps({
     columnas: Array,
     sgbdSeleccionado: String,
+    disabled: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const columnas = ref([]);

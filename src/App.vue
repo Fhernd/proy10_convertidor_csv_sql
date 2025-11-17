@@ -169,13 +169,20 @@
       <OpcionesSGBD @update:config="handleOpcionesSgbdParams" />
 
       <OpcionesSalida :columnas="columnas" :sgbdSeleccionado="paramsOpcionesSGBD.sgbdSeleccionado"
+        :disabled="!datos || datos.length === 0 || !columnas || columnas.length === 0"
         @update:tiposColumnas="handleTiposColumnasUpdate" />
 
-      <OpcionesSalidaTabla :columnas="columnas" @update:opcionesSalidaTabla="handleOpcionesSalidaTabla" />
+      <OpcionesSalidaTabla :columnas="columnas" 
+        :disabled="!datos || datos.length === 0 || !columnas || columnas.length === 0"
+        @update:opcionesSalidaTabla="handleOpcionesSalidaTabla" />
 
-      <OpcionesInsert :sgbdSeleccionado="paramsOpcionesSGBD.sgbdSeleccionado" @update:opcionesInsert="handleOpcionesInsert" />
+      <OpcionesInsert :sgbdSeleccionado="paramsOpcionesSGBD.sgbdSeleccionado" 
+        :disabled="!datos || datos.length === 0 || !columnas || columnas.length === 0"
+        @update:opcionesInsert="handleOpcionesInsert" />
 
-      <OpcionesFormato @update:opcionesFormato="handleOpcionesFormato" />
+      <OpcionesFormato 
+        :disabled="!datos || datos.length === 0 || !columnas || columnas.length === 0"
+        @update:opcionesFormato="handleOpcionesFormato" />
 
       <SalidaSQL
         :datos="datos"

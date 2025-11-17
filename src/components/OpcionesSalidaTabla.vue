@@ -1,37 +1,73 @@
 <template>
-    <div class="p-6 bg-white shadow-lg rounded-lg mt-4">
-        <h2 class="text-xl font-bold mb-4">Opciones de Salida de la Tabla</h2>
+    <div class="p-6 bg-white shadow-lg rounded-lg mt-4" :class="{ 'opacity-60 pointer-events-none': disabled }">
+        <h2 class="text-xl font-bold mb-4" :class="disabled ? 'text-gray-400' : ''">Opciones de Salida de la Tabla</h2>
 
         <div class="flex flex-col space-y-4">
             <div class="mb-4">
-                <label for="table-name" class="block text-gray-700 font-bold mb-2">Nombre de la Tabla:</label>
+                <label for="table-name" :class="['block font-bold mb-2', disabled ? 'text-gray-400' : 'text-gray-700']">Nombre de la Tabla:</label>
                 <input id="table-name" v-model="tableName" type="text" placeholder="Introduce el nombre de la tabla"
-                    class="w-full p-3 border border-gray-300 rounded focus:ring focus:ring-blue-200">
+                    :disabled="disabled"
+                    :class="[
+                        'w-full p-3 border rounded transition-colors duration-200',
+                        disabled
+                            ? 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                            : 'border-gray-300 focus:ring focus:ring-blue-200'
+                    ]">
             </div>
 
-            <label class="flex items-center">
-                <input v-model="replaceSpaces" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
-                Sustitución de espacios por guiones bajos en nombres de columnas
+            <label class="flex items-center" :class="{ 'cursor-not-allowed': disabled }">
+                <input v-model="replaceSpaces" type="checkbox" :disabled="disabled"
+                    :class="[
+                        'mr-2 h-5 w-5 border-gray-300 rounded transition-colors duration-200',
+                        disabled
+                            ? 'text-gray-400 cursor-not-allowed'
+                            : 'text-blue-600 focus:ring focus:ring-blue-200'
+                    ]">
+                <span :class="disabled ? 'text-gray-400' : ''">Sustitución de espacios por guiones bajos en nombres de columnas</span>
             </label>
 
-            <label class="flex items-center">
-                <input v-model="allVarchar" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
-                Dejar como VARCHAR todos los campos
+            <label class="flex items-center" :class="{ 'cursor-not-allowed': disabled }">
+                <input v-model="allVarchar" type="checkbox" :disabled="disabled"
+                    :class="[
+                        'mr-2 h-5 w-5 border-gray-300 rounded transition-colors duration-200',
+                        disabled
+                            ? 'text-gray-400 cursor-not-allowed'
+                            : 'text-blue-600 focus:ring focus:ring-blue-200'
+                    ]">
+                <span :class="disabled ? 'text-gray-400' : ''">Dejar como VARCHAR todos los campos</span>
             </label>
 
-            <label class="flex items-center">
-                <input v-model="createView" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
-                Crear vista
+            <label class="flex items-center" :class="{ 'cursor-not-allowed': disabled }">
+                <input v-model="createView" type="checkbox" :disabled="disabled"
+                    :class="[
+                        'mr-2 h-5 w-5 border-gray-300 rounded transition-colors duration-200',
+                        disabled
+                            ? 'text-gray-400 cursor-not-allowed'
+                            : 'text-blue-600 focus:ring focus:ring-blue-200'
+                    ]">
+                <span :class="disabled ? 'text-gray-400' : ''">Crear vista</span>
             </label>
 
-            <label class="flex items-center">
-                <input v-model="dropTable" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
-                Eliminar tabla si existe antes de crearla
+            <label class="flex items-center" :class="{ 'cursor-not-allowed': disabled }">
+                <input v-model="dropTable" type="checkbox" :disabled="disabled"
+                    :class="[
+                        'mr-2 h-5 w-5 border-gray-300 rounded transition-colors duration-200',
+                        disabled
+                            ? 'text-gray-400 cursor-not-allowed'
+                            : 'text-blue-600 focus:ring focus:ring-blue-200'
+                    ]">
+                <span :class="disabled ? 'text-gray-400' : ''">Eliminar tabla si existe antes de crearla</span>
             </label>
 
-            <label class="flex items-center">
-                <input v-model="selectPrimaryKey" type="checkbox" class="mr-2 h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
-                Selección de columnas que integran la llave primaria
+            <label class="flex items-center" :class="{ 'cursor-not-allowed': disabled }">
+                <input v-model="selectPrimaryKey" type="checkbox" :disabled="disabled"
+                    :class="[
+                        'mr-2 h-5 w-5 border-gray-300 rounded transition-colors duration-200',
+                        disabled
+                            ? 'text-gray-400 cursor-not-allowed'
+                            : 'text-blue-600 focus:ring focus:ring-blue-200'
+                    ]">
+                <span :class="disabled ? 'text-gray-400' : ''">Selección de columnas que integran la llave primaria</span>
             </label>
 
             <!-- Panel de selección de columnas para llave primaria -->
@@ -51,7 +87,13 @@
                             type="checkbox" 
                             :value="col"
                             v-model="primaryKeyColumns"
-                            class="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200">
+                            :disabled="disabled"
+                            :class="[
+                                'mr-2 h-4 w-4 border-gray-300 rounded transition-colors duration-200',
+                                disabled
+                                    ? 'text-gray-400 cursor-not-allowed'
+                                    : 'text-blue-600 focus:ring focus:ring-blue-200'
+                            ]">
                         <span class="text-sm text-gray-700">{{ col }}</span>
                     </label>
                 </div>
@@ -84,6 +126,10 @@ const props = defineProps({
     columnas: {
         type: Array,
         default: () => []
+    },
+    disabled: {
+        type: Boolean,
+        default: false
     }
 });
 
