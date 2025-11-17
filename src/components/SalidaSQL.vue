@@ -1202,14 +1202,13 @@ const generateSQL = (type) => {
                 const valuesList = allValues.join(', ');
                 const columnsList = formattedAllColumns.join(', ');
                 
-                // Construir la subconsulta VALUES para USING
-                const valuesAliases = formattedAllColumns.map((col, idx) => `${allValues[idx]} AS ${col}`).join(', ');
+                // Construir la subconsulta VALUES para USING (sintaxis correcta de SQL Server)
                 const onClauses = primaryKeyFormattedColumns.map((col, idx) => 
                     `target.${col} = source.${col}`
                 ).join(' AND ');
                 
                 mergeStatement = `MERGE ${formattedTableName} AS target\n`;
-                mergeStatement += `USING (SELECT ${valuesAliases}) AS source\n`;
+                mergeStatement += `USING (VALUES (${valuesList})) AS source(${columnsList})\n`;
                 mergeStatement += `ON ${onClauses}\n`;
                 mergeStatement += `WHEN MATCHED THEN\n`;
                 mergeStatement += `    UPDATE SET ${updateClauses.join(', ')}\n`;
