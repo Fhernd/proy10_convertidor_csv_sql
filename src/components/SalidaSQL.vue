@@ -10,14 +10,14 @@
         </h2>
 
         <!-- First Row: Buttons -->
-        <div class="flex flex-wrap justify-center gap-2 mb-4">
+        <div class="flex flex-wrap justify-center gap-3 mb-6">
             <button v-for="(option, index) in sqlOptions" :key="index" @click="generateSQL(option.type)"
                 :disabled="!hayDatosDisponibles"
                 :class="[
-                    'font-bold py-2 px-4 rounded transition-colors duration-200',
+                    'font-bold py-3 px-6 rounded-lg shadow-md transition-all duration-300 transform',
                     hayDatosDisponibles
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white cursor-pointer hover:scale-105 hover:shadow-lg active:scale-95'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm'
                 ]"
                 :title="hayDatosDisponibles ? `Generar ${option.label}` : 'Primero evalúa el contenido CSV'">
                 {{ option.label }}
@@ -32,10 +32,10 @@
                     @click="copiarAlPortapapeles"
                     :disabled="!sqlOutput || sqlOutput.trim().length === 0"
                     :class="[
-                        'flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500',
+                        'flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2',
                         sqlOutput && sqlOutput.trim().length > 0
-                            ? 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 active:scale-95 hover:scale-105 hover:shadow-lg'
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm'
                     ]"
                     :title="sqlOutput && sqlOutput.trim().length > 0 ? 'Copiar SQL al portapapeles' : 'No hay contenido para copiar'">
                     <svg v-if="copiadoExitoso" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,11 +52,11 @@
                 @click="copiarAlHacerClick"
                 :disabled="!hayDatosDisponibles"
                 :class="[
-                    'w-full p-3 border rounded h-40 transition-colors duration-200',
+                    'w-full p-4 border-2 rounded-lg h-40 font-mono text-sm transition-all duration-300 shadow-sm',
                     hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0
-                        ? 'border-gray-300 focus:ring focus:ring-blue-200 cursor-pointer'
+                        ? 'border-purple-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 cursor-pointer hover:border-purple-400'
                         : hayDatosDisponibles
-                            ? 'border-gray-300 focus:ring focus:ring-blue-200 cursor-text'
+                            ? 'border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 cursor-text hover:border-blue-400'
                             : 'border-gray-200 bg-gray-50 cursor-not-allowed'
                 ]"
                 :placeholder="!hayDatosDisponibles ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...'"
@@ -71,9 +71,9 @@
             <input v-model="fileName" type="text" placeholder="Nombre del archivo de salida"
                 :disabled="!hayDatosDisponibles"
                 :class="[
-                    'p-2 border rounded w-1/3 transition-colors duration-200',
+                    'p-2.5 border-2 rounded-lg w-1/3 transition-all duration-300 shadow-sm',
                     hayDatosDisponibles
-                        ? 'border-gray-300 focus:ring focus:ring-blue-200'
+                        ? 'border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 hover:border-blue-400'
                         : 'border-gray-200 bg-gray-50 cursor-not-allowed'
                 ]"
                 :title="hayDatosDisponibles ? `Formato: NOMBRE_TABLA-FechaHora.sql (se genera automáticamente al crear SQL)` : 'Primero evalúa el contenido CSV'">
@@ -81,10 +81,10 @@
             <button @click="downloadSQL" 
                 :disabled="!hayDatosDisponibles || !sqlOutput || sqlOutput.trim().length === 0"
                 :class="[
-                    'flex items-center gap-2 font-bold py-2 px-4 rounded transition-colors duration-200',
+                    'flex items-center gap-2 font-bold py-2.5 px-5 rounded-lg shadow-md transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2',
                     hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0
-                        ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white cursor-pointer hover:scale-105 hover:shadow-lg active:scale-95'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm'
                 ]"
                 :title="hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0 ? 'Descargar SQL generado' : 'Primero genera SQL'">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,9 +100,9 @@
                     v-model="eolType"
                     :disabled="!hayDatosDisponibles"
                     :class="[
-                        'p-2 border rounded transition-colors duration-200',
+                        'p-2.5 border-2 rounded-lg transition-all duration-300 shadow-sm',
                         hayDatosDisponibles
-                            ? 'border-gray-300 focus:ring focus:ring-blue-200'
+                            ? 'border-indigo-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 hover:border-indigo-400'
                             : 'border-gray-200 bg-gray-50 cursor-not-allowed'
                     ]"
                     :title="hayDatosDisponibles ? 'Selecciona el tipo de fin de línea para el archivo descargado' : 'Primero evalúa el contenido CSV'">

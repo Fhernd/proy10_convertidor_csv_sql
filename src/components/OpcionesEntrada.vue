@@ -1,14 +1,16 @@
 <template>
   <div class="p-6 bg-white shadow-md rounded-md w-full">
     <!-- Título -->
-    <h1 class="text-xl font-bold text-gray-800 mb-4">Parámetros de Entrada del CSV</h1>
+    <h1 class="text-xl font-bold mb-4 flex items-center gap-2">
+      <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Parámetros de Entrada del CSV</span>
+    </h1>
 
     <!-- Checkbox: Primera fila tiene nombres de columnas -->
     <div class="mb-4">
-      <label class="flex items-center space-x-2">
+      <label class="flex items-center space-x-2 cursor-pointer group">
         <input type="checkbox" v-model="params.primeraFilaEncabezados"
-          class="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring focus:ring-blue-200" />
-        <span class="text-gray-700">Primera fila tiene los nombres de las columnas</span>
+          class="h-5 w-5 text-blue-600 border-2 border-blue-300 rounded focus:ring-2 focus:ring-blue-200 focus:ring-offset-1 transition-all duration-200 group-hover:border-blue-400" />
+        <span class="text-gray-700 group-hover:text-gray-900 transition-colors">Primera fila tiene los nombres de las columnas</span>
       </label>
     </div>
 
@@ -16,72 +18,72 @@
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-1">Límite de líneas a leer:</label>
       <input type="number" v-model="params.limiteLineas" placeholder="Ingrese el límite"
-        class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500" />
+        class="w-full p-2.5 border-2 border-blue-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-500 hover:border-blue-400 transition-all duration-300" />
     </div>
 
     <!-- Campo de texto: Saltar líneas -->
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-1">Saltar líneas:</label>
       <input type="number" v-model="params.lineasOmitidas" placeholder="Ingrese el número de líneas a saltar"
-        class="w-full border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500" />
+        class="w-full p-2.5 border-2 border-purple-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-200 focus:border-purple-500 hover:border-purple-400 transition-all duration-300" />
     </div>
 
     <!-- Grupo de Radio Buttons: Separador de campos -->
     <div class="mb-4">
       <label class="block text-gray-700 font-medium mb-2">Separador de campos:</label>
-      <div class="grid grid-cols-3 gap-4">
+      <div class="grid grid-cols-3 gap-3">
         <!-- Radios -->
-        <label class="flex items-center space-x-2">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-indigo-50 transition-colors duration-200 group">
           <input type="radio" value="auto" v-model="params.delimitador"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
-          <span>Auto detectar</span>
+            class="h-4 w-4 text-indigo-600 border-2 border-indigo-300 focus:ring-2 focus:ring-indigo-200 group-hover:border-indigo-400 transition-all" />
+          <span class="text-gray-700 group-hover:text-indigo-600 transition-colors">Auto detectar</span>
         </label>
-        <label class="flex items-center space-x-2">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors duration-200 group">
           <input type="radio" value="," v-model="params.delimitador"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
-          <span>,</span>
+            class="h-4 w-4 text-blue-600 border-2 border-blue-300 focus:ring-2 focus:ring-blue-200 group-hover:border-blue-400 transition-all" />
+          <span class="text-gray-700 group-hover:text-blue-600 transition-colors font-mono">,</span>
         </label>
-        <label class="flex items-center space-x-2">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-purple-50 transition-colors duration-200 group">
           <input type="radio" value=";" v-model="params.delimitador"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
-          <span>;</span>
+            class="h-4 w-4 text-purple-600 border-2 border-purple-300 focus:ring-2 focus:ring-purple-200 group-hover:border-purple-400 transition-all" />
+          <span class="text-gray-700 group-hover:text-purple-600 transition-colors font-mono">;</span>
         </label>
-        <label class="flex items-center space-x-2">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-indigo-50 transition-colors duration-200 group">
           <input type="radio" value=":" v-model="params.delimitador"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
-          <span>:</span>
+            class="h-4 w-4 text-indigo-600 border-2 border-indigo-300 focus:ring-2 focus:ring-indigo-200 group-hover:border-indigo-400 transition-all" />
+          <span class="text-gray-700 group-hover:text-indigo-600 transition-colors font-mono">:</span>
         </label>
-        <label class="flex items-center space-x-2">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors duration-200 group">
           <input type="radio" value="|" v-model="params.delimitador"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
-          <span>|</span>
+            class="h-4 w-4 text-blue-600 border-2 border-blue-300 focus:ring-2 focus:ring-blue-200 group-hover:border-blue-400 transition-all" />
+          <span class="text-gray-700 group-hover:text-blue-600 transition-colors font-mono">|</span>
         </label>
-        <label class="flex items-center space-x-2">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-purple-50 transition-colors duration-200 group">
           <input type="radio" value="Tab" v-model="params.delimitador"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
-          <span>Tab</span>
+            class="h-4 w-4 text-purple-600 border-2 border-purple-300 focus:ring-2 focus:ring-purple-200 group-hover:border-purple-400 transition-all" />
+          <span class="text-gray-700 group-hover:text-purple-600 transition-colors">Tab</span>
         </label>
-        <label class="flex items-center space-x-2">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-indigo-50 transition-colors duration-200 group">
           <input type="radio" value="^" v-model="params.delimitador"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
-          <span>^</span>
+            class="h-4 w-4 text-indigo-600 border-2 border-indigo-300 focus:ring-2 focus:ring-indigo-200 group-hover:border-indigo-400 transition-all" />
+          <span class="text-gray-700 group-hover:text-indigo-600 transition-colors font-mono">^</span>
         </label>
-        <label class="flex items-center space-x-2">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 transition-colors duration-200 group">
           <input type="radio" value="custom" v-model="params.delimitador"
-            class="h-4 w-4 text-blue-600 border-gray-300 focus:ring focus:ring-blue-200" />
-          <span>Personalizado</span>
+            class="h-4 w-4 text-purple-600 border-2 border-purple-300 focus:ring-2 focus:ring-purple-200 group-hover:border-purple-400 transition-all" />
+          <span class="text-gray-700 group-hover:text-purple-600 transition-colors font-semibold">Personalizado</span>
         </label>
       </div>
 
       <!-- Campo de texto para separador personalizado -->
-      <div v-if="params.delimitador === 'custom'" class="mt-4">
-        <label class="block text-gray-700 font-medium mb-1">Ingresar separador personalizado:</label>
+      <div v-if="params.delimitador === 'custom'" class="mt-4 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border-2 border-purple-200 shadow-sm">
+        <label class="block text-gray-700 font-medium mb-2">Ingresar separador personalizado:</label>
         <input type="text" v-model="customDelimiter" @input="handleCustomDelimiterChange"
           placeholder="Ejemplo: ~, #, \t, etc." maxlength="10"
-          class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
+          class="w-full p-2.5 border-2 border-purple-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-200 focus:border-purple-500 hover:border-purple-400 transition-all duration-300"
           title="Ingresa el carácter o caracteres que se usarán como separador. Para Tab usa \t" />
-        <p class="mt-1 text-xs text-gray-500">
-          💡 Ingresa el carácter separador. Para Tab, escribe <code class="bg-gray-100 px-1 rounded">\t</code>
+        <p class="mt-2 text-xs text-gray-600">
+          💡 Ingresa el carácter separador. Para Tab, escribe <code class="bg-purple-100 text-purple-700 px-2 py-1 rounded font-mono">\t</code>
         </p>
       </div>
     </div>

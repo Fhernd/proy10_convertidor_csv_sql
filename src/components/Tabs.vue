@@ -1,12 +1,12 @@
 <template>
     <div>
         <!-- Navegación de Tabs -->
-        <div class="flex justify-center space-x-4 border-b border-gray-200">
+        <div class="flex justify-center space-x-2 border-b-2 border-gray-200 pb-1">
             <button v-for="(tab, index) in tabs" :key="index" :class="[
-                'flex items-center gap-2 py-2 px-4 text-sm font-medium focus:outline-none transition-colors duration-200',
+                'flex items-center gap-2 py-3 px-5 text-sm font-semibold rounded-t-lg focus:outline-none transition-all duration-300 relative',
                 index === activeTabIndex
-                    ? 'border-b-2 border-blue-500 text-blue-500'
-                    : 'text-gray-600 hover:text-blue-500 hover:border-blue-500'
+                    ? 'bg-gradient-to-b from-blue-50 to-transparent text-blue-600 border-b-2 border-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-purple-600 hover:bg-purple-50'
             ]" @click="activeTabIndex = index">
                 <!-- Ícono de Ingreso datos -->
                 <svg v-if="tab.icon === 'edit'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

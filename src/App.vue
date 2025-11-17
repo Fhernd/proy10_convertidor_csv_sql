@@ -29,7 +29,7 @@
           <h2 class="text-lg font-bold text-gray-700">Entrada de Datos CSV</h2>
           <button
             @click="toggleEntradaDatos"
-            class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 bg-gradient-to-r from-gray-100 to-gray-50 hover:from-gray-200 hover:to-gray-100 rounded-lg shadow-sm transition-all duration-300 focus:ring-2 focus:ring-purple-500 focus:outline-none hover:shadow-md transform hover:scale-105 active:scale-95"
             :aria-expanded="entradaDatosExpandida"
             :aria-label="entradaDatosExpandida ? 'Colapsar sección de entrada' : 'Expandir sección de entrada'">
             <span>{{ entradaDatosExpandida ? 'Ocultar' : 'Mostrar' }}</span>
@@ -53,7 +53,7 @@
             <Tab label="Ingreso datos" icon="edit">
               <div class="tab-content p-4 bg-white shadow rounded-md">
                 <textarea 
-                  class="w-full h-48 p-2 border border-gray-300 rounded" 
+                  class="w-full h-48 p-3 border-2 border-blue-300 rounded-lg font-mono text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-300 hover:border-blue-400 shadow-sm" 
                   placeholder="Escribe aquí..."
                   v-model="contenidoCsv"
                   @input="limpiarEstadoArchivo"></textarea>
@@ -68,7 +68,7 @@
                     ref="fileInput"
                     accept=".csv,.CSV"
                     @change="handleFileSelect"
-                    class="p-2 border border-gray-300 rounded cursor-pointer w-full" />
+                    class="p-3 border-2 border-purple-300 rounded-lg cursor-pointer w-full focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none transition-all duration-300 hover:border-purple-400 shadow-sm" />
                   <p v-if="archivoSeleccionado" class="mt-2 text-sm text-gray-600">
                     ✓ Archivo seleccionado: <strong>{{ archivoSeleccionado.name }}</strong>
                     <span class="text-gray-500"> ({{ formatFileSize(archivoSeleccionado.size) }})</span>
@@ -87,7 +87,7 @@
                   </label>
                   <textarea 
                     v-model="contenidoCsv"
-                    class="w-full h-64 p-3 border border-gray-300 rounded font-mono text-sm focus:ring focus:ring-blue-200 focus:outline-none"
+                    class="w-full h-64 p-3 border-2 border-purple-300 rounded-lg font-mono text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none transition-all duration-300 hover:border-purple-400 shadow-sm"
                     placeholder="El contenido del archivo CSV aparecerá aquí después de seleccionarlo..."
                     @input="limpiarEstadoArchivo"></textarea>
                   <p v-if="contenidoCsv" class="mt-2 text-xs text-gray-500">
@@ -106,12 +106,12 @@
                       ref="urlInput"
                       v-model="urlCsv"
                       @keyup.enter="cargarCsvDesdeUrl"
-                      class="flex-1 p-2 border border-gray-300 rounded focus:ring focus:ring-blue-200 focus:outline-none"
+                      class="flex-1 p-2.5 border-2 border-indigo-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all duration-300 hover:border-indigo-400 shadow-sm"
                       placeholder="https://ejemplo.com/archivo.csv" />
                     <button
                       @click="cargarCsvDesdeUrl"
                       :disabled="cargandoUrl"
-                      class="px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed">
+                      class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-md hover:shadow-lg focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 active:scale-95">
                       <span v-if="!cargandoUrl">Cargar</span>
                       <span v-else>Cargando...</span>
                     </button>
@@ -133,7 +133,7 @@
                   </label>
                   <textarea 
                     v-model="contenidoCsv"
-                    class="w-full h-64 p-3 border border-gray-300 rounded font-mono text-sm focus:ring focus:ring-blue-200 focus:outline-none"
+                    class="w-full h-64 p-3 border-2 border-indigo-300 rounded-lg font-mono text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all duration-300 hover:border-indigo-400 shadow-sm"
                     placeholder="El contenido del archivo CSV aparecerá aquí después de cargarlo desde la URL..."
                     @input="limpiarEstadoUrl"></textarea>
                   <p v-if="contenidoCsv" class="mt-2 text-xs text-gray-500">
@@ -145,7 +145,7 @@
           </template>
           </Tabs>
           <button
-            class="w-full flex items-center justify-center gap-2 bg-blue-600 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-700 focus:ring focus:ring-blue-200 focus:outline-none mt-4 transition-colors duration-200"
+            class="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:outline-none mt-4 transition-all duration-300 transform hover:scale-105 active:scale-95"
             @click="evaluarContenidoCsv">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
