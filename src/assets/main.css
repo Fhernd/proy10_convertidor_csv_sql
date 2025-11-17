@@ -5,6 +5,12 @@
   margin: 0 auto;
   padding: 2rem;
   font-weight: normal;
+  background-color: transparent;
+}
+
+/* Asegurar que #app respete el modo oscuro */
+:root.dark #app {
+  background-color: transparent !important;
 }
 
 a,

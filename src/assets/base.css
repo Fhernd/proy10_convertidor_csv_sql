@@ -84,3 +84,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Estilos para modo oscuro usando la clase dark */
+:root.dark body {
+  background-color: rgb(17, 24, 39) !important; /* gray-900 */
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+:root.dark #app {
+  background-color: transparent !important;
+}

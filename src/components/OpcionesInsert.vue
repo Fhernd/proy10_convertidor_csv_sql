@@ -14,7 +14,7 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 group-hover:border-indigo-400 dark:group-hover:border-indigo-500'
                     ]">
-                <span :class="[disabled ? 'text-gray-400 dark:text-gray-600' : 'text-gray-700 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400', 'transition-colors']">Usar REPLACE en lugar de INSERT</span>
+                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-300', 'transition-colors']">Usar REPLACE en lugar de INSERT</span>
             </label>
 
             <div class="flex items-center space-x-2 p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group" :class="{ 'cursor-not-allowed': disabled }">
@@ -25,7 +25,7 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-purple-300 dark:border-purple-600 text-purple-600 dark:text-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 group-hover:border-purple-400 dark:group-hover:border-purple-500'
                     ]">
-                <label :class="[disabled ? 'text-gray-400 dark:text-gray-600' : 'text-gray-700 dark:text-gray-200 group-hover:text-purple-600 dark:group-hover:text-purple-400', 'transition-colors flex-1']">Usar una sentencia INSERT/REPLACE con múltiples cláusulas</label>
+                <label :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-300', 'transition-colors flex-1']">Usar una sentencia INSERT/REPLACE con múltiples cláusulas</label>
                 <input v-model="insertMultipleClauses" :disabled="disabled || !enableInsertMultipleClauses" type="number"
                     :class="[
                         'p-2 border-2 rounded-lg focus:ring-2 w-24 transition-all duration-300 shadow-sm',
@@ -36,7 +36,7 @@
             </div>
 
             <div>
-                <label :class="['block mb-2 font-medium', disabled ? 'text-gray-400 dark:text-gray-600' : 'text-gray-700 dark:text-gray-200']">Agregar frase después de las palabras clave INSERT/REPLACE</label>
+                <label :class="['block mb-2 font-medium', disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100']">Agregar frase después de las palabras clave INSERT/REPLACE</label>
                 <select 
                     v-model="additionalPhrase" 
                     :disabled="disabled || useReplace || validPhrases.length === 0"
@@ -51,13 +51,13 @@
                         {{ phrase }}
                     </option>
                 </select>
-                <div v-if="useReplace" class="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800">
+                <div v-if="useReplace" class="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-700 rounded text-sm text-yellow-800 dark:text-yellow-300">
                     ⚠️ REPLACE no soporta modificadores adicionales.
                 </div>
-                <div v-else-if="validPhrases.length === 0" class="mt-2 p-2 bg-gray-50 border border-gray-200 rounded text-sm text-gray-600">
+                <div v-else-if="validPhrases.length === 0" class="mt-2 p-2 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded text-sm text-gray-600 dark:text-gray-100">
                     ℹ️ No hay modificadores disponibles para {{ sgbdName }}.
                 </div>
-                <div v-else-if="additionalPhrase" class="mt-2 p-2 bg-green-50 border border-green-200 rounded text-sm text-green-800">
+                <div v-else-if="additionalPhrase" class="mt-2 p-2 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded text-sm text-green-800 dark:text-green-300">
                     ✓ Modificador seleccionado: <strong>{{ additionalPhrase }}</strong>
                 </div>
             </div>

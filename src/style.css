@@ -1,1 +1,147 @@
-@import "tailwindcss"
+@import "tailwindcss";
+
+/* Asegurar que el modo oscuro funcione correctamente */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+/* Estilos globales para el body y html en modo oscuro */
+:root.dark body {
+  background-color: rgb(17, 24, 39) !important; /* gray-900 */
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+:root.dark html {
+  background-color: rgb(17, 24, 39) !important; /* gray-900 */
+}
+
+/* Estilos para elementos option en modo oscuro */
+:root.dark select option {
+  background-color: rgb(55, 65, 81) !important; /* gray-700 */
+  color: rgb(229, 231, 235) !important; /* gray-200 */
+}
+
+/* Estilos para elementos strong en modo oscuro */
+:root.dark strong {
+  color: rgb(229, 231, 235) !important; /* gray-200 */
+}
+
+/* Estilos para elementos code en modo oscuro */
+:root.dark code {
+  background-color: rgb(55, 65, 81) !important; /* gray-700 */
+  color: rgb(209, 213, 219) !important; /* gray-300 */
+}
+
+/* Asegurar que todos los componentes con bg-white tengan fondo oscuro */
+:root.dark .bg-white {
+  background-color: rgb(31, 41, 55) !important; /* gray-800 */
+}
+
+:root.dark .bg-gray-50 {
+  background-color: rgb(17, 24, 39) !important; /* gray-900 */
+}
+
+:root.dark .bg-gray-100 {
+  background-color: rgb(31, 41, 55) !important; /* gray-800 */
+}
+
+/* Asegurar que los contenedores principales tengan fondo oscuro */
+:root.dark .container {
+  background-color: transparent !important;
+}
+
+/* Asegurar que los elementos con shadow tengan fondo oscuro */
+:root.dark [class*="shadow"] {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Asegurar que los elementos con rounded tengan fondo oscuro si tienen bg-white */
+:root.dark [class*="rounded"][class*="bg-white"] {
+  background-color: rgb(31, 41, 55) !important; /* gray-800 */
+}
+
+/* Mejorar el contraste del texto en modo oscuro - Forzar textos oscuros a ser claros */
+:root.dark .text-gray-600,
+:root.dark .text-gray-700,
+:root.dark .text-gray-800,
+:root.dark .text-gray-900 {
+  color: rgb(243, 244, 246) !important; /* gray-100 - blanco/crema */
+}
+
+:root.dark .text-gray-500 {
+  color: rgb(229, 231, 235) !important; /* gray-200 */
+}
+
+:root.dark .text-gray-400 {
+  color: rgb(209, 213, 219) !important; /* gray-300 */
+}
+
+:root.dark .text-black {
+  color: rgb(255, 255, 255) !important; /* blanco puro */
+}
+
+/* Asegurar que los labels y textos de formularios sean claros */
+:root.dark label {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+:root.dark p {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+:root.dark span:not([class*="bg-gradient"]) {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Asegurar que los textos dentro de inputs y textareas sean claros */
+:root.dark input[type="text"],
+:root.dark input[type="number"],
+:root.dark input[type="url"],
+:root.dark textarea {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+:root.dark input::placeholder,
+:root.dark textarea::placeholder {
+  color: rgb(156, 163, 175) !important; /* gray-400 */
+}
+
+/* Asegurar que los textos en tablas sean claros */
+:root.dark td,
+:root.dark th {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Asegurar que los textos en botones deshabilitados sean visibles */
+:root.dark .text-gray-500[disabled],
+:root.dark button[disabled] .text-gray-500 {
+  color: rgb(156, 163, 175) !important; /* gray-400 */
+}
+
+/* Asegurar que los textos deshabilitados sean visibles pero tenues */
+:root.dark .text-gray-400:not([disabled]),
+:root.dark [disabled] .text-gray-400 {
+  color: rgb(156, 163, 175) !important; /* gray-400 - visible pero tenue */
+}
+
+:root.dark .text-gray-500:not([disabled]) {
+  color: rgb(209, 213, 219) !important; /* gray-300 - más claro */
+}
+
+:root.dark .text-gray-600:not([disabled]) {
+  color: rgb(229, 231, 235) !important; /* gray-200 - aún más claro */
+}
+
+/* Asegurar que los textos en elementos deshabilitados sean visibles */
+:root.dark input[disabled],
+:root.dark textarea[disabled],
+:root.dark select[disabled],
+:root.dark button[disabled] {
+  color: rgb(156, 163, 175) !important; /* gray-400 */
+}

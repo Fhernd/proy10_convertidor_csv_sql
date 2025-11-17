@@ -16,12 +16,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue';
+import { ref, onMounted } from 'vue';
 
 // Por defecto: modo oscuro
 const DEFAULT_DARK = true;
 
-// Inicializar con el estado actual del DOM
+// Inicializar con el estado actual del DOM (ya aplicado por el script en index.html)
 const getInitialTheme = () => {
   try {
     return document.documentElement.classList.contains('dark');
@@ -32,61 +32,45 @@ const getInitialTheme = () => {
 
 const isDark = ref(getInitialTheme());
 
-// Función para aplicar el tema de forma robusta
+// Función para aplicar el tema
 const applyTheme = (dark) => {
-  try {
-    const htmlElement = document.documentElement;
-    if (dark) {
-      htmlElement.classList.add('dark');
-    } else {
-      htmlElement.classList.remove('dark');
-    }
-  } catch (error) {
-    console.error('Error al aplicar tema:', error);
+  const htmlElement = document.documentElement;
+  if (dark) {
+    htmlElement.classList.add('dark');
+  } else {
+    htmlElement.classList.remove('dark');
   }
 };
 
 // Función para alternar el tema
 const toggleTheme = () => {
-  const newValue = !isDark.value;
-  isDark.value = newValue;
-  applyTheme(newValue);
+  // Cambiar el valor
+  isDark.value = !isDark.value;
   
+  // Aplicar el tema al DOM
+  applyTheme(isDark.value);
+  
+  // Guardar en localStorage
   try {
-    localStorage.setItem('theme', newValue ? 'dark' : 'light');
-    console.log('Tema cambiado a:', newValue ? 'oscuro' : 'claro');
+    localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
   } catch (error) {
-    console.warn('No se pudo guardar el tema en localStorage:', error);
+    console.warn('No se pudo guardar el tema:', error);
   }
 };
 
-// Watch para aplicar cambios automáticamente
-watch(isDark, (newValue) => {
-  nextTick(() => {
-    applyTheme(newValue);
-  });
-}, { immediate: false });
-
-// Cargar y sincronizar tema al montar el componente
+// Sincronizar al montar el componente
 onMounted(() => {
-  // Verificar el estado actual del DOM (aplicado por el script en index.html)
-  const hasDarkClass = document.documentElement.classList.contains('dark');
-  
-  // Sincronizar el estado del componente con el DOM
-  isDark.value = hasDarkClass;
-  
-  // Asegurar que el tema esté aplicado (por si acaso)
-  applyTheme(isDark.value);
-  
-  // Verificar y guardar tema si es necesario
-  try {
-    const savedTheme = localStorage.getItem('theme');
-    if (!savedTheme) {
-      localStorage.setItem('theme', DEFAULT_DARK ? 'dark' : 'light');
-    }
-  } catch (error) {
-    // Ignorar si no se puede acceder a localStorage
-  }
+  // Esperar un tick para asegurar que el DOM esté completamente listo
+  setTimeout(() => {
+    // Leer el estado actual del DOM (ya aplicado por el script en index.html)
+    const hasDarkClass = document.documentElement.classList.contains('dark');
+    
+    // Sincronizar el estado reactivo con el DOM
+    isDark.value = hasDarkClass;
+    
+    // Verificar en consola
+    console.log('ThemeToggle montado. Estado dark:', hasDarkClass, 'Clase presente:', document.documentElement.classList.contains('dark'));
+  }, 0);
 });
 </script>
 

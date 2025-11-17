@@ -2,7 +2,7 @@
     <h1 class="text-xl font-bold mb-4 flex items-center gap-2">
         <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent">Configuración de los tipos de datos de las columnas</span>
     </h1>
-    <p class="text-gray-600 dark:text-gray-300 mb-6">
+    <p class="text-gray-600 dark:text-gray-100 mb-6">
         Selecciona el tipo de dato para cada columna del archivo CSV.
     </p>
 
@@ -11,8 +11,8 @@
         <table class="w-full border-collapse">
             <thead class="bg-gradient-to-r from-blue-50 via-purple-50 to-indigo-50 dark:from-blue-900/30 dark:via-purple-900/30 dark:to-indigo-900/30">
                 <tr>
-                    <th class="p-4 text-left font-semibold text-gray-700 dark:text-gray-200 border-b-2 border-purple-200 dark:border-purple-700">Columna</th>
-                    <th class="p-4 text-left font-semibold text-gray-700 dark:text-gray-200 border-b-2 border-indigo-200 dark:border-indigo-700">Tipo de Dato</th>
+                    <th class="p-4 text-left font-semibold text-gray-700 dark:text-gray-100 border-b-2 border-purple-200 dark:border-purple-700">Columna</th>
+                    <th class="p-4 text-left font-semibold text-gray-700 dark:text-gray-100 border-b-2 border-indigo-200 dark:border-indigo-700">Tipo de Dato</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,7 +22,7 @@
                         index % 2 === 0 ? 'bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/30' : 'bg-gray-50 dark:bg-gray-700/50 hover:bg-purple-50 dark:hover:bg-purple-900/30'
                     ]">
                     <!-- Nombre de la columna -->
-                    <td class="p-3 border-b border-gray-200 dark:border-gray-700 font-medium text-gray-700 dark:text-gray-200">
+                    <td class="p-3 border-b border-gray-200 dark:border-gray-700 font-medium text-gray-700 dark:text-gray-100">
                         {{ column }}
                     </td>
 

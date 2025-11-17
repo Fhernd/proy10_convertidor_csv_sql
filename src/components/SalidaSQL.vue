@@ -27,7 +27,7 @@
         <!-- Second Row: SQL Output -->
         <div class="mb-4">
             <div class="flex items-center justify-between mb-2">
-                <label class="block text-gray-700 dark:text-gray-200 font-bold">Salida SQL:</label>
+                <label class="block text-gray-700 dark:text-gray-100 font-bold">Salida SQL:</label>
                 <button
                     @click="copiarAlPortapapeles"
                     :disabled="!sqlOutput || sqlOutput.trim().length === 0"
@@ -61,7 +61,7 @@
                 ]"
                 :placeholder="!hayDatosDisponibles ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...'"
                 :title="hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0 ? 'Haz clic para copiar al portapapeles' : hayDatosDisponibles ? 'Genera SQL usando los botones de arriba' : 'Primero evalúa el contenido CSV'"></textarea>
-            <p v-if="!props.datos || props.datos.length === 0" class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            <p v-if="!props.datos || props.datos.length === 0" class="text-sm text-gray-500 dark:text-gray-200 mt-1">
                 💡 Primero ingresa datos CSV y presiona "Evaluar contenido CSV"
             </p>
         </div>
@@ -94,7 +94,7 @@
             </button>
 
             <div class="flex items-center gap-2 ml-auto">
-                <label for="eol-select" :class="['font-bold', hayDatosDisponibles ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-600']">EOL:</label>
+                <label for="eol-select" :class="['font-bold', hayDatosDisponibles ? 'text-gray-700 dark:text-gray-100' : 'text-gray-400 dark:text-gray-500']">EOL:</label>
                 <select 
                     id="eol-select" 
                     v-model="eolType"

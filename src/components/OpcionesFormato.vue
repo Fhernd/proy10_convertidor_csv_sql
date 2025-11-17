@@ -7,7 +7,7 @@
 
         <div class="flex flex-col space-y-4">
             <div>
-                <label :class="['block mb-2 font-medium', disabled ? 'text-gray-400 dark:text-gray-600' : 'text-gray-700 dark:text-gray-200']">Formatear fechas</label>
+                <label :class="['block mb-2 font-medium', disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100']">Formatear fechas</label>
                 <select v-model="selectedDateFormat" :disabled="disabled"
                     :class="[
                         'mt-1 block w-full p-2.5 border-2 rounded-lg transition-all duration-300 shadow-sm',
@@ -38,8 +38,8 @@
                             ? 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 cursor-not-allowed'
                             : 'border-indigo-300 dark:border-indigo-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-500'
                     ]">
-                <p v-if="selectedDateFormat && selectedDateFormat !== 'custom'" class="mt-1 text-xs text-gray-600 dark:text-gray-300">
-                    Formato seleccionado: <strong>{{ selectedDateFormat }}</strong>
+                <p v-if="selectedDateFormat && selectedDateFormat !== 'custom'" class="mt-1 text-xs text-gray-600 dark:text-gray-100">
+                    Formato seleccionado: <strong class="dark:text-white">{{ selectedDateFormat }}</strong>
                 </p>
             </div>
 
@@ -51,7 +51,7 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 group-hover:border-blue-400 dark:group-hover:border-blue-500'
                     ]">
-                <span :class="[disabled ? 'text-gray-400 dark:text-gray-600' : 'text-gray-700 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400', 'transition-colors']">Reemplazar campos faltantes por NULL</span>
+                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-300', 'transition-colors']">Reemplazar campos faltantes por NULL</span>
             </label>
 
             <label class="flex items-center p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group" :class="{ 'cursor-not-allowed': disabled }">
@@ -62,7 +62,7 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-purple-300 dark:border-purple-600 text-purple-600 dark:text-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 group-hover:border-purple-400 dark:group-hover:border-purple-500'
                     ]">
-                <span :class="[disabled ? 'text-gray-400 dark:text-gray-600' : 'text-gray-700 dark:text-gray-200 group-hover:text-purple-600 dark:group-hover:text-purple-400', 'transition-colors']">Utilizar comillas simples para las cadenas de caracteres</span>
+                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-300', 'transition-colors']">Utilizar comillas simples para las cadenas de caracteres</span>
             </label>
         </div>
     </div>
