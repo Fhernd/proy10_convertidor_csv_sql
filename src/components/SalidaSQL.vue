@@ -1,10 +1,10 @@
 <template>
-    <div class="p-6 bg-white shadow-lg rounded-lg mt-4">
+    <div class="p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg mt-4 transition-colors duration-300">
         <h2 class="text-2xl font-bold mb-4 text-center flex items-center justify-center gap-2">
-            <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-7 h-7 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <span class="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
                 Generador de SQL desde CSV
             </span>
         </h2>
@@ -27,7 +27,7 @@
         <!-- Second Row: SQL Output -->
         <div class="mb-4">
             <div class="flex items-center justify-between mb-2">
-                <label class="block text-gray-700 font-bold">Salida SQL:</label>
+                <label class="block text-gray-700 dark:text-gray-200 font-bold">Salida SQL:</label>
                 <button
                     @click="copiarAlPortapapeles"
                     :disabled="!sqlOutput || sqlOutput.trim().length === 0"
@@ -54,14 +54,14 @@
                 :class="[
                     'w-full p-4 border-2 rounded-lg h-40 font-mono text-sm transition-all duration-300 shadow-sm',
                     hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0
-                        ? 'border-purple-300 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 cursor-pointer hover:border-purple-400'
+                        ? 'border-purple-300 dark:border-purple-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 cursor-pointer hover:border-purple-400 dark:hover:border-purple-500'
                         : hayDatosDisponibles
-                            ? 'border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 cursor-text hover:border-blue-400'
-                            : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                            ? 'border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 cursor-text hover:border-blue-400 dark:hover:border-blue-500'
+                            : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 cursor-not-allowed'
                 ]"
                 :placeholder="!hayDatosDisponibles ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...'"
                 :title="hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0 ? 'Haz clic para copiar al portapapeles' : hayDatosDisponibles ? 'Genera SQL usando los botones de arriba' : 'Primero evalúa el contenido CSV'"></textarea>
-            <p v-if="!props.datos || props.datos.length === 0" class="text-sm text-gray-500 mt-1">
+            <p v-if="!props.datos || props.datos.length === 0" class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 💡 Primero ingresa datos CSV y presiona "Evaluar contenido CSV"
             </p>
         </div>
@@ -73,8 +73,8 @@
                 :class="[
                     'p-2.5 border-2 rounded-lg w-1/3 transition-all duration-300 shadow-sm',
                     hayDatosDisponibles
-                        ? 'border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 hover:border-blue-400'
-                        : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                        ? 'border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 hover:border-blue-400 dark:hover:border-blue-500'
+                        : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 cursor-not-allowed'
                 ]"
                 :title="hayDatosDisponibles ? `Formato: NOMBRE_TABLA-FechaHora.sql (se genera automáticamente al crear SQL)` : 'Primero evalúa el contenido CSV'">
 
@@ -94,7 +94,7 @@
             </button>
 
             <div class="flex items-center gap-2 ml-auto">
-                <label for="eol-select" :class="['font-bold', hayDatosDisponibles ? 'text-gray-700' : 'text-gray-400']">EOL:</label>
+                <label for="eol-select" :class="['font-bold', hayDatosDisponibles ? 'text-gray-700 dark:text-gray-200' : 'text-gray-400 dark:text-gray-600']">EOL:</label>
                 <select 
                     id="eol-select" 
                     v-model="eolType"
@@ -102,8 +102,8 @@
                     :class="[
                         'p-2.5 border-2 rounded-lg transition-all duration-300 shadow-sm',
                         hayDatosDisponibles
-                            ? 'border-indigo-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 hover:border-indigo-400'
-                            : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                            ? 'border-indigo-300 dark:border-indigo-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 hover:border-indigo-400 dark:hover:border-indigo-500'
+                            : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 cursor-not-allowed'
                     ]"
                     :title="hayDatosDisponibles ? 'Selecciona el tipo de fin de línea para el archivo descargado' : 'Primero evalúa el contenido CSV'">
                     <option :value="'\n'">LF (Unix/Linux)</option>

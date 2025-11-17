@@ -1,6 +1,7 @@
 <template>
-  <div class="min-h-screen bg-gray-50 text-gray-800">
-    <header class="sticky top-0 z-10 bg-white shadow-md">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-300">
+    <ThemeToggle />
+    <header class="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-md dark:shadow-gray-900 transition-colors duration-300">
       <div class="container mx-auto max-w-screen-lg px-4 py-4">
         <!-- Título principal de la aplicación -->
         <div class="flex items-center justify-center mb-4">
@@ -26,10 +27,10 @@
         
         <!-- Botón para colapsar/expandir sección de entrada -->
         <div class="flex items-center justify-between mb-2">
-          <h2 class="text-lg font-bold text-gray-700">Entrada de Datos CSV</h2>
+          <h2 class="text-lg font-bold text-gray-700 dark:text-gray-200">Entrada de Datos CSV</h2>
           <button
             @click="toggleEntradaDatos"
-            class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 bg-gradient-to-r from-gray-100 to-gray-50 hover:from-gray-200 hover:to-gray-100 rounded-lg shadow-sm transition-all duration-300 focus:ring-2 focus:ring-purple-500 focus:outline-none hover:shadow-md transform hover:scale-105 active:scale-95"
+            class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-600 hover:from-gray-200 hover:to-gray-100 dark:hover:from-gray-600 dark:hover:to-gray-500 rounded-lg shadow-sm transition-all duration-300 focus:ring-2 focus:ring-purple-500 focus:outline-none hover:shadow-md transform hover:scale-105 active:scale-95"
             :aria-expanded="entradaDatosExpandida"
             :aria-label="entradaDatosExpandida ? 'Colapsar sección de entrada' : 'Expandir sección de entrada'">
             <span>{{ entradaDatosExpandida ? 'Ocultar' : 'Mostrar' }}</span>
@@ -51,62 +52,62 @@
           <Tabs>
           <template #default="{ activeTab }">
             <Tab label="Ingreso datos" icon="edit">
-              <div class="tab-content p-4 bg-white shadow rounded-md">
+              <div class="tab-content p-4 bg-white dark:bg-gray-800 shadow rounded-md transition-colors duration-300">
                 <textarea 
-                  class="w-full h-48 p-3 border-2 border-blue-300 rounded-lg font-mono text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-300 hover:border-blue-400 shadow-sm" 
+                  class="w-full h-48 p-3 border-2 border-blue-300 dark:border-blue-600 rounded-lg font-mono text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 focus:outline-none transition-all duration-300 hover:border-blue-400 dark:hover:border-blue-500 shadow-sm" 
                   placeholder="Escribe aquí..."
                   v-model="contenidoCsv"
                   @input="limpiarEstadoArchivo"></textarea>
               </div>
             </Tab>
             <Tab label="Subir archivo" icon="upload">
-              <div class="tab-content p-4 bg-white shadow rounded-md">
+              <div class="tab-content p-4 bg-white dark:bg-gray-800 shadow rounded-md transition-colors duration-300">
                 <div class="mb-4">
-                  <label class="block text-gray-700 font-semibold mb-2">Seleccionar archivo CSV</label>
+                  <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">Seleccionar archivo CSV</label>
                   <input 
                     type="file" 
                     ref="fileInput"
                     accept=".csv,.CSV"
                     @change="handleFileSelect"
-                    class="p-3 border-2 border-purple-300 rounded-lg cursor-pointer w-full focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none transition-all duration-300 hover:border-purple-400 shadow-sm" />
-                  <p v-if="archivoSeleccionado" class="mt-2 text-sm text-gray-600">
+                    class="p-3 border-2 border-purple-300 dark:border-purple-600 rounded-lg cursor-pointer w-full bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 focus:outline-none transition-all duration-300 hover:border-purple-400 dark:hover:border-purple-500 shadow-sm" />
+                  <p v-if="archivoSeleccionado" class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                     ✓ Archivo seleccionado: <strong>{{ archivoSeleccionado.name }}</strong>
-                    <span class="text-gray-500"> ({{ formatFileSize(archivoSeleccionado.size) }})</span>
+                    <span class="text-gray-500 dark:text-gray-400"> ({{ formatFileSize(archivoSeleccionado.size) }})</span>
                   </p>
-                  <p v-if="errorArchivo" class="mt-2 text-sm text-red-600">
+                  <p v-if="errorArchivo" class="mt-2 text-sm text-red-600 dark:text-red-400">
                     ⚠️ {{ errorArchivo }}
                   </p>
                 </div>
                 
                 <div v-if="contenidoCsv || archivoSeleccionado" class="mt-4">
-                  <label class="block text-gray-700 font-semibold mb-2">
+                  <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">
                     Contenido del archivo
-                    <span v-if="archivoSeleccionado" class="text-sm font-normal text-gray-500">
+                    <span v-if="archivoSeleccionado" class="text-sm font-normal text-gray-500 dark:text-gray-400">
                       (puedes editar el contenido si es necesario)
                     </span>
                   </label>
                   <textarea 
                     v-model="contenidoCsv"
-                    class="w-full h-64 p-3 border-2 border-purple-300 rounded-lg font-mono text-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-200 focus:outline-none transition-all duration-300 hover:border-purple-400 shadow-sm"
+                    class="w-full h-64 p-3 border-2 border-purple-300 dark:border-purple-600 rounded-lg font-mono text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 focus:outline-none transition-all duration-300 hover:border-purple-400 dark:hover:border-purple-500 shadow-sm"
                     placeholder="El contenido del archivo CSV aparecerá aquí después de seleccionarlo..."
                     @input="limpiarEstadoArchivo"></textarea>
-                  <p v-if="contenidoCsv" class="mt-2 text-xs text-gray-500">
+                  <p v-if="contenidoCsv" class="mt-2 text-xs text-gray-500 dark:text-gray-400">
                     {{ contenidoCsv.split('\n').length }} líneas • {{ contenidoCsv.length }} caracteres
                   </p>
                 </div>
               </div>
             </Tab>
             <Tab label="URL" icon="link">
-              <div class="tab-content p-4 bg-white shadow rounded-md">
+              <div class="tab-content p-4 bg-white dark:bg-gray-800 shadow rounded-md transition-colors duration-300">
                 <div class="mb-4">
-                  <label class="block text-gray-700 font-semibold mb-2">Ingresar URL del archivo CSV</label>
+                  <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">Ingresar URL del archivo CSV</label>
                   <div class="flex gap-2">
                     <input 
                       type="url" 
                       ref="urlInput"
                       v-model="urlCsv"
                       @keyup.enter="cargarCsvDesdeUrl"
-                      class="flex-1 p-2.5 border-2 border-indigo-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all duration-300 hover:border-indigo-400 shadow-sm"
+                      class="flex-1 p-2.5 border-2 border-indigo-300 dark:border-indigo-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 focus:outline-none transition-all duration-300 hover:border-indigo-400 dark:hover:border-indigo-500 shadow-sm"
                       placeholder="https://ejemplo.com/archivo.csv" />
                     <button
                       @click="cargarCsvDesdeUrl"
@@ -116,27 +117,27 @@
                       <span v-else>Cargando...</span>
                     </button>
                   </div>
-                  <p v-if="urlCsv && !errorUrl" class="mt-2 text-sm text-gray-600">
+                  <p v-if="urlCsv && !errorUrl" class="mt-2 text-sm text-gray-600 dark:text-gray-300">
                     URL: <strong class="break-all">{{ urlCsv }}</strong>
                   </p>
-                  <p v-if="errorUrl" class="mt-2 text-sm text-red-600">
+                  <p v-if="errorUrl" class="mt-2 text-sm text-red-600 dark:text-red-400">
                     ⚠️ {{ errorUrl }}
                   </p>
                 </div>
                 
                 <div v-if="contenidoCsv || urlCsv" class="mt-4">
-                  <label class="block text-gray-700 font-semibold mb-2">
+                  <label class="block text-gray-700 dark:text-gray-200 font-semibold mb-2">
                     Contenido del archivo CSV
-                    <span v-if="urlCsv" class="text-sm font-normal text-gray-500">
+                    <span v-if="urlCsv" class="text-sm font-normal text-gray-500 dark:text-gray-400">
                       (puedes editar el contenido si es necesario)
                     </span>
                   </label>
                   <textarea 
                     v-model="contenidoCsv"
-                    class="w-full h-64 p-3 border-2 border-indigo-300 rounded-lg font-mono text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none transition-all duration-300 hover:border-indigo-400 shadow-sm"
+                    class="w-full h-64 p-3 border-2 border-indigo-300 dark:border-indigo-600 rounded-lg font-mono text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 focus:outline-none transition-all duration-300 hover:border-indigo-400 dark:hover:border-indigo-500 shadow-sm"
                     placeholder="El contenido del archivo CSV aparecerá aquí después de cargarlo desde la URL..."
                     @input="limpiarEstadoUrl"></textarea>
-                  <p v-if="contenidoCsv" class="mt-2 text-xs text-gray-500">
+                  <p v-if="contenidoCsv" class="mt-2 text-xs text-gray-500 dark:text-gray-400">
                     {{ contenidoCsv.split('\n').length }} líneas • {{ contenidoCsv.length }} caracteres
                   </p>
                 </div>
@@ -233,6 +234,7 @@ import OpcionesSalidaTabla from "./components/OpcionesSalidaTabla.vue";
 import OpcionesInsert from "./components/OpcionesInsert.vue";
 import OpcionesFormato from "./components/OpcionesFormato.vue";
 import SalidaSQL from "./components/SalidaSQL.vue";
+import ThemeToggle from "./components/ThemeToggle.vue";
 
 import { csvUtils } from '@/utils';
 
