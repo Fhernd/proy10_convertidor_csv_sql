@@ -1,7 +1,29 @@
 <template>
   <div class="min-h-screen bg-gray-50 text-gray-800">
     <header class="sticky top-0 z-10 bg-white shadow-md">
-      <div class="container mx-auto max-w-screen-lg px-4 py-2">
+      <div class="container mx-auto max-w-screen-lg px-4 py-4">
+        <!-- Título principal de la aplicación -->
+        <div class="flex items-center justify-center mb-4">
+          <h1 class="text-3xl md:text-4xl font-extrabold flex items-center gap-3">
+            <!-- Ícono de archivo CSV -->
+            <svg class="w-10 h-10 md:w-12 md:h-12 text-green-600 drop-shadow-lg transition-transform duration-300 hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <!-- Flecha de conversión -->
+            <svg class="w-8 h-8 md:w-10 md:h-10 text-purple-500 drop-shadow-md animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+            <!-- Texto con gradiente de colores -->
+            <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent drop-shadow-md hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 transition-all duration-300">
+              Convertidor CSV a SQL
+            </span>
+            <!-- Ícono de base de datos -->
+            <svg class="w-10 h-10 md:w-12 md:h-12 text-indigo-600 drop-shadow-lg transition-transform duration-300 hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+            </svg>
+          </h1>
+        </div>
+        
         <!-- Botón para colapsar/expandir sección de entrada -->
         <div class="flex items-center justify-between mb-2">
           <h2 class="text-lg font-bold text-gray-700">Entrada de Datos CSV</h2>
