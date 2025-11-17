@@ -1,5 +1,5 @@
 <template>
-    <div class="p-6 bg-white shadow-md rounded-md w-full mt-5" :class="{ 'opacity-60 pointer-events-none': disabled }">
+    <div class="p-6 bg-white dark:bg-gray-800 shadow-md rounded-md w-full mt-5 transition-colors duration-300" :class="{ 'opacity-60 pointer-events-none': disabled }">
         <OpcionesSalidaColumnas :columnas="columnas" :sgbdSeleccionado="sgbdSeleccionado" :disabled="disabled"
             @update:tiposColumnas="handleTiposColumnasUpdate" />
     </div>

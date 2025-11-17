@@ -16,9 +16,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 
-const isDark = ref(false);
+// Por defecto: modo oscuro
+const DEFAULT_DARK = true;
+
+const isDark = ref(DEFAULT_DARK);
 
 // Función para aplicar el tema
 const applyTheme = (dark) => {
@@ -36,18 +39,24 @@ const toggleTheme = () => {
   localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
 };
 
+// Sincronizar con cambios en el DOM (por si acaso)
+watch(isDark, (newValue) => {
+  applyTheme(newValue);
+});
+
 // Cargar tema guardado al montar el componente
 onMounted(() => {
+  // Primero verificar el estado actual del DOM (aplicado por el script en index.html)
+  const hasDarkClass = document.documentElement.classList.contains('dark');
+  
+  // Sincronizar el estado del componente con el DOM
+  isDark.value = hasDarkClass;
+  
+  // Si no hay tema guardado, guardar el tema por defecto
   const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
-  if (savedTheme) {
-    isDark.value = savedTheme === 'dark';
-  } else {
-    isDark.value = prefersDark;
+  if (!savedTheme) {
+    localStorage.setItem('theme', DEFAULT_DARK ? 'dark' : 'light');
   }
-  
-  applyTheme(isDark.value);
 });
 </script>
 

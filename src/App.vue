@@ -7,19 +7,19 @@
         <div class="flex items-center justify-center mb-4">
           <h1 class="text-3xl md:text-4xl font-extrabold flex items-center gap-3">
             <!-- Ícono de archivo CSV -->
-            <svg class="w-10 h-10 md:w-12 md:h-12 text-green-600 drop-shadow-lg transition-transform duration-300 hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg class="w-10 h-10 md:w-12 md:h-12 text-green-600 dark:text-green-400 drop-shadow-lg transition-transform duration-300 hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <!-- Flecha de conversión -->
-            <svg class="w-8 h-8 md:w-10 md:h-10 text-purple-500 drop-shadow-md animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg class="w-8 h-8 md:w-10 md:h-10 text-purple-500 dark:text-purple-400 drop-shadow-md animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>
             <!-- Texto con gradiente de colores -->
-            <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent drop-shadow-md hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 transition-all duration-300">
+            <span class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent drop-shadow-md hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 dark:hover:from-blue-500 dark:hover:via-purple-500 dark:hover:to-indigo-500 transition-all duration-300">
               Convertidor CSV a SQL
             </span>
             <!-- Ícono de base de datos -->
-            <svg class="w-10 h-10 md:w-12 md:h-12 text-indigo-600 drop-shadow-lg transition-transform duration-300 hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <svg class="w-10 h-10 md:w-12 md:h-12 text-indigo-600 dark:text-indigo-400 drop-shadow-lg transition-transform duration-300 hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
             </svg>
           </h1>
@@ -158,27 +158,27 @@
         <!-- Indicador cuando está colapsado -->
         <div 
           v-if="!entradaDatosExpandida && contenidoCsv"
-          class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-md shadow-sm">
+          class="mt-2 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-700 rounded-md shadow-sm transition-colors duration-300">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2 flex-1 min-w-0">
-              <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div class="flex-1 min-w-0">
-                <span class="text-sm text-blue-800 font-medium block truncate">
+                <span class="text-sm text-blue-800 dark:text-blue-300 font-medium block truncate">
                   CSV cargado: {{ contenidoCsv.split('\n').length }} líneas • {{ contenidoCsv.length.toLocaleString() }} caracteres
                 </span>
-                <span v-if="archivoSeleccionado" class="text-xs text-blue-600 block truncate">
+                <span v-if="archivoSeleccionado" class="text-xs text-blue-600 dark:text-blue-400 block truncate">
                   Archivo: {{ archivoSeleccionado.name }}
                 </span>
-                <span v-if="urlCsv && !archivoSeleccionado" class="text-xs text-blue-600 block truncate">
+                <span v-if="urlCsv && !archivoSeleccionado" class="text-xs text-blue-600 dark:text-blue-400 block truncate">
                   URL: {{ urlCsv }}
                 </span>
               </div>
             </div>
             <button
               @click="toggleEntradaDatos"
-              class="ml-3 flex-shrink-0 text-sm text-blue-600 hover:text-blue-800 font-medium underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1">
+              class="ml-3 flex-shrink-0 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 transition-colors">
               Ver contenido
             </button>
           </div>
