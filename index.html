@@ -1,35 +1,54 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="es">
   <head>
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Convertidor CSV a SQL</title>
-    <link rel="stylesheet" href="/src/style.css" />
     <script>
-      // Aplicar tema antes de que Vue monte la aplicación para evitar flash
+      // CRÍTICO: Este script debe ejecutarse ANTES de cualquier otro código
+      // Aplica el tema inmediatamente para evitar flash de contenido sin tema
       (function() {
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        // Por defecto: modo oscuro
+        const DEFAULT_DARK = true;
         
-        // Por defecto: modo oscuro (cambiar a true para modo oscuro por defecto)
-        const defaultDark = true;
+        // Obtener tema guardado
+        let savedTheme = null;
+        try {
+          savedTheme = localStorage.getItem('theme');
+        } catch (e) {
+          // Si localStorage no está disponible, usar el valor por defecto
+        }
         
-        let shouldBeDark = defaultDark;
+        // Determinar si debe estar en modo oscuro
+        let shouldBeDark = DEFAULT_DARK;
         
-        if (savedTheme) {
+        if (savedTheme === 'dark' || savedTheme === 'light') {
           shouldBeDark = savedTheme === 'dark';
         } else {
-          shouldBeDark = defaultDark;
+          // Si no hay tema guardado, usar el valor por defecto
+          shouldBeDark = DEFAULT_DARK;
+          // Guardar el tema por defecto
+          try {
+            localStorage.setItem('theme', DEFAULT_DARK ? 'dark' : 'light');
+          } catch (e) {
+            // Ignorar si no se puede guardar
+          }
         }
         
+        // Aplicar la clase dark al elemento html INMEDIATAMENTE
+        const htmlElement = document.documentElement;
         if (shouldBeDark) {
-          document.documentElement.classList.add('dark');
+          htmlElement.classList.add('dark');
         } else {
-          document.documentElement.classList.remove('dark');
+          htmlElement.classList.remove('dark');
         }
+        
+        // Verificar que se aplicó correctamente
+        console.log('Tema inicial aplicado:', shouldBeDark ? 'oscuro' : 'claro', 'Clase dark presente:', htmlElement.classList.contains('dark'));
       })();
     </script>
+    <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
     <div id="app"></div>

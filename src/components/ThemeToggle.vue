@@ -16,46 +16,76 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, nextTick } from 'vue';
 
 // Por defecto: modo oscuro
 const DEFAULT_DARK = true;
 
-const isDark = ref(DEFAULT_DARK);
+// Inicializar con el estado actual del DOM
+const getInitialTheme = () => {
+  try {
+    return document.documentElement.classList.contains('dark');
+  } catch {
+    return DEFAULT_DARK;
+  }
+};
 
-// Función para aplicar el tema
+const isDark = ref(getInitialTheme());
+
+// Función para aplicar el tema de forma robusta
 const applyTheme = (dark) => {
-  if (dark) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
+  try {
+    const htmlElement = document.documentElement;
+    if (dark) {
+      htmlElement.classList.add('dark');
+    } else {
+      htmlElement.classList.remove('dark');
+    }
+  } catch (error) {
+    console.error('Error al aplicar tema:', error);
   }
 };
 
 // Función para alternar el tema
 const toggleTheme = () => {
-  isDark.value = !isDark.value;
-  applyTheme(isDark.value);
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
+  const newValue = !isDark.value;
+  isDark.value = newValue;
+  applyTheme(newValue);
+  
+  try {
+    localStorage.setItem('theme', newValue ? 'dark' : 'light');
+    console.log('Tema cambiado a:', newValue ? 'oscuro' : 'claro');
+  } catch (error) {
+    console.warn('No se pudo guardar el tema en localStorage:', error);
+  }
 };
 
-// Sincronizar con cambios en el DOM (por si acaso)
+// Watch para aplicar cambios automáticamente
 watch(isDark, (newValue) => {
-  applyTheme(newValue);
-});
+  nextTick(() => {
+    applyTheme(newValue);
+  });
+}, { immediate: false });
 
-// Cargar tema guardado al montar el componente
+// Cargar y sincronizar tema al montar el componente
 onMounted(() => {
-  // Primero verificar el estado actual del DOM (aplicado por el script en index.html)
+  // Verificar el estado actual del DOM (aplicado por el script en index.html)
   const hasDarkClass = document.documentElement.classList.contains('dark');
   
   // Sincronizar el estado del componente con el DOM
   isDark.value = hasDarkClass;
   
-  // Si no hay tema guardado, guardar el tema por defecto
-  const savedTheme = localStorage.getItem('theme');
-  if (!savedTheme) {
-    localStorage.setItem('theme', DEFAULT_DARK ? 'dark' : 'light');
+  // Asegurar que el tema esté aplicado (por si acaso)
+  applyTheme(isDark.value);
+  
+  // Verificar y guardar tema si es necesario
+  try {
+    const savedTheme = localStorage.getItem('theme');
+    if (!savedTheme) {
+      localStorage.setItem('theme', DEFAULT_DARK ? 'dark' : 'light');
+    }
+  } catch (error) {
+    // Ignorar si no se puede acceder a localStorage
   }
 });
 </script>
