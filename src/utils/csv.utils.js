@@ -83,10 +83,22 @@ function obtenerDelimitadorReal(delimitador, contenidoCsv = '') {
     if (!delimitadorLimpio || delimitadorLimpio === 'auto') {
         return detectarDelimitador(contenidoCsv);
     }
-    if (delimitadorLimpio === 'Tab' || delimitadorLimpio === '\t') {
+    
+    // Manejar Tab (ya sea como "Tab" o como "\t")
+    if (delimitadorLimpio === 'Tab' || delimitadorLimpio === '\t' || delimitadorLimpio === '\\t') {
         return '\t';
     }
-    // Retornar el primer carácter si hay espacios (por seguridad)
+    
+    // Manejar secuencias de escape comunes
+    if (delimitadorLimpio === '\\n') {
+        return '\n';
+    }
+    if (delimitadorLimpio === '\\r') {
+        return '\r';
+    }
+    
+    // Si el delimitador tiene más de un carácter, usar el primero
+    // Esto permite usar cualquier carácter personalizado
     return delimitadorLimpio.charAt(0) || ',';
 }
 
