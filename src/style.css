@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+/* IMPORTANTE: Estas reglas deben estar después de Tailwind para sobrescribir */
+
 /* Asegurar que el modo oscuro funcione correctamente */
 @media (prefers-color-scheme: dark) {
   :root {
@@ -144,4 +146,98 @@
 :root.dark select[disabled],
 :root.dark button[disabled] {
   color: rgb(156, 163, 175) !important; /* gray-400 */
+}
+
+/* Asegurar legibilidad del texto en hover en modo oscuro */
+/* Reglas muy específicas para sobrescribir Tailwind - DEBEN estar después de @import tailwindcss */
+
+/* Regla más general y poderosa: cualquier span dentro de label con hover en modo oscuro */
+.dark label:hover span,
+.dark .group:hover span {
+  color: rgb(243, 244, 246) !important; /* gray-100 - texto claro */
+}
+
+/* Sobrescribir TODAS las clases de Tailwind relacionadas con group-hover en modo oscuro */
+.dark label.group:hover span,
+.dark label[class*="group"]:hover span {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Para labels con clases específicas de hover de fondo oscuro */
+.dark label[class*="hover:bg-indigo-900"]:hover span,
+.dark label[class*="hover:bg-blue-900"]:hover span,
+.dark label[class*="hover:bg-purple-900"]:hover span {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Sobrescribir clases específicas de Tailwind dark:group-hover:text-* */
+.dark label:hover span.dark\:group-hover\:text-indigo-300,
+.dark label:hover span.dark\:group-hover\:text-blue-300,
+.dark label:hover span.dark\:group-hover\:text-purple-300,
+.dark .group:hover span.dark\:group-hover\:text-indigo-300,
+.dark .group:hover span.dark\:group-hover\:text-blue-300,
+.dark .group:hover span.dark\:group-hover\:text-purple-300 {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Regla usando selector de atributo para cualquier clase que contenga group-hover */
+.dark label:hover span[class*="group-hover"],
+.dark .group:hover span[class*="group-hover"] {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Reglas adicionales con máxima especificidad usando múltiples selectores */
+.dark label.group:hover > span,
+.dark label[class*="group"]:hover > span,
+.dark label:hover > span {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Para elementos con fondo hover oscuro - regla muy específica */
+.dark label[class*="dark:hover:bg-indigo-900"]:hover span,
+.dark label[class*="dark:hover:bg-blue-900"]:hover span,
+.dark label[class*="dark:hover:bg-purple-900"]:hover span {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Regla catch-all: cualquier elemento hijo span de label con hover en modo oscuro */
+html.dark label:hover span {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+html.dark .group:hover span {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Reglas ultra-específicas para sobrescribir cualquier clase de Tailwind */
+html.dark label.group:hover span[class*="group-hover"],
+html.dark label[class*="group"]:hover span[class*="group-hover"],
+html.dark label:hover span[class*="dark:group-hover"],
+html.dark .group:hover span[class*="dark:group-hover"] {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Regla final con máxima especificidad - debe estar al final */
+html.dark label[class*="hover:bg"]:hover span,
+html.dark label.group[class*="hover:bg"]:hover span {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Asegurar que los textos en tablas con hover sean legibles */
+.dark tr:hover td,
+.dark tr:hover th {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Para botones con hover oscuro */
+.dark button[class*="hover:bg-purple-900"]:hover,
+.dark button[class*="hover:bg-indigo-900"]:hover,
+.dark button[class*="hover:bg-blue-900"]:hover {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+.dark button[class*="hover:bg-purple-900"]:hover span,
+.dark button[class*="hover:bg-indigo-900"]:hover span,
+.dark button[class*="hover:bg-blue-900"]:hover span {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
 }

@@ -4,6 +4,8 @@ import App from './App.vue'
 import router from './router'
 
 import './style.css'
+import './assets/hover-fix.css'
+import './assets/dark-hover-override.css'
 
 const app = createApp(App)
 

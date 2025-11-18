@@ -178,7 +178,7 @@
             </div>
             <button
               @click="toggleEntradaDatos"
-              class="ml-3 flex-shrink-0 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 transition-colors">
+              class="ml-3 flex-shrink-0 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-medium underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 transition-colors">
               Ver contenido
             </button>
           </div>

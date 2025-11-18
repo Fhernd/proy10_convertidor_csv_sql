@@ -1,0 +1,89 @@
+/* 
+ * Archivo para corregir la legibilidad del texto en hover en modo oscuro
+ * Este archivo debe cargarse después de Tailwind para sobrescribir sus estilos
+ * IMPORTANTE: Usar máxima especificidad posible
+ */
+
+/* Clase personalizada para texto legible en hover oscuro */
+.dark-hover-text-light {
+  color: rgb(243, 244, 246) !important; /* gray-100 */
+}
+
+/* Regla con máxima especificidad posible - debe estar primero */
+html.dark label.group:hover span.dark\:group-hover\:text-white {
+  color: rgb(243, 244, 246) !important;
+}
+
+html.dark label[class*="group"]:hover span.dark\:group-hover\:text-white {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* Reglas con máxima especificidad usando múltiples selectores */
+html.dark label.group:hover span,
+html.dark label[class*="group"]:hover span,
+html.dark label:hover span,
+html.dark .group:hover span {
+  color: rgb(243, 244, 246) !important; /* gray-100 - texto claro y legible */
+}
+
+/* Sobrescribir específicamente las clases de Tailwind dark:group-hover:text-* */
+html.dark label.group:hover span.dark\:group-hover\:text-white,
+html.dark label.group:hover span[class*="dark:group-hover:text-white"],
+html.dark label[class*="group"]:hover span[class*="dark:group-hover"],
+html.dark .group:hover span[class*="dark:group-hover"] {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* Para elementos con fondo hover oscuro */
+html.dark label[class*="hover:bg-indigo-900"]:hover span,
+html.dark label[class*="hover:bg-blue-900"]:hover span,
+html.dark label[class*="hover:bg-purple-900"]:hover span,
+html.dark label[class*="dark:hover:bg-indigo-900"]:hover span,
+html.dark label[class*="dark:hover:bg-blue-900"]:hover span,
+html.dark label[class*="dark:hover:bg-purple-900"]:hover span {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* Regla catch-all final con máxima especificidad */
+html.dark label:hover > span,
+html.dark label.group:hover > span,
+html.dark .group:hover > span {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* Regla adicional para cualquier span dentro de un label con hover */
+html.dark label:hover span[class*="group-hover"],
+html.dark label.group:hover span[class*="group-hover"],
+html.dark .group:hover span[class*="group-hover"] {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* Regla ULTRA específica: cuando un label con clase group está en hover, TODOS sus spans deben ser claros */
+html.dark label.group:hover span,
+html.dark label[class*="group"]:hover span,
+html.dark label.group:hover > span,
+html.dark label[class*="group"]:hover > span {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* Regla para la clase personalizada cuando está en hover */
+html.dark label.group:hover span.dark-hover-text-light,
+html.dark label:hover span.dark-hover-text-light {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* REGLA FINAL ULTRA AGRESIVA: Cualquier span dentro de cualquier label con hover en modo oscuro */
+html.dark label:hover span,
+html.dark label.group:hover span,
+html.dark label[class*="group"]:hover span {
+  color: rgb(243, 244, 246) !important;
+  /* Forzar el color incluso si hay otras clases */
+}
+
+/* Regla específica para spans con clases de Tailwind group-hover */
+html.dark label.group:hover span[class*="group-hover"],
+html.dark label[class*="group"]:hover span[class*="group-hover"],
+html.dark label:hover span[class*="group-hover"] {
+  color: rgb(243, 244, 246) !important;
+}
+

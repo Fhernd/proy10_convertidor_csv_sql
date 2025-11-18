@@ -6,7 +6,7 @@
                 'flex items-center gap-2 py-3 px-5 text-sm font-semibold rounded-t-lg focus:outline-none transition-all duration-300 relative',
                 index === activeTabIndex
                     ? 'bg-gradient-to-b from-blue-50 dark:from-blue-900/30 to-transparent text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/30'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/30'
             ]" @click="activeTabIndex = index">
                 <!-- Ícono de Ingreso datos -->
                 <svg v-if="tab.icon === 'edit'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

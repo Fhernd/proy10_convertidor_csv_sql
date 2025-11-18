@@ -1,0 +1,58 @@
+/* 
+ * OVERRIDE AGRESIVO PARA HOVER EN MODO OSCURO
+ * Este archivo debe cargarse AL FINAL para tener máxima prioridad
+ * Usa selectores con máxima especificidad posible
+ */
+
+/* Clases personalizadas para mayor control - MÁXIMA PRIORIDAD */
+.dark-hover-label:hover .dark-hover-text,
+.dark-hover-label:hover span.dark-hover-text {
+  color: rgb(243, 244, 246) !important;
+}
+
+html.dark .dark-hover-label:hover .dark-hover-text,
+html.dark .dark-hover-label:hover span.dark-hover-text,
+html.dark .dark-hover-label:hover span {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* Regla específica para labels con clase dark-hover-label */
+html.dark label.dark-hover-label:hover span {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* FORZAR texto claro en TODOS los spans dentro de labels con hover en modo oscuro */
+html.dark label.group:hover span,
+html.dark label[class*="group"]:hover span,
+html.dark label:hover span,
+html.dark .dark-hover-label:hover span {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* Sobrescribir específicamente las clases de Tailwind */
+html.dark label.group:hover span[class*="dark:group-hover:text-white"],
+html.dark label[class*="group"]:hover span[class*="dark:group-hover:text-white"],
+html.dark label:hover span[class*="dark:group-hover:text-white"],
+html.dark label.group:hover span[class*="group-hover:text-white"],
+html.dark label[class*="group"]:hover span[class*="group-hover:text-white"],
+html.dark label:hover span[class*="group-hover:text-white"] {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* Regla catch-all con máxima especificidad */
+html.dark body label.group:hover span,
+html.dark body label[class*="group"]:hover span,
+html.dark body label:hover span {
+  color: rgb(243, 244, 246) !important;
+}
+
+/* Para elementos con fondo hover oscuro específico */
+html.dark label[class*="dark:hover:bg-indigo-900"]:hover span,
+html.dark label[class*="dark:hover:bg-blue-900"]:hover span,
+html.dark label[class*="dark:hover:bg-purple-900"]:hover span,
+html.dark label[class*="hover:bg-indigo-900"]:hover span,
+html.dark label[class*="hover:bg-blue-900"]:hover span,
+html.dark label[class*="hover:bg-purple-900"]:hover span {
+  color: rgb(243, 244, 246) !important;
+}
+

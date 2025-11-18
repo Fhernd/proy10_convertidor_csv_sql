@@ -43,7 +43,7 @@
                 </p>
             </div>
 
-            <label class="flex items-center p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-200 group" :class="{ 'cursor-not-allowed': disabled }">
+            <label class="flex items-center p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="replaceNulls" type="checkbox" :disabled="disabled"
                     :class="[
                         'mr-2 h-5 w-5 border-2 rounded transition-all duration-200',
@@ -51,10 +51,10 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 group-hover:border-blue-400 dark:group-hover:border-blue-500'
                     ]">
-                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-300', 'transition-colors']">Reemplazar campos faltantes por NULL</span>
+                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-white dark-hover-text', 'transition-colors']">Reemplazar campos faltantes por NULL</span>
             </label>
 
-            <label class="flex items-center p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group" :class="{ 'cursor-not-allowed': disabled }">
+            <label class="flex items-center p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="useSingleQuotes" type="checkbox" :disabled="disabled"
                     :class="[
                         'mr-2 h-5 w-5 border-2 rounded transition-all duration-200',
@@ -62,7 +62,7 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-purple-300 dark:border-purple-600 text-purple-600 dark:text-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 group-hover:border-purple-400 dark:group-hover:border-purple-500'
                     ]">
-                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-300', 'transition-colors']">Utilizar comillas simples para las cadenas de caracteres</span>
+                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-white dark-hover-text', 'transition-colors']">Utilizar comillas simples para las cadenas de caracteres</span>
             </label>
         </div>
     </div>

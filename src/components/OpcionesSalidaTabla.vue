@@ -18,7 +18,7 @@
                     ]">
             </div>
 
-            <label class="flex items-center p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group" :class="{ 'cursor-not-allowed': disabled }">
+            <label class="flex items-center p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="replaceSpaces" type="checkbox" :disabled="disabled"
                     :class="[
                         'mr-2 h-5 w-5 border-2 rounded transition-all duration-200',
@@ -26,10 +26,10 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-purple-300 dark:border-purple-600 text-purple-600 dark:text-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 group-hover:border-purple-400 dark:group-hover:border-purple-500'
                     ]">
-                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-300', 'transition-colors']">Sustitución de espacios por guiones bajos en nombres de columnas</span>
+                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-white dark-hover-text', 'transition-colors']">Sustitución de espacios por guiones bajos en nombres de columnas</span>
             </label>
 
-            <label class="flex items-center p-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors duration-200 group" :class="{ 'cursor-not-allowed': disabled }">
+            <label class="flex items-center p-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="allVarchar" type="checkbox" :disabled="disabled"
                     :class="[
                         'mr-2 h-5 w-5 border-2 rounded transition-all duration-200',
@@ -37,10 +37,10 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 group-hover:border-indigo-400 dark:group-hover:border-indigo-500'
                     ]">
-                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-300', 'transition-colors']">Dejar como VARCHAR todos los campos</span>
+                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-white dark-hover-text', 'transition-colors']">Dejar como VARCHAR todos los campos</span>
             </label>
 
-            <label class="flex items-center p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-200 group" :class="{ 'cursor-not-allowed': disabled }">
+            <label class="flex items-center p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="createView" type="checkbox" :disabled="disabled"
                     :class="[
                         'mr-2 h-5 w-5 border-2 rounded transition-all duration-200',
@@ -48,10 +48,10 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-blue-300 dark:border-blue-600 text-blue-600 dark:text-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 group-hover:border-blue-400 dark:group-hover:border-blue-500'
                     ]">
-                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-300', 'transition-colors']">Crear vista</span>
+                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-white dark-hover-text', 'transition-colors']">Crear vista</span>
             </label>
 
-            <label class="flex items-center p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group" :class="{ 'cursor-not-allowed': disabled }">
+            <label class="flex items-center p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="dropTable" type="checkbox" :disabled="disabled"
                     :class="[
                         'mr-2 h-5 w-5 border-2 rounded transition-all duration-200',
@@ -59,10 +59,10 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-purple-300 dark:border-purple-600 text-purple-600 dark:text-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 group-hover:border-purple-400 dark:group-hover:border-purple-500'
                     ]">
-                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-300', 'transition-colors']">Eliminar tabla si existe antes de crearla</span>
+                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-white dark-hover-text', 'transition-colors']">Eliminar tabla si existe antes de crearla</span>
             </label>
 
-            <label class="flex items-center p-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors duration-200 group" :class="{ 'cursor-not-allowed': disabled }">
+            <label class="flex items-center p-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="selectPrimaryKey" type="checkbox" :disabled="disabled"
                     :class="[
                         'mr-2 h-5 w-5 border-2 rounded transition-all duration-200',
@@ -70,7 +70,7 @@
                             ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                             : 'border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 group-hover:border-indigo-400 dark:group-hover:border-indigo-500'
                     ]">
-                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-300', 'transition-colors']">Selección de columnas que integran la llave primaria</span>
+                <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-white dark-hover-text', 'transition-colors']">Selección de columnas que integran la llave primaria</span>
             </label>
 
             <!-- Panel de selección de columnas para llave primaria -->
@@ -100,7 +100,7 @@
                                     ? 'border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-600 cursor-not-allowed'
                                     : 'border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 group-hover:border-indigo-400 dark:group-hover:border-indigo-500'
                             ]">
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">{{ col }}</span>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-white dark-hover-text transition-colors">{{ col }}</span>
                     </label>
                 </div>
                 <div v-if="primaryKeyColumns.length > 0" class="mt-4 p-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-2 border-indigo-300 dark:border-indigo-700 rounded-lg shadow-sm">
