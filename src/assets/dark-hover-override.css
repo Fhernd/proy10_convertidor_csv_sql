@@ -1,9 +1,47 @@
 /* 
- * OVERRIDE AGRESIVO PARA HOVER EN MODO OSCURO
+ * OVERRIDE AGRESIVO PARA HOVER EN MODO OSCURO Y CLARO
  * Este archivo debe cargarse AL FINAL para tener máxima prioridad
  * Usa selectores con máxima especificidad posible
  */
 
+/* ===== REGLAS PARA MODO CLARO - TEXTO NEGRO EN HOVER ===== */
+/* Forzar texto negro en labels con hover en modo claro */
+label.dark-hover-label:hover .dark-hover-text,
+label.dark-hover-label:hover span.dark-hover-text,
+label.dark-hover-label:hover span {
+  color: rgb(17, 24, 39) !important; /* gray-900 - negro */
+}
+
+label.group:hover span,
+label[class*="group"]:hover span,
+label:hover span {
+  color: rgb(17, 24, 39) !important; /* gray-900 - negro */
+}
+
+/* Sobrescribir clases de Tailwind en modo claro */
+label.group:hover span[class*="group-hover:text-indigo"],
+label.group:hover span[class*="group-hover:text-blue"],
+label.group:hover span[class*="group-hover:text-purple"],
+label[class*="group"]:hover span[class*="group-hover"],
+label:hover span[class*="group-hover"] {
+  color: rgb(17, 24, 39) !important; /* gray-900 - negro */
+}
+
+/* Regla catch-all para modo claro - texto negro en hover */
+body:not(.dark) label:hover span,
+body:not(.dark) label.group:hover span,
+body:not(.dark) label[class*="group"]:hover span {
+  color: rgb(17, 24, 39) !important; /* gray-900 - negro */
+}
+
+/* Asegurar que no se aplique en modo oscuro */
+html:not(.dark) label:hover span,
+html:not(.dark) label.group:hover span,
+html:not(.dark) label[class*="group"]:hover span {
+  color: rgb(17, 24, 39) !important; /* gray-900 - negro */
+}
+
+/* ===== REGLAS PARA MODO OSCURO - TEXTO CLARO EN HOVER ===== */
 /* Clases personalizadas para mayor control - MÁXIMA PRIORIDAD */
 .dark-hover-label:hover .dark-hover-text,
 .dark-hover-label:hover span.dark-hover-text {
