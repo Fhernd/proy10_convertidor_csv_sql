@@ -68,7 +68,7 @@
             class="h-4 w-4 text-indigo-600 dark:text-indigo-400 border-2 border-indigo-300 dark:border-indigo-600 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 group-hover:border-indigo-400 dark:group-hover:border-indigo-500 transition-all" />
           <span class="text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-white dark-hover-text transition-colors font-mono">^</span>
         </label>
-        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-gradient-to-r hover:from-purple-50 hover:to-indigo-50 dark:hover:from-purple-900/30 dark:hover:to-indigo-900/30 transition-colors duration-200 group dark-hover-label">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/40 transition-colors duration-200 group dark-hover-label">
           <input type="radio" value="custom" v-model="params.delimitador"
             class="h-4 w-4 text-purple-600 dark:text-purple-400 border-2 border-purple-300 dark:border-purple-600 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 group-hover:border-purple-400 dark:group-hover:border-purple-500 transition-all" />
           <span class="text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-white dark-hover-text transition-colors font-semibold">Personalizado</span>
@@ -76,7 +76,7 @@
       </div>
 
       <!-- Campo de texto para separador personalizado -->
-      <div v-if="params.delimitador === 'custom'" class="mt-4 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30 rounded-lg border-2 border-purple-200 dark:border-purple-700 shadow-sm">
+      <div v-if="params.delimitador === 'custom'" class="mt-4 p-4 bg-purple-50 dark:bg-purple-900/40 rounded-lg border-2 border-purple-200 dark:border-purple-700 shadow-sm">
         <label class="block text-gray-700 dark:text-gray-100 font-medium mb-2">Ingresar separador personalizado:</label>
         <input type="text" v-model="customDelimiter" @input="handleCustomDelimiterChange"
           placeholder="Ejemplo: ~, #, \t, etc." maxlength="10"
