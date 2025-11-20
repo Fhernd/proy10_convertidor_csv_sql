@@ -33,7 +33,7 @@
             class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-100 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-700 dark:to-gray-600 hover:from-gray-200 hover:to-gray-100 dark:hover:from-gray-600 dark:hover:to-gray-500 rounded-lg shadow-sm transition-all duration-300 focus:ring-2 focus:ring-purple-500 focus:outline-none hover:shadow-md transform hover:scale-105 active:scale-95"
             :aria-expanded="entradaDatosExpandida"
             :aria-label="entradaDatosExpandida ? 'Colapsar sección de entrada' : 'Expandir sección de entrada'">
-            <span>{{ entradaDatosExpandida ? 'Ocultar' : 'Mostrar' }}</span>
+            <span style="color: gray !important;">{{ entradaDatosExpandida ? 'Ocultar' : 'Mostrar' }}</span>
             <svg 
               class="w-5 h-5 transition-transform duration-300"
               :class="{ 'rotate-180': !entradaDatosExpandida }"
