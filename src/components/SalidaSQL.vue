@@ -52,7 +52,7 @@
                 @click="copiarAlHacerClick"
                 :disabled="!hayDatosDisponibles"
                 :class="[
-                    'w-full p-4 border-2 rounded-lg h-40 font-mono text-sm transition-all duration-300 shadow-sm',
+                    'w-full p-4 border-2 rounded-lg h-96 font-mono text-sm transition-all duration-300 shadow-sm whitespace-pre',
                     hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0
                         ? 'border-purple-300 dark:border-purple-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 cursor-pointer hover:border-purple-400 dark:hover:border-purple-500'
                         : hayDatosDisponibles
@@ -117,6 +117,7 @@
 
 <script setup>
 import { defineProps, ref, computed } from 'vue';
+import { format } from 'sql-formatter';
 
 const props = defineProps({
     datos: {
@@ -172,6 +173,50 @@ const hayDatosDisponibles = computed(() => {
     return props.datos && Array.isArray(props.datos) && props.datos.length > 0 &&
            props.columnas && Array.isArray(props.columnas) && props.columnas.length > 0;
 });
+
+// Función para formatear SQL usando sql-formatter
+const formatearSQL = (sql) => {
+    // Si el SQL es un mensaje de error o está vacío, no formatear
+    if (!sql || sql.trim().length === 0 || sql.trim().startsWith('-- Error:')) {
+        return sql;
+    }
+    
+    try {
+        // Obtener el dialecto según el SGBD seleccionado
+        const sgbd = (props.paramsOpcionesSGBD?.sgbdSeleccionado || 'mysql').toLowerCase();
+        let dialect = 'mysql';
+        
+        switch (sgbd) {
+            case 'postgresql':
+                dialect = 'postgresql';
+                break;
+            case 'sqlite':
+                dialect = 'sqlite';
+                break;
+            case 'sqlserver':
+                dialect = 'sql';
+                break;
+            default:
+                dialect = 'mysql';
+        }
+        
+        // Formatear el SQL con sql-formatter
+        const formatted = format(sql, {
+            language: dialect,
+            tabWidth: 2,
+            useTabs: false,
+            keywordCase: 'upper',
+            indentStyle: 'standard',
+            linesBetweenQueries: 2,
+        });
+        
+        return formatted;
+    } catch (error) {
+        // Si hay un error al formatear, devolver el SQL original
+        console.warn('Error al formatear SQL, usando SQL original:', error);
+        return sql;
+    }
+};
 
 // Función para generar el nombre del archivo con formato: NOMBRE_TABLA-FechaHora.sql
 const generarNombreArchivo = () => {
@@ -771,7 +816,7 @@ const generateSQL = (type) => {
         }
         
         const sql = sqlStatements.join('\n');
-        sqlOutput.value = sql;
+        sqlOutput.value = formatearSQL(sql);
         
         // Actualizar el nombre del archivo con el formato: NOMBRE_TABLA-FechaHora.sql
         fileName.value = generarNombreArchivo();
@@ -946,7 +991,7 @@ const generateSQL = (type) => {
         }
         
         const sql = updateStatements.join('\n');
-        sqlOutput.value = sql;
+        sqlOutput.value = formatearSQL(sql);
         
         // Actualizar el nombre del archivo
         fileName.value = generarNombreArchivo();
@@ -1066,7 +1111,7 @@ const generateSQL = (type) => {
         }
         
         const sql = deleteStatements.join('\n');
-        sqlOutput.value = sql;
+        sqlOutput.value = formatearSQL(sql);
         
         // Actualizar el nombre del archivo
         fileName.value = generarNombreArchivo();
@@ -1300,7 +1345,7 @@ const generateSQL = (type) => {
         }
         
         const sql = mergeStatements.join('\n\n');
-        sqlOutput.value = sql;
+        sqlOutput.value = formatearSQL(sql);
         
         // Actualizar el nombre del archivo
         fileName.value = generarNombreArchivo();
@@ -1450,7 +1495,7 @@ const generateSQL = (type) => {
         }
         
         const sql = selectStatements.join('\n');
-        sqlOutput.value = sql;
+        sqlOutput.value = formatearSQL(sql);
         
         // Actualizar el nombre del archivo
         fileName.value = generarNombreArchivo();
