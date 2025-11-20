@@ -47,20 +47,24 @@
                     <span>{{ copiadoExitoso ? '¡Copiado!' : 'Copiar' }}</span>
                 </button>
             </div>
-            <textarea 
-                v-model="sqlOutput"
+            <div 
                 @click="copiarAlHacerClick"
-                :disabled="!hayDatosDisponibles"
                 :class="[
-                    'w-full p-4 border-2 rounded-lg h-96 font-mono text-sm transition-all duration-300 shadow-sm whitespace-pre',
+                    'w-full p-4 border-2 rounded-lg h-96 font-mono text-sm transition-all duration-300 shadow-sm overflow-auto relative',
                     hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0
-                        ? 'border-purple-300 dark:border-purple-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 cursor-pointer hover:border-purple-400 dark:hover:border-purple-500'
+                        ? 'border-purple-300 dark:border-purple-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 cursor-pointer hover:border-purple-400 dark:hover:border-purple-500'
                         : hayDatosDisponibles
-                            ? 'border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 cursor-text hover:border-blue-400 dark:hover:border-blue-500'
+                            ? 'border-blue-300 dark:border-blue-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 cursor-text hover:border-blue-400 dark:hover:border-blue-500'
                             : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 cursor-not-allowed'
                 ]"
-                :placeholder="!hayDatosDisponibles ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...'"
-                :title="hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0 ? 'Haz clic para copiar al portapapeles' : hayDatosDisponibles ? 'Genera SQL usando los botones de arriba' : 'Primero evalúa el contenido CSV'"></textarea>
+                :title="hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0 ? 'Haz clic para copiar al portapapeles' : hayDatosDisponibles ? 'Genera SQL usando los botones de arriba' : 'Primero evalúa el contenido CSV'">
+                <pre v-if="sqlOutput && sqlOutput.trim().length > 0" 
+                     class="language-sql m-0 p-0 bg-transparent text-inherit font-mono text-sm whitespace-pre-wrap break-words"
+                     v-html="sqlOutputHighlighted"></pre>
+                <p v-else class="m-0 text-gray-400 dark:text-gray-500 italic">
+                    {{ !hayDatosDisponibles ? 'Primero evalúa el contenido CSV para generar SQL...' : 'Aquí se generará el código SQL...' }}
+                </p>
+            </div>
             <p v-if="!props.datos || props.datos.length === 0" class="text-sm text-gray-500 dark:text-gray-200 mt-1">
                 💡 Primero ingresa datos CSV y presiona "Evaluar contenido CSV"
             </p>
@@ -116,8 +120,12 @@
 </template>
 
 <script setup>
-import { defineProps, ref, computed } from 'vue';
+import { defineProps, ref, computed, watch, onMounted, nextTick } from 'vue';
 import { format } from 'sql-formatter';
+import Prism from 'prismjs';
+import 'prismjs/themes/prism.css';
+import 'prismjs/themes/prism-tomorrow.css';
+import 'prismjs/components/prism-sql.js';
 
 const props = defineProps({
     datos: {
@@ -174,6 +182,43 @@ const hayDatosDisponibles = computed(() => {
            props.columnas && Array.isArray(props.columnas) && props.columnas.length > 0;
 });
 
+// Función para compactar sentencias INSERT (una línea)
+const compactarINSERT = (sql) => {
+    if (!sql || sql.trim().length === 0) {
+        return sql;
+    }
+    
+    // Dividir por sentencias SQL (terminadas con ;)
+    // Usar regex para dividir manteniendo el punto y coma
+    const statements = sql.split(/(?<=;)/);
+    const result = [];
+    
+    for (let i = 0; i < statements.length; i++) {
+        let statement = statements[i].trim();
+        
+        if (statement.length === 0) {
+            continue;
+        }
+        
+        // Detectar si es un INSERT o REPLACE
+        if (statement.match(/^(INSERT|REPLACE)\s+INTO/i)) {
+            // Compactar INSERT/REPLACE en una sola línea
+            // Remover saltos de línea y espacios múltiples
+            statement = statement.replace(/\s+/g, ' ').trim();
+            // Asegurar que termine con ;
+            if (!statement.endsWith(';')) {
+                statement += ';';
+            }
+            result.push(statement);
+        } else {
+            // Mantener otras sentencias con su formato original
+            result.push(statement);
+        }
+    }
+    
+    return result.join('\n');
+};
+
 // Función para formatear SQL usando sql-formatter
 const formatearSQL = (sql) => {
     // Si el SQL es un mensaje de error o está vacío, no formatear
@@ -182,6 +227,9 @@ const formatearSQL = (sql) => {
     }
     
     try {
+        // Primero compactar los INSERT statements
+        const sqlCompactado = compactarINSERT(sql);
+        
         // Obtener el dialecto según el SGBD seleccionado
         const sgbd = (props.paramsOpcionesSGBD?.sgbdSeleccionado || 'mysql').toLowerCase();
         let dialect = 'mysql';
@@ -200,23 +248,71 @@ const formatearSQL = (sql) => {
                 dialect = 'mysql';
         }
         
-        // Formatear el SQL con sql-formatter
-        const formatted = format(sql, {
-            language: dialect,
-            tabWidth: 2,
-            useTabs: false,
-            keywordCase: 'upper',
-            indentStyle: 'standard',
-            linesBetweenQueries: 2,
-        });
+        // Dividir por sentencias (terminadas con ;)
+        const statements = sqlCompactado.split(';');
+        const formattedStatements = [];
         
-        return formatted;
+        for (let i = 0; i < statements.length; i++) {
+            let statement = statements[i].trim();
+            
+            if (statement.length === 0) {
+                continue;
+            }
+            
+            // Detectar si es un INSERT o REPLACE
+            if (statement.match(/^(INSERT|REPLACE)\s+INTO/i)) {
+                // Mantener INSERT compacto (ya está en una línea)
+                formattedStatements.push(statement);
+            } else {
+                // Formatear otras sentencias SQL
+                try {
+                    const formatted = format(statement, {
+                        language: dialect,
+                        tabWidth: 2,
+                        useTabs: false,
+                        keywordCase: 'upper',
+                        indentStyle: 'standard',
+                    });
+                    formattedStatements.push(formatted.trim());
+                } catch (e) {
+                    // Si falla el formateo, mantener la sentencia original
+                    formattedStatements.push(statement);
+                }
+            }
+        }
+        
+        return formattedStatements.map(s => s.endsWith(';') ? s : s + ';').join('\n\n');
     } catch (error) {
         // Si hay un error al formatear, devolver el SQL original
         console.warn('Error al formatear SQL, usando SQL original:', error);
         return sql;
     }
 };
+
+// Computed para el HTML con syntax highlighting
+const sqlOutputHighlighted = computed(() => {
+    if (!sqlOutput.value || sqlOutput.value.trim().length === 0) {
+        return '';
+    }
+    
+    try {
+        // Escapar HTML primero
+        const escaped = sqlOutput.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        // Aplicar syntax highlighting
+        return Prism.highlight(escaped, Prism.languages.sql, 'sql');
+    } catch (error) {
+        console.warn('Error al aplicar syntax highlighting:', error);
+        return sqlOutput.value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+});
+
+// Watch para actualizar el highlighting cuando cambie el SQL
+watch(sqlOutput, () => {
+    nextTick(() => {
+        // Forzar re-renderizado del highlighting
+        Prism.highlightAll();
+    });
+});
 
 // Función para generar el nombre del archivo con formato: NOMBRE_TABLA-FechaHora.sql
 const generarNombreArchivo = () => {
@@ -1642,4 +1738,26 @@ const downloadSQL = () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Estilos para Prism.js syntax highlighting */
+:deep(pre[class*="language-"]) {
+    margin: 0;
+    padding: 0;
+    background: transparent !important;
+    overflow: visible;
+}
+
+:deep(code[class*="language-"]) {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Asegurar que el pre mantenga el formato */
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin: 0;
+    padding: 0;
+}
+</style>
