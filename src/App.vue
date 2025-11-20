@@ -165,20 +165,20 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div class="flex-1 min-w-0">
-                <span class="text-sm text-blue-800 dark:text-blue-300 font-medium block truncate">
+                <span class="text-sm text-blue-800 dark:text-blue-100 font-medium block whitespace-normal" style="color: black !important;">
                   CSV cargado: {{ contenidoCsv.split('\n').length }} líneas • {{ contenidoCsv.length.toLocaleString() }} caracteres
                 </span>
-                <span v-if="archivoSeleccionado" class="text-xs text-blue-600 dark:text-blue-400 block truncate">
+                <span v-if="archivoSeleccionado" class="text-xs text-blue-600 dark:text-blue-200 block truncate">
                   Archivo: {{ archivoSeleccionado.name }}
                 </span>
-                <span v-if="urlCsv && !archivoSeleccionado" class="text-xs text-blue-600 dark:text-blue-400 block truncate">
+                <span v-if="urlCsv && !archivoSeleccionado" class="text-xs text-blue-600 dark:text-blue-200 block truncate">
                   URL: {{ urlCsv }}
                 </span>
               </div>
             </div>
             <button
               @click="toggleEntradaDatos"
-              class="ml-3 flex-shrink-0 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 font-medium underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-2 py-1 transition-colors">
+              class="ml-3 flex-shrink-0 text-sm text-blue-600 dark:text-blue-200 hover:text-blue-800 dark:hover:text-blue-100 font-medium underline focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 rounded px-2 py-1 transition-colors">
               Ver contenido
             </button>
           </div>

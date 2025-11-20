@@ -22,16 +22,22 @@ html.dark label[class*="group"]:hover span.dark\:group-hover\:text-white {
 html.dark label.group:hover span,
 html.dark label[class*="group"]:hover span,
 html.dark label:hover span,
-html.dark .group:hover span {
-  color: rgb(243, 244, 246) !important; /* gray-100 - texto claro y legible */
+html.dark .group:hover span,
+html.dark label.group:hover *,
+html.dark label[class*="group"]:hover *,
+html.dark label:hover * {
+  color: rgb(255, 255, 255) !important; /* blanco puro para máximo contraste */
 }
 
 /* Sobrescribir específicamente las clases de Tailwind dark:group-hover:text-* */
 html.dark label.group:hover span.dark\:group-hover\:text-white,
 html.dark label.group:hover span[class*="dark:group-hover:text-white"],
 html.dark label[class*="group"]:hover span[class*="dark:group-hover"],
-html.dark .group:hover span[class*="dark:group-hover"] {
-  color: rgb(243, 244, 246) !important;
+html.dark .group:hover span[class*="dark:group-hover"],
+html.dark label.group:hover span[class*="dark:group-hover:text-white"],
+html.dark label[class*="group"]:hover span[class*="dark:group-hover:text-white"],
+html.dark label:hover span[class*="dark:group-hover:text-white"] {
+  color: rgb(255, 255, 255) !important; /* blanco puro */
 }
 
 /* Para elementos con fondo hover oscuro */
@@ -40,15 +46,19 @@ html.dark label[class*="hover:bg-blue-900"]:hover span,
 html.dark label[class*="hover:bg-purple-900"]:hover span,
 html.dark label[class*="dark:hover:bg-indigo-900"]:hover span,
 html.dark label[class*="dark:hover:bg-blue-900"]:hover span,
-html.dark label[class*="dark:hover:bg-purple-900"]:hover span {
-  color: rgb(243, 244, 246) !important;
+html.dark label[class*="dark:hover:bg-purple-900"]:hover span,
+html.dark label[class*="hover:bg-indigo-900"]:hover *,
+html.dark label[class*="hover:bg-blue-900"]:hover *,
+html.dark label[class*="hover:bg-purple-900"]:hover * {
+  color: rgb(255, 255, 255) !important; /* blanco puro */
 }
 
 /* Regla catch-all final con máxima especificidad */
 html.dark label:hover > span,
 html.dark label.group:hover > span,
-html.dark .group:hover > span {
-  color: rgb(243, 244, 246) !important;
+html.dark .group:hover > span,
+html.dark label:hover > * {
+  color: rgb(255, 255, 255) !important; /* blanco puro */
 }
 
 /* Regla adicional para cualquier span dentro de un label con hover */
@@ -62,8 +72,10 @@ html.dark .group:hover span[class*="group-hover"] {
 html.dark label.group:hover span,
 html.dark label[class*="group"]:hover span,
 html.dark label.group:hover > span,
-html.dark label[class*="group"]:hover > span {
-  color: rgb(243, 244, 246) !important;
+html.dark label[class*="group"]:hover > span,
+html.dark label.group:hover *,
+html.dark label[class*="group"]:hover * {
+  color: rgb(255, 255, 255) !important; /* blanco puro */
 }
 
 /* Regla para la clase personalizada cuando está en hover */
@@ -75,8 +87,9 @@ html.dark label:hover span.dark-hover-text-light {
 /* REGLA FINAL ULTRA AGRESIVA: Cualquier span dentro de cualquier label con hover en modo oscuro */
 html.dark label:hover span,
 html.dark label.group:hover span,
-html.dark label[class*="group"]:hover span {
-  color: rgb(243, 244, 246) !important;
+html.dark label[class*="group"]:hover span,
+html.dark label:hover * {
+  color: rgb(255, 255, 255) !important; /* blanco puro para máximo contraste */
   /* Forzar el color incluso si hay otras clases */
 }
 

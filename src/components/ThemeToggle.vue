@@ -1,7 +1,7 @@
 <template>
   <button
     @click="toggleTheme"
-    class="fixed top-4 right-4 z-50 p-3 rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+    class="fixed top-4 right-4 z-50 p-3 rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 dark:from-indigo-500 dark:to-blue-500 dark:hover:from-indigo-400 dark:hover:to-blue-400 text-white dark:text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
     :aria-label="isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
     :title="isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'">
     <!-- Ícono de sol (modo claro) -->
