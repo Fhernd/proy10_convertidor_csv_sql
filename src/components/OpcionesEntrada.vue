@@ -33,42 +33,42 @@
       <label class="block text-gray-700 dark:text-gray-100 font-medium mb-2">Separador de campos:</label>
       <div class="grid grid-cols-3 gap-3">
         <!-- Radios -->
-        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors duration-200 group dark-hover-label">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label">
           <input type="radio" value="auto" v-model="params.delimitador"
             class="h-4 w-4 text-indigo-600 dark:text-indigo-400 border-2 border-indigo-300 dark:border-indigo-600 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 group-hover:border-indigo-400 dark:group-hover:border-indigo-500 transition-all" />
           <span class="text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-white dark-hover-text transition-colors">Auto detectar</span>
         </label>
-        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-200 group dark-hover-label">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label">
           <input type="radio" value="," v-model="params.delimitador"
             class="h-4 w-4 text-blue-600 dark:text-blue-400 border-2 border-blue-300 dark:border-blue-600 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 group-hover:border-blue-400 dark:group-hover:border-blue-500 transition-all" />
           <span class="text-gray-700 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-white dark-hover-text transition-colors font-mono">,</span>
         </label>
-        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group dark-hover-label">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label">
           <input type="radio" value=";" v-model="params.delimitador"
             class="h-4 w-4 text-purple-600 dark:text-purple-400 border-2 border-purple-300 dark:border-purple-600 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 group-hover:border-purple-400 dark:group-hover:border-purple-500 transition-all" />
           <span class="text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-white dark-hover-text transition-colors font-mono">;</span>
         </label>
-        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors duration-200 group dark-hover-label">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label">
           <input type="radio" value=":" v-model="params.delimitador"
             class="h-4 w-4 text-indigo-600 dark:text-indigo-400 border-2 border-indigo-300 dark:border-indigo-600 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 group-hover:border-indigo-400 dark:group-hover:border-indigo-500 transition-all" />
           <span class="text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-white dark-hover-text transition-colors font-mono">:</span>
         </label>
-        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-200 group dark-hover-label">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label">
           <input type="radio" value="|" v-model="params.delimitador"
             class="h-4 w-4 text-blue-600 dark:text-blue-400 border-2 border-blue-300 dark:border-blue-600 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-800 group-hover:border-blue-400 dark:group-hover:border-blue-500 transition-all" />
           <span class="text-gray-700 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-white dark-hover-text transition-colors font-mono">|</span>
         </label>
-        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group dark-hover-label">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label">
           <input type="radio" value="Tab" v-model="params.delimitador"
             class="h-4 w-4 text-purple-600 dark:text-purple-400 border-2 border-purple-300 dark:border-purple-600 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 group-hover:border-purple-400 dark:group-hover:border-purple-500 transition-all" />
           <span class="text-gray-700 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-white dark-hover-text transition-colors">Tab</span>
         </label>
-        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors duration-200 group dark-hover-label">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label">
           <input type="radio" value="^" v-model="params.delimitador"
-            class="h-4 w-4 text-indigo-600 dark:text-indigo-400 border-2 border-indigo-300 dark:border-indigo-600 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 group-hover:border-indigo-400 dark:group-hover:border-indigo-500 transition-all" />
+            class="h-4 w-4 text-indigo-600 dark:text-blue-400 border-2 border-indigo-300 dark:border-indigo-600 focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-800 group-hover:border-indigo-400 dark:group-hover:border-indigo-500 transition-all" />
           <span class="text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-white dark-hover-text transition-colors font-mono">^</span>
         </label>
-        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-500 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label">
+        <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label">
           <input type="radio" value="custom" v-model="params.delimitador"
             class="h-4 w-4 text-purple-600 dark:text-orange-400 border-2 border-purple-300 dark:border-orange-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-orange-400 group-hover:border-purple-400 dark:group-hover:border-orange-400 transition-all" />
           <span class="text-gray-700 dark:text-orange-300 group-hover:text-purple-600 dark:group-hover:text-orange-300 transition-colors font-semibold">Personalizado</span>
