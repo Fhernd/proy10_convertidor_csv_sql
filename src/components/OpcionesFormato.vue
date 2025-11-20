@@ -43,7 +43,7 @@
                 </p>
             </div>
 
-            <label class="flex items-center p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
+            <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="replaceNulls" type="checkbox" :disabled="disabled"
                     :class="[
                         'mr-2 h-5 w-5 border-2 rounded transition-all duration-200',
@@ -54,7 +54,7 @@
                 <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-white dark-hover-text', 'transition-colors']">Reemplazar campos faltantes por NULL</span>
             </label>
 
-            <label class="flex items-center p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
+            <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="useSingleQuotes" type="checkbox" :disabled="disabled"
                     :class="[
                         'mr-2 h-5 w-5 border-2 rounded transition-all duration-200',
