@@ -6,7 +6,7 @@
         </h2>
 
         <div class="flex flex-col space-y-4">
-            <label class="flex items-center p-2 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
+            <label class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="useReplace" type="checkbox" :disabled="disabled"
                     :class="[
                         'mr-2 h-5 w-5 border-2 rounded transition-all duration-200',
@@ -17,7 +17,7 @@
                 <span :class="[disabled ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-white dark-hover-text', 'transition-colors']">Usar REPLACE en lugar de INSERT</span>
             </label>
 
-            <div class="flex items-center space-x-2 p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
+            <div class="flex items-center space-x-2 p-2 rounded-lg cursor-pointer hover:bg-blue-300 dark:hover:bg-magenta-900/30 transition-colors duration-200 group dark-hover-label" :class="{ 'cursor-not-allowed': disabled }">
                 <input v-model="enableInsertMultipleClauses" type="checkbox" :disabled="disabled"
                     :class="[
                         'h-5 w-5 border-2 rounded transition-all duration-200',
