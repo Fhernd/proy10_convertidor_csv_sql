@@ -4,7 +4,56 @@
     <meta charset="UTF-8">
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convertidor CSV a SQL</title>
+    <title>Convertidor CSV a SQL - Genera código SQL desde archivos CSV</title>
+    
+    <!-- Meta Description -->
+    <meta name="description" content="Convierte archivos CSV a código SQL de forma rápida y sencilla. Genera sentencias INSERT, UPDATE, DELETE, MERGE y SELECT para MySQL, PostgreSQL, SQLite y SQL Server.">
+    <meta name="keywords" content="CSV, SQL, convertidor, INSERT, MySQL, PostgreSQL, SQLite, SQL Server, generador SQL">
+    <meta name="author" content="Convertidor CSV a SQL">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Convertidor CSV a SQL - Genera código SQL desde archivos CSV">
+    <meta property="og:description" content="Convierte archivos CSV a código SQL de forma rápida y sencilla. Genera sentencias INSERT, UPDATE, DELETE, MERGE y SELECT para MySQL, PostgreSQL, SQLite y SQL Server.">
+    <meta property="og:image" content="/csv.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Convertidor CSV a SQL - Interfaz de la aplicación">
+    <meta property="og:locale" content="es_ES">
+    <meta property="og:site_name" content="Convertidor CSV a SQL">
+    <script>
+      // Establecer URL dinámica para Open Graph
+      (function() {
+        const ogUrl = window.location.origin + window.location.pathname;
+        const metaUrl = document.createElement('meta');
+        metaUrl.setAttribute('property', 'og:url');
+        metaUrl.setAttribute('content', ogUrl);
+        document.head.appendChild(metaUrl);
+      })();
+    </script>
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Convertidor CSV a SQL - Genera código SQL desde archivos CSV">
+    <meta name="twitter:description" content="Convierte archivos CSV a código SQL de forma rápida y sencilla. Genera sentencias INSERT, UPDATE, DELETE, MERGE y SELECT para MySQL, PostgreSQL, SQLite y SQL Server.">
+    <meta name="twitter:image" content="/csv.png">
+    <meta name="twitter:image:alt" content="Convertidor CSV a SQL - Interfaz de la aplicación">
+    <script>
+      // Establecer URL dinámica para Twitter
+      (function() {
+        const twitterUrl = window.location.origin + window.location.pathname;
+        const metaTwitterUrl = document.createElement('meta');
+        metaTwitterUrl.setAttribute('name', 'twitter:url');
+        metaTwitterUrl.setAttribute('content', twitterUrl);
+        document.head.appendChild(metaTwitterUrl);
+      })();
+    </script>
+    
+    <!-- Additional Meta Tags -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CSV a SQL">
     <script>
       // CRÍTICO: Este script debe ejecutarse ANTES de cualquier otro código
       // Aplica el tema inmediatamente para evitar flash de contenido sin tema
