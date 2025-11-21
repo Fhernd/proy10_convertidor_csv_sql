@@ -25,32 +25,81 @@
         </div>
 
         <!-- Second Row: SQL Output -->
-        <div class="mb-4">
-            <div class="flex items-center justify-between mb-2">
+        <div ref="sqlOutputContainer" class="mb-4" :class="{ 'fixed inset-0 z-50 bg-white dark:bg-gray-900 p-4': isFullscreen }">
+            <div class="flex items-center justify-between mb-2" v-if="isFullscreen">
+                <label class="block text-gray-700 dark:text-gray-100 font-bold text-xl">Salida SQL:</label>
+                <div class="flex items-center gap-2">
+                    <button
+                        @click="copiarAlPortapapeles"
+                        :disabled="!sqlOutput || sqlOutput.trim().length === 0"
+                        :class="[
+                            'flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2',
+                            sqlOutput && sqlOutput.trim().length > 0
+                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 active:scale-95 hover:scale-105 hover:shadow-lg'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm'
+                        ]"
+                        :title="sqlOutput && sqlOutput.trim().length > 0 ? 'Copiar SQL al portapapeles' : 'No hay contenido para copiar'">
+                        <svg v-if="copiadoExitoso" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span>{{ copiadoExitoso ? '¡Copiado!' : 'Copiar' }}</span>
+                    </button>
+                    <button
+                        @click="toggleFullscreen"
+                        class="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-300 transform bg-gray-700 dark:bg-gray-600 text-white hover:bg-gray-800 dark:hover:bg-gray-500 active:scale-95 hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                        title="Salir de pantalla completa (Esc)">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        <span>Salir (Esc)</span>
+                    </button>
+                </div>
+            </div>
+            <div class="flex items-center justify-between mb-2" v-else>
                 <label class="block text-gray-700 dark:text-gray-100 font-bold">Salida SQL:</label>
-                <button
-                    @click="copiarAlPortapapeles"
-                    :disabled="!sqlOutput || sqlOutput.trim().length === 0"
-                    :class="[
-                        'flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2',
-                        sqlOutput && sqlOutput.trim().length > 0
-                            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 active:scale-95 hover:scale-105 hover:shadow-lg'
-                            : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm'
-                    ]"
-                    :title="sqlOutput && sqlOutput.trim().length > 0 ? 'Copiar SQL al portapapeles' : 'No hay contenido para copiar'">
-                    <svg v-if="copiadoExitoso" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    <span>{{ copiadoExitoso ? '¡Copiado!' : 'Copiar' }}</span>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button
+                        @click="toggleFullscreen"
+                        :disabled="!sqlOutput || sqlOutput.trim().length === 0"
+                        :class="[
+                            'flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2',
+                            sqlOutput && sqlOutput.trim().length > 0
+                                ? 'bg-gray-600 dark:bg-gray-700 text-white hover:bg-gray-700 dark:hover:bg-gray-600 active:scale-95 hover:scale-105 hover:shadow-lg'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm'
+                        ]"
+                        title="Pantalla completa">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                        </svg>
+                    </button>
+                    <button
+                        @click="copiarAlPortapapeles"
+                        :disabled="!sqlOutput || sqlOutput.trim().length === 0"
+                        :class="[
+                            'flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg shadow-md transition-all duration-300 transform focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2',
+                            sqlOutput && sqlOutput.trim().length > 0
+                                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 active:scale-95 hover:scale-105 hover:shadow-lg'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-sm'
+                        ]"
+                        :title="sqlOutput && sqlOutput.trim().length > 0 ? 'Copiar SQL al portapapeles' : 'No hay contenido para copiar'">
+                        <svg v-if="copiadoExitoso" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <span>{{ copiadoExitoso ? '¡Copiado!' : 'Copiar' }}</span>
+                    </button>
+                </div>
             </div>
             <div 
                 @click="copiarAlHacerClick"
                 :class="[
-                    'w-full p-4 border-2 rounded-lg h-96 font-mono text-sm transition-all duration-300 shadow-sm overflow-auto relative',
+                    'w-full p-4 border-2 rounded-lg font-mono text-sm transition-all duration-300 shadow-sm overflow-auto relative',
+                    isFullscreen ? 'h-[calc(100vh-120px)]' : 'h-96',
                     hayDatosDisponibles && sqlOutput && sqlOutput.trim().length > 0
                         ? 'border-purple-300 dark:border-purple-600 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 cursor-pointer hover:border-purple-400 dark:hover:border-purple-500'
                         : hayDatosDisponibles
@@ -175,6 +224,8 @@ const sqlOutput = ref('');
 const fileName = ref('query.sql');
 const eolType = ref('\n');
 const copiadoExitoso = ref(false);
+const isFullscreen = ref(false);
+const sqlOutputContainer = ref(null);
 
 // Computed para determinar si hay datos CSV disponibles
 const hayDatosDisponibles = computed(() => {
@@ -311,6 +362,68 @@ watch(sqlOutput, () => {
     nextTick(() => {
         // Forzar re-renderizado del highlighting
         Prism.highlightAll();
+    });
+});
+
+// Función para alternar pantalla completa
+const toggleFullscreen = async () => {
+    if (!sqlOutputContainer.value) {
+        return;
+    }
+    
+    try {
+        if (!isFullscreen.value) {
+            // Entrar en pantalla completa
+            if (sqlOutputContainer.value.requestFullscreen) {
+                await sqlOutputContainer.value.requestFullscreen();
+            } else if (sqlOutputContainer.value.webkitRequestFullscreen) {
+                await sqlOutputContainer.value.webkitRequestFullscreen();
+            } else if (sqlOutputContainer.value.msRequestFullscreen) {
+                await sqlOutputContainer.value.msRequestFullscreen();
+            } else {
+                // Fallback: usar modo pseudo-fullscreen con CSS
+                isFullscreen.value = true;
+            }
+        } else {
+            // Salir de pantalla completa
+            if (document.exitFullscreen) {
+                await document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                await document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                await document.msExitFullscreen();
+            } else {
+                // Fallback: usar modo pseudo-fullscreen con CSS
+                isFullscreen.value = false;
+            }
+        }
+    } catch (error) {
+        console.error('Error al cambiar pantalla completa:', error);
+        // Fallback: usar modo pseudo-fullscreen con CSS
+        isFullscreen.value = !isFullscreen.value;
+    }
+};
+
+// Escuchar cambios en el estado de pantalla completa
+const handleFullscreenChange = () => {
+    isFullscreen.value = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.msFullscreenElement
+    );
+};
+
+// Agregar listeners para eventos de pantalla completa
+onMounted(() => {
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('msfullscreenchange', handleFullscreenChange);
+    
+    // Escuchar tecla ESC para salir de pantalla completa
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isFullscreen.value) {
+            toggleFullscreen();
+        }
     });
 });
 
