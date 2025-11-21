@@ -172,8 +172,6 @@
 import { defineProps, ref, computed, watch, onMounted, nextTick } from 'vue';
 import { format } from 'sql-formatter';
 import Prism from 'prismjs';
-import 'prismjs/themes/prism.css';
-import 'prismjs/themes/prism-tomorrow.css';
 import 'prismjs/components/prism-sql.js';
 
 const props = defineProps({
@@ -1852,7 +1850,7 @@ const downloadSQL = () => {
 </script>
 
 <style scoped>
-/* Estilos para Prism.js syntax highlighting */
+/* Estilos para Prism.js syntax highlighting con colores intensos */
 :deep(pre[class*="language-"]) {
     margin: 0;
     padding: 0;
@@ -1864,6 +1862,85 @@ const downloadSQL = () => {
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.875rem;
     line-height: 1.5;
+    color: #e5e7eb !important; /* gray-200 - texto base más claro */
+}
+
+/* Palabras clave SQL - colores intensos */
+:deep(.token.keyword),
+:deep(.token.operator),
+:deep(.token.punctuation) {
+    color: #60a5fa !important; /* blue-400 - azul brillante */
+    font-weight: 600 !important;
+}
+
+:deep(.token.string) {
+    color: #34d399 !important; /* green-400 - verde brillante */
+    font-weight: 500 !important;
+}
+
+:deep(.token.number) {
+    color: #fbbf24 !important; /* amber-400 - amarillo/naranja brillante */
+    font-weight: 500 !important;
+}
+
+:deep(.token.boolean) {
+    color: #a78bfa !important; /* purple-400 - morado brillante */
+    font-weight: 600 !important;
+}
+
+:deep(.token.function) {
+    color: #f472b6 !important; /* pink-400 - rosa brillante */
+    font-weight: 500 !important;
+}
+
+:deep(.token.comment) {
+    color: #9ca3af !important; /* gray-400 - gris para comentarios */
+    font-style: italic !important;
+}
+
+:deep(.token.property),
+:deep(.token.attr-name) {
+    color: #fbbf24 !important; /* amber-400 - amarillo para propiedades */
+    font-weight: 500 !important;
+}
+
+/* Modo oscuro - colores aún más intensos */
+.dark :deep(.token.keyword),
+.dark :deep(.token.operator),
+.dark :deep(.token.punctuation) {
+    color: #93c5fd !important; /* blue-300 - azul más brillante en modo oscuro */
+    font-weight: 600 !important;
+}
+
+.dark :deep(.token.string) {
+    color: #6ee7b7 !important; /* green-300 - verde más brillante en modo oscuro */
+    font-weight: 500 !important;
+}
+
+.dark :deep(.token.number) {
+    color: #fcd34d !important; /* amber-300 - amarillo más brillante en modo oscuro */
+    font-weight: 500 !important;
+}
+
+.dark :deep(.token.boolean) {
+    color: #c4b5fd !important; /* purple-300 - morado más brillante en modo oscuro */
+    font-weight: 600 !important;
+}
+
+.dark :deep(.token.function) {
+    color: #f9a8d4 !important; /* pink-300 - rosa más brillante en modo oscuro */
+    font-weight: 500 !important;
+}
+
+.dark :deep(.token.comment) {
+    color: #d1d5db !important; /* gray-300 - gris más claro para comentarios */
+    font-style: italic !important;
+}
+
+.dark :deep(.token.property),
+.dark :deep(.token.attr-name) {
+    color: #fcd34d !important; /* amber-300 - amarillo más brillante en modo oscuro */
+    font-weight: 500 !important;
 }
 
 /* Asegurar que el pre mantenga el formato */
@@ -1872,5 +1949,14 @@ pre {
     word-wrap: break-word;
     margin: 0;
     padding: 0;
+}
+
+/* Mejorar contraste general */
+:deep(code) {
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.dark :deep(code) {
+    text-shadow: 0 0 2px rgba(255, 255, 255, 0.1);
 }
 </style>
