@@ -258,37 +258,53 @@ Puedes probar la aplicación directamente en GitHub Pages:
 
 ## 🚀 Despliegue
 
-### GitHub Pages
+### GitHub Pages (Recomendado - Automatizado)
 
-Para desplegar la aplicación en GitHub Pages:
+La aplicación está configurada para desplegarse automáticamente en GitHub Pages usando GitHub Actions.
 
-1. **Configurar el repositorio**:
+#### Pasos para Desplegar:
+
+1. **Habilitar GitHub Pages en el repositorio**:
+   - Ve a tu repositorio en GitHub: `https://github.com/Fhernd/proy10_convertidor_csv_sql`
+   - Haz clic en **Settings** > **Pages**
+   - En la sección **Build and deployment**:
+     - **Source**: Selecciona **"GitHub Actions"**
+   - Guarda los cambios
+
+2. **Hacer commit y push de los cambios**:
    ```bash
-   # Asegúrate de estar en la rama main
-   git checkout main
+   git add .
+   git commit -m "Configurar despliegue en GitHub Pages"
+   git push origin master
+   # o si tu rama principal es 'main':
+   git push origin main
    ```
 
-2. **Instalar gh-pages** (opcional, o usar GitHub Actions):
-   ```bash
-   npm install --save-dev gh-pages
-   ```
+3. **Verificar el despliegue**:
+   - Ve a la pestaña **Actions** en tu repositorio
+   - Verás un workflow ejecutándose llamado "Deploy to GitHub Pages"
+   - Espera a que termine (generalmente toma 1-2 minutos)
+   - Una vez completado, tu aplicación estará disponible en:
+     `https://fhernd.github.io/proy10_convertidor_csv_sql/`
 
-3. **Agregar script al package.json**:
-   ```json
-   "scripts": {
-     "deploy": "npm run build && gh-pages -d dist"
-   }
-   ```
+4. **Configuración automática**:
+   - El workflow se ejecutará automáticamente cada vez que hagas push a la rama `master` o `main`
+   - No necesitas hacer nada más, el despliegue es completamente automático
 
-4. **Desplegar**:
-   ```bash
-   npm run deploy
-   ```
+#### Estructura del Workflow:
 
-5. **Configurar en GitHub**:
-   - Ve a Settings > Pages
-   - Selecciona la rama `gh-pages` como fuente
-   - La aplicación estará disponible en `https://[tu-usuario].github.io/proy10_convertidor_csv_sql/`
+El archivo `.github/workflows/deploy.yml` contiene la configuración que:
+- ✅ Construye la aplicación automáticamente
+- ✅ Despliega en GitHub Pages
+- ✅ Se ejecuta en cada push a la rama principal
+- ✅ También puede ejecutarse manualmente desde la pestaña Actions
+
+#### Solución de Problemas:
+
+Si el despliegue falla:
+1. Verifica que GitHub Pages esté habilitado en Settings > Pages
+2. Asegúrate de que el workflow tenga permisos de escritura (se configuran automáticamente)
+3. Revisa los logs en la pestaña Actions para ver errores específicos
 
 ### Vercel
 
